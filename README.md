@@ -1,8 +1,3 @@
-# Status: Archived
-This repository has been archived and is no longer maintained.
-
-![status: inactive](https://img.shields.io/badge/status-inactive-red.svg)
-
 Sceneform SDK for Android
 =========================
 Copyright (c) 2018 Google Inc.  All rights reserved.
@@ -15,7 +10,7 @@ apps without requiring OpenGL.
 ## Choosing the right Sceneform SDK version for your project
 
 As of ARCore release 1.16.0, Google open-sourced the implementation of Sceneform
-allowing you to extend Sceneform's features and capabilities. As part of the
+allowing to extend Sceneform's features and capabilities. As part of the
 1.16.0 release, support for `SFA` and `SFB` assets was removed in favor of
 adding `glTF` support
 
@@ -66,10 +61,26 @@ Do not use Sceneform 1.17.0 as that release will not work correctly. (Sceneform
     <td>Sceneform SDK<br>version <b>1.17.1</b></td>
     <td>Identical to version 1.15.0</td>
   </tr>
+   <tr>
+    <td>Sceneform SDK<br>version <b>1.18.0</b></td>
+    <td>
+      <ul>
+        <li>Open source</li>
+        <li>Built alongside an application as a Gradle module</li>
+        <li>
+          Supports <a href="https://www.khronos.org/gltf/">glTF</a> instead of
+          <code>SFA</code> and <code>SFB</code> Sceneform formats
+        </li>
+        <li>
+          Compatible with the latests versions of [ARCore SDK for Android](https://github.com/google-ar/arcore-android-sdk) and [Filament](https://github.com/google/filament)
+        </li>
+      </ul>
+    </td>
+  </tr>
 </table>
 
 
-## Getting started with Sceneform 1.16.0
+## Getting started with Sceneform 1.18.0
 
 Use the following steps to include and build the Sceneform 1.16.0 SDK with your
 app:
@@ -114,17 +125,6 @@ dependencies {
 To get started with the Sceneform SDK, check out the
 [Sceneform sample](https://github.com/google-ar/sceneform-android-sdk/tree/master/samples/gltf/app).
 
-
-## Archived Sceneform 1.15.0 content
-
-Documentation for the Sceneform SDK for Android 1.15.0 is available from
-https://developers.google.com/sceneform.
-
-* [Getting started](https://developers.google.com/sceneform/develop/getting-started)
-* [API reference](https://developers.google.com/sceneform/reference)
-* [Samples](https://github.com/google-ar/sceneform-android-sdk/tree/v1.15.0/samples)
-
-
 ## Release notes
 
 The SDK release notes are available on the
@@ -134,7 +134,7 @@ The SDK release notes are available on the
 ## License
 
 Please see the
-[LICENSE](https://github.com/google-ar/sceneform-android-sdk/blob/master/LICENSE)
+[LICENSE](https://github.com/ThomasGorisse/sceneform-android-sdk/blob/master/LICENSE)
 file.
 
 
