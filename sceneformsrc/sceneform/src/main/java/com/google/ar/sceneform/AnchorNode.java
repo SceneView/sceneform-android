@@ -1,6 +1,6 @@
 package com.google.ar.sceneform;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 import android.util.Log;
 import com.google.ar.core.Anchor;
 import com.google.ar.core.Pose;

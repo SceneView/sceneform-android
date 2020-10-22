@@ -1,8 +1,8 @@
 package com.google.ar.sceneform.rendering;
 
 import android.net.Uri;
-import android.support.annotation.Nullable;
-import android.support.annotation.Size;
+import androidx.annotation.Nullable;
+import androidx.annotation.Size;
 import android.util.Log;
 import com.google.android.filament.Engine;
 import com.google.android.filament.Entity;
@@ -13,7 +13,6 @@ import com.google.android.filament.RenderableManager;
 import com.google.android.filament.TransformManager;
 import com.google.android.filament.gltfio.AssetLoader;
 import com.google.android.filament.gltfio.FilamentAsset;
-import com.google.android.filament.gltfio.ResourceLoader;
 
 
 import com.google.ar.sceneform.collision.Box;
@@ -29,7 +28,6 @@ import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 
-import java.nio.IntBuffer;
 import java.util.concurrent.Callable;
 import java.util.function.Function;
 

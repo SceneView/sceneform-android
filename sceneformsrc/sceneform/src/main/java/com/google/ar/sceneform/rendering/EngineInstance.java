@@ -1,7 +1,7 @@
 package com.google.ar.sceneform.rendering;
 
 import android.opengl.EGLContext;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 import com.google.android.filament.Engine;
 import com.google.android.filament.Filament;
 import com.google.android.filament.gltfio.Gltfio;

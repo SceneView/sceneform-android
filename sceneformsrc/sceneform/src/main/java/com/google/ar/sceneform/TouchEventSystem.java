@@ -1,6 +1,6 @@
 package com.google.ar.sceneform;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 import android.view.MotionEvent;
 import com.google.ar.sceneform.Scene.OnPeekTouchListener;
 import com.google.ar.sceneform.utilities.Preconditions;

@@ -3,7 +3,7 @@ package com.google.ar.sceneform.utilities;
 import android.os.Build;
 import android.os.Build.VERSION_CODES;
 import android.os.Looper;
-import android.support.annotation.VisibleForTesting;
+import androidx.annotation.VisibleForTesting;
 
 /**
  * Helper class for common android specific preconditions used inside of RenderCore.

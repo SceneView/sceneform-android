@@ -1,6 +1,6 @@
 package com.google.ar.sceneform.rendering;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 import android.util.Log;
 import com.google.ar.core.Frame;
 import com.google.ar.core.HitResult;

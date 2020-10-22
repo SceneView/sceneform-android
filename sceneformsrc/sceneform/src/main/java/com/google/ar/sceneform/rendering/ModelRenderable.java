@@ -2,7 +2,7 @@ package com.google.ar.sceneform.rendering;
 
 import android.os.Build;
 
-import android.support.annotation.RequiresApi;
+import androidx.annotation.RequiresApi;
 
 import com.google.ar.sceneform.resources.ResourceRegistry;
 import com.google.ar.sceneform.utilities.AndroidPreconditions;
