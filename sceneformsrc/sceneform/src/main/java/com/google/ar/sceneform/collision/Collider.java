@@ -1,6 +1,6 @@
 package com.google.ar.sceneform.collision;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 import com.google.ar.sceneform.common.TransformProvider;
 import com.google.ar.sceneform.utilities.ChangeId;
 import com.google.ar.sceneform.utilities.Preconditions;

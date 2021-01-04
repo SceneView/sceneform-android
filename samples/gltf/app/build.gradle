@@ -15,13 +15,13 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 28
+    compileSdkVersion 30
     defaultConfig {
         applicationId "com.google.ar.sceneform.samples.gltf"
 
         // Sceneform requires minSdkVersion >= 24.
         minSdkVersion 24
-        targetSdkVersion 28
+        targetSdkVersion 30
         versionCode 1
         versionName "1.0"
     }
@@ -43,5 +43,5 @@ dependencies {
     // Use the Sceneform UX Package built from the source files included in the sceneformux folder.
     api project(":sceneformux")
 
-    implementation "com.android.support:appcompat-v7:28.0.0"
+    implementation 'androidx.appcompat:appcompat:1.2.0'
 }

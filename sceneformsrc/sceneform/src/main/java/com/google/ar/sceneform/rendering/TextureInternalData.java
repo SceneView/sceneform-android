@@ -1,6 +1,6 @@
 package com.google.ar.sceneform.rendering;
 
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 import com.google.ar.core.annotations.UsedByNative;
 import com.google.ar.sceneform.resources.SharedReference;
 import com.google.ar.sceneform.utilities.AndroidPreconditions;

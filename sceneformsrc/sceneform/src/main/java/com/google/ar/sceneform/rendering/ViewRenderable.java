@@ -2,8 +2,8 @@ package com.google.ar.sceneform.rendering;
 
 import android.content.Context;
 import android.os.Build;
-import android.support.annotation.Nullable;
-import android.support.annotation.RequiresApi;
+import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,7 +22,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.OptionalInt;
 import java.util.concurrent.CompletableFuture;
-import java.util.function.Function;
 
 /**
  * Renders a 2D Android view in 3D space by attaching it to a {@link com.google.ar.sceneform.Node}

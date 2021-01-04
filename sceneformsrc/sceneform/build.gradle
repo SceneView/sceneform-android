@@ -15,11 +15,11 @@
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion 28
+    compileSdkVersion 30
     defaultConfig {
         // Sceneform requires minSdkVersion >= 24.
         minSdkVersion 24
-        targetSdkVersion 28
+        targetSdkVersion 30
         versionCode 1
         versionName "1.0"
     }
@@ -39,12 +39,12 @@ android {
 }
 
 dependencies {
-    api 'com.google.android.filament:filament-android:1.7.0'
-    api 'com.google.android.filament:gltfio-android:1.7.0'
+    api 'com.google.android.filament:filament-android:1.9.5'
+    api 'com.google.android.filament:gltfio-android:1.9.5'
     implementation files("../libs/libsceneform_runtime_schemas.jar")
 
-    api "com.google.ar:core:1.16.0"
+    api "com.google.ar:core:1.20.0"
 
-    implementation "com.android.support:appcompat-v7:28.0.0"
-    implementation "com.android.support:design:28.0.0"
+    implementation 'androidx.appcompat:appcompat:1.2.0'
+    implementation 'com.google.android.material:material:1.2.1'
 }

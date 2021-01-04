@@ -2,8 +2,8 @@ package com.google.ar.sceneform.rendering;
 
 import android.content.Context;
 import android.net.Uri;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import com.google.android.filament.IndexBuffer;
 import com.google.android.filament.VertexBuffer;
 import com.google.android.filament.gltfio.MaterialProvider;
