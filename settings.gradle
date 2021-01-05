@@ -1,0 +1,2 @@
+include ':core', ':ux', ':samples-gltf'
+project(':samples-gltf').projectDir=new File('samples/gltf')

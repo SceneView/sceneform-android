@@ -1,4 +1,0 @@
-include ':ux'
-
-include ':sceneform'
-project(':sceneform').projectDir=new File('../sceneformsrc/sceneform')

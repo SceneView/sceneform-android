@@ -12,37 +12,41 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-apply plugin: 'com.android.application'
+apply plugin: 'com.android.library'
 
 android {
     compileSdkVersion 30
     defaultConfig {
-        applicationId "com.google.ar.sceneform.samples.gltf"
-
         // Sceneform requires minSdkVersion >= 24.
         minSdkVersion 24
         targetSdkVersion 30
         versionCode 1
         versionName "1.0"
     }
-    // Sceneform libraries use language constructs from Java 8.
-    // Add these compile options if targeting minSdkVersion < 26.
     compileOptions {
+        // Sceneform libraries use language constructs from Java 8.
+        // Add these compile options if targeting minSdkVersion < 26.
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
     buildTypes {
         release {
             minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+
 }
 
 dependencies {
-    // Use the Sceneform UX Package built from the source files included in the sceneformux folder.
-    api project(":ux")
+    // Use the Sceneform SDK built from the source files included in the core folder.
+    api project(":core")
 
-    implementation 'com.google.ar:core:1.20.0'
     implementation 'androidx.appcompat:appcompat:1.2.0'
+    implementation 'com.google.android.material:material:1.2.1'
 }
+
+task compileUxAssets {
+}
+
+preBuild.dependsOn compileUxAssets
