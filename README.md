@@ -1,13 +1,93 @@
-Sceneform SDK for Android
-=========================
+Sceneform SDK for Android - Maintained
+======================================
 Copyright (c) 2018 Google Inc.  All rights reserved.
 
 Sceneform is a 3D framework with a physically based renderer that's optimized
 for mobile devices and that makes it easy for you to build augmented reality
 apps without requiring OpenGL.
 
+## Download
 
-## Choosing the right Sceneform SDK version for your project
+Sceneform is available on `jCenter()`
+
+```kotlin
+//Scenform Core
+implementation("com.gorisse.thomas.sceneform:core:1.18.0")
+//Scenform Fragment
+implementation("com.gorisse.thomas.sceneform:ux:1.18.0")
+```
+
+## Usage
+
+### Update your AndroidManifest.xml
+
+Modify your ```AndroidManifest.xml``` to indicate that your app uses (AR Optional) or requires (AR Required) ARCore and CAMERA access:
+```xml
+<!-- Both "AR Optional" and "AR Required" apps require CAMERA permission. -->
+<uses-permission android:name="android.permission.CAMERA" />
+
+<!-- Sceneform requires OpenGL ES 3.0 or later. -->
+<uses-feature android:glEsVersion="0x00030000" android:required="true" />
+
+<!-- Indicates that app requires ARCore ("AR Required"). Ensures the app is
+     visible only in the Google Play Store on devices that support ARCore.
+     For "AR Optional" apps remove this line. -->
+<uses-feature android:name="android.hardware.camera.ar" />
+
+<application>
+    …
+    <!-- Indicates that app requires ARCore ("AR Required"). Causes the Google
+         Play Store to download and install Google Play Services for AR along
+         with the app. For an "AR Optional" app, specify "optional" instead of
+         "required".
+    -->
+    <meta-data android:name="com.google.ar.core" android:value="required" />
+</application>
+```
+
+### Add the fragment to your layout
+```xml
+<fragment android:name="com.google.ar.sceneform.ux.ArFragment"
+      android:id="@+id/ux_fragment"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent" />
+```
+
+### Add your renderable
+```kotlin
+ ModelRenderable.builder()
+    .setSource(
+        this,
+        // Http source
+        Uri.parse("https://storage.googleapis.com/ar-answers-in-search-models/static/Tiger/model.glb")
+        // Or raw resource : model.glb
+        // R.raw.model
+    )
+    .setIsFilamentGltf(true)
+    .build()
+    .thenAccept { modelRenderable: ModelRenderable? ->
+        activity.renderable = modelRenderable
+    }
+    .exceptionally { throwable: Throwable? ->
+        Toast.makeText(this, "Unable to load renderable", Toast.LENGTH_LONG)
+        null
+    }
+```
+
+## Release notes
+
+The SDK release notes are available on the
+[releases](https://github.com/ThomasGorisse/sceneform-android-sdk/releases) page.
+
+
+## License
+
+Please see the
+[LICENSE](https://github.com/ThomasGorisse/sceneform-android-sdk/blob/master/LICENSE)
+file.
+
+
+## OLD - Choosing the right Sceneform SDK version for your project
 
 As of ARCore release 1.16.0, Google open-sourced the implementation of Sceneform
 allowing to extend Sceneform's features and capabilities. As part of the
@@ -66,77 +146,21 @@ Do not use Sceneform 1.17.0 as that release will not work correctly. (Sceneform
     <td>
       <ul>
         <li>Open source</li>
-        <li>Built alongside an application as a Gradle module</li>
+        <li>Avaiable on jCenter dependencies</li>
         <li>
           Supports <a href="https://www.khronos.org/gltf/">glTF</a> instead of
-          <code>SFA</code> and <code>SFB</code> Sceneform formats
+          olds <code>SFA</code> and <code>SFB</code> formats.
         </li>
         <li>
-          Compatible with the latests versions of [ARCore SDK for Android](https://github.com/google-ar/arcore-android-sdk) and [Filament](https://github.com/google/filament)
+          Compatible with the latests versions of <a href="https://github.com/google-ar/arcore-android-sdk">ARCore SDK</a> and <a href="https://github.com/google/filament">Filament</a>
         </li>
       </ul>
     </td>
   </tr>
 </table>
 
-
-## Getting started with Sceneform 1.18.0
-
-Use the following steps to include and build the Sceneform 1.16.0 SDK with your
-app:
-
-1. Download `sceneform-android-sdk-1.16.0.zip` from the Sceneform SDK
-   [releases](https://github.com/google-ar/sceneform-android-sdk/releases/tag/v1.16.0)
-   page.
-2. Extract the `sceneformsrc` and `sceneformux` directories into your project's
-   top-level directory. The resulting directory structure should be similar to
-   the following:
-```
-project
-+-- app
-|   +-- build.gradle
-|   +-- ...
-+-- sceneformsrc
-+-- sceneformux
-+-- build.gradle
-+-- settings.gradle
-+-- ...
-```
-
-3. Modify your project's `settings.gradle` to include the Sceneform projects:
-```
-include ':app'
-
-// Add these lines:
-include ':sceneform'
-project(':sceneform').projectDir=new File('sceneformsrc/sceneform')
-
-include ':sceneformux'
-project(':sceneformux').projectDir=new File('sceneformux/ux')
-```
-
-4. Finally, add a reference to the Sceneform SDK to your app's `build.gradle`:
-```
-dependencies {
-    api project(":sceneformux")
-}
-```
-
 To get started with the Sceneform SDK, check out the
-[Sceneform sample](https://github.com/google-ar/sceneform-android-sdk/tree/master/samples/gltf/app).
-
-## Release notes
-
-The SDK release notes are available on the
-[releases](https://github.com/google-ar/sceneform-android-sdk/releases) page.
-
-
-## License
-
-Please see the
-[LICENSE](https://github.com/ThomasGorisse/sceneform-android-sdk/blob/master/LICENSE)
-file.
-
+[Sceneform samples](https://github.com/ThomasGorisse/sceneform-android-sdk/tree/master/samples).
 
 ## Brand Guidelines
 
