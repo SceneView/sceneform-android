@@ -2,15 +2,27 @@ Sceneform SDK for Android - Maintained
 ======================================
 Copyright (c) 2018 Google Inc.  All rights reserved.
 
+[ ![Core - jCenter](https://img.shields.io/badge/Core%20--%20jCenter-1.18.0-blue) ](https://bintray.com/thomasgorisse/maven/com.gorisse.thomas.sceneform:core/1.18.0/link)
+[ ![Ux - jCenter](https://img.shields.io/badge/Ux%20--%20jCenter-1.18.0-blue) ](https://bintray.com/thomasgorisse/maven/com.gorisse.thomas.sceneform:ux/1.18.0/link)
+
 Sceneform is a 3D framework with a physically based renderer that's optimized
 for mobile devices and that makes it easy for you to build augmented reality
-apps without requiring OpenGL.
+apps without requiring OpenGL or Unity.
 
-## Download
+This repository is the continuation of the [Archived version](https://github.com/google-ar/sceneform-android-sdk)
+
+## Usage benefits
+* Continuous compatibility with the latests versions of [ARCore SDK](https://github.com/google-ar/arcore-android-sdk) and [Filament](https://github.com/google/filament) 
+* Avaiable has jCenter dependencies 
+* Supports <a href="https://www.khronos.org/gltf/">glTF</a> instead of olds <code>SFA</code> and <code>SFB</code> formats 
+* Open source 
+
+
+## Dependencies
 
 Sceneform is available on `jCenter()`
 
-```kotlin
+```gradle
 //Scenform Core
 implementation("com.gorisse.thomas.sceneform:core:1.18.0")
 //Scenform Fragment
@@ -18,6 +30,8 @@ implementation("com.gorisse.thomas.sceneform:ux:1.18.0")
 ```
 
 ## Usage
+
+Check out the [Full source code samples](https://github.com/ThomasGorisse/sceneform-android-sdk/tree/master/samples).
 
 ### Update your AndroidManifest.xml
 
@@ -158,9 +172,6 @@ Do not use Sceneform 1.17.0 as that release will not work correctly. (Sceneform
     </td>
   </tr>
 </table>
-
-To get started with the Sceneform SDK, check out the
-[Sceneform samples](https://github.com/ThomasGorisse/sceneform-android-sdk/tree/master/samples).
 
 ## Brand Guidelines
 
