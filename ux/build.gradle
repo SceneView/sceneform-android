@@ -13,6 +13,7 @@
  * limitations under the License.
  */
 apply plugin: 'com.android.library'
+apply plugin: 'maven-publish'
 
 android {
     compileSdkVersion 30
@@ -46,7 +47,27 @@ dependencies {
     implementation 'com.google.android.material:material:1.2.1'
 }
 
-task compileUxAssets {
+//task compileUxAssets {
+//}
+
+//preBuild.dependsOn compileUxAssets
+
+// Generate Source Jar
+task sourceJar(type: Jar) {
+    from android.sourceSets.main.java.srcDirs
+    classifier "sources"
 }
 
-preBuild.dependsOn compileUxAssets
+afterEvaluate {
+    publishing {
+        publications {
+            releasePublication(MavenPublication) {
+                groupId = project.mavenGroupId
+                artifactId = project.name
+                version = project.mavenVersion
+                artifact(sourceJar)
+                artifact("$buildDir/outputs/aar/${project.getName()}-release.aar")
+            }
+        }
+    }
+}
