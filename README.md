@@ -13,6 +13,7 @@ This repository is the continuation of the [Archived version](https://github.com
 
 ## Usage benefits
 * Continuous compatibility with the latests versions of [ARCore SDK](https://github.com/google-ar/arcore-android-sdk) and [Filament](https://github.com/google/filament) 
+* Based on AndroidX
 * Avaiable has jCenter dependencies 
 * Supports <a href="https://www.khronos.org/gltf/">glTF</a> instead of olds <code>SFA</code> and <code>SFB</code> formats 
 * Open source 
@@ -161,6 +162,7 @@ Do not use Sceneform 1.17.0 as that release will not work correctly. (Sceneform
       <ul>
         <li>Open source</li>
         <li>Avaiable on jCenter dependencies</li>
+        <li>Based on AndroidX</li>
         <li>
           Supports <a href="https://www.khronos.org/gltf/">glTF</a> instead of
           olds <code>SFA</code> and <code>SFB</code> formats.
