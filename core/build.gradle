@@ -13,6 +13,7 @@
  * limitations under the License.
  */
 apply plugin: 'com.android.library'
+apply plugin: 'maven-publish'
 
 android {
     compileSdkVersion 30
@@ -21,7 +22,7 @@ android {
         minSdkVersion 24
         targetSdkVersion 30
         versionCode 1
-        versionName "1.0"
+        versionName "1.18.0"
     }
     compileOptions {
         // Sceneform libraries use language constructs from Java 8.
@@ -39,11 +40,11 @@ android {
 }
 
 dependencies {
-    api 'com.google.android.filament:filament-android:1.9.5'
-    api 'com.google.android.filament:gltfio-android:1.9.5'
+    api 'com.google.android.filament:filament-android:1.9.9'
+    api 'com.google.android.filament:gltfio-android:1.9.9'
     implementation files("libs/libsceneform_runtime_schemas.jar")
 
-    api "com.google.ar:core:1.20.0"
+    api "com.google.ar:core:1.22.0"
 
     implementation 'androidx.appcompat:appcompat:1.2.0'
     implementation 'com.google.android.material:material:1.2.1'
