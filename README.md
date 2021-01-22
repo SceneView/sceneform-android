@@ -2,8 +2,7 @@ Sceneform SDK for Android - Maintained
 ======================================
 Copyright (c) 2018 Google Inc.  All rights reserved.
 
-[ ![Core - jCenter](https://img.shields.io/badge/Core%20--%20jCenter-1.18.0-blue) ](https://bintray.com/thomasgorisse/maven/com.gorisse.thomas.sceneform:core/1.18.0/link)
-[ ![Ux - jCenter](https://img.shields.io/badge/Ux%20--%20jCenter-1.18.0-blue) ](https://bintray.com/thomasgorisse/maven/com.gorisse.thomas.sceneform:ux/1.18.0/link)
+[ ![jCenter](https://img.shields.io/badge/jCenter-1.18.3-blue) ](https://bintray.com/thomasgorisse/maven/com.gorisse.thomas.sceneform:sceneform/1.18.3/link)
 
 Sceneform is a 3D framework with a physically based renderer that's optimized
 for mobile devices and that makes it easy for you to build augmented reality
@@ -14,7 +13,7 @@ This repository is the continuation of the [Archived version](https://github.com
 ## Usage benefits
 * Continuous compatibility with the latests versions of [ARCore SDK](https://github.com/google-ar/arcore-android-sdk) and [Filament](https://github.com/google/filament) 
 * Based on AndroidX
-* Avaiable has jCenter dependencies 
+* Available has jCenter dependency
 * Supports <a href="https://www.khronos.org/gltf/">glTF</a> instead of olds <code>SFA</code> and <code>SFB</code> formats 
 * Open source 
 
@@ -24,15 +23,14 @@ This repository is the continuation of the [Archived version](https://github.com
 Sceneform is available on `jCenter()`
 
 ```gradle
-//Scenform Core
-implementation("com.gorisse.thomas.sceneform:core:1.18.0")
-//Scenform Fragment
-implementation("com.gorisse.thomas.sceneform:ux:1.18.0")
+dependencies {
+     implementation("com.gorisse.thomas.sceneform:sceneform:1.18.3")
+}
 ```
 
 ## Usage
 
-Check out the [Full source code samples](https://github.com/ThomasGorisse/sceneform-android-sdk/tree/master/samples).
+You can check out the [Full source code samples](https://github.com/ThomasGorisse/sceneform-android-sdk/tree/master/samples).
 
 ### Update your AndroidManifest.xml
 
@@ -102,78 +100,78 @@ Please see the
 file.
 
 
-## OLD - Choosing the right Sceneform SDK version for your project
-
-As of ARCore release 1.16.0, Google open-sourced the implementation of Sceneform
+> ## OLD - Choosing the right Sceneform SDK version for your project
+>
+> As of ARCore release 1.16.0, Google open-sourced the implementation of Sceneform
 allowing to extend Sceneform's features and capabilities. As part of the
 1.16.0 release, support for `SFA` and `SFB` assets was removed in favor of
 adding `glTF` support
-
-You can continue to use Sceneform 1.15.0 (or earlier). There is no requirement
+>
+> You can continue to use Sceneform 1.15.0 (or earlier). There is no requirement
 that you migrate to Sceneform 1.16.0.
-
-Do not use Sceneform 1.17.0 as that release will not work correctly. (Sceneform
+>
+>Do not use Sceneform 1.17.0 as that release will not work correctly. (Sceneform
 1.17.1 can be used, but is otherwise identical to Sceneform 1.15.0.)
-
-
-<table>
-  <tr>
-    <th>Sceneform SDK</th>
-    <th>Description</th>
-  </tr>
-  <tr>
-    <td>Sceneform SDK<br>versions <b>1.0.0 - 1.15.0</b></td>
-    <td>
-      <ul>
-        <li>Closed source</li>
-        <li>Included in your project as an external Gradle dependency</li>
-        <li>
-          <code>FBX</code> and <code>OBJ</code> files can be converted to
-          Sceneform's <code>SFA</code> and <code>SFB</code> Sceneform
-          formats
-        </li>
-      </ul>
-    </td>
-  </tr>
-  <tr>
-    <td>Sceneform SDK<br>version <b>1.16.0</b></td>
-    <td>
-      <ul>
-        <li>Open source</li>
-        <li>Built alongside an application as a Gradle module</li>
-        <li>
-          Supports <a href="https://www.khronos.org/gltf/">glTF</a> instead of
-          <code>SFA</code> and <code>SFB</code> Sceneform formats
-        </li>
-      </ul>
-    </td>
-  </tr>
-  <tr>
-    <td>Sceneform SDK<br>version <b>1.17.0</b></td>
-    <td>Do not use</td>
-  </tr>
-  <tr>
-    <td>Sceneform SDK<br>version <b>1.17.1</b></td>
-    <td>Identical to version 1.15.0</td>
-  </tr>
-   <tr>
-    <td>Sceneform SDK<br>version <b>1.18.0</b></td>
-    <td>
-      <ul>
-        <li>Open source</li>
-        <li>Avaiable on jCenter dependencies</li>
-        <li>Based on AndroidX</li>
-        <li>
-          Supports <a href="https://www.khronos.org/gltf/">glTF</a> instead of
-          olds <code>SFA</code> and <code>SFB</code> formats.
-        </li>
-        <li>
-          Compatible with the latests versions of <a href="https://github.com/google-ar/arcore-android-sdk">ARCore SDK</a> and <a href="https://github.com/google/filament">Filament</a>
-        </li>
-      </ul>
-    </td>
-  </tr>
-</table>
+>
+>
+> <table>
+>  <tr>
+>    <th>Sceneform SDK</th>
+>    <th>Description</th>
+>  </tr>
+>  <tr>
+>    <td>Sceneform SDK<br>versions <b>1.0.0 - 1.15.0</b></td>
+>    <td>
+>      <ul>
+>        <li>Closed source</li>
+>        <li>Included in your project as an external Gradle dependency</li>
+>        <li>
+>          <code>FBX</code> and <code>OBJ</code> files can be converted to
+>          Sceneform's <code>SFA</code> and <code>SFB</code> Sceneform
+>          formats
+>        </li>
+>      </ul>
+>    </td>
+>  </tr>
+>  <tr>
+>    <td>Sceneform SDK<br>version <b>1.16.0</b></td>
+>    <td>
+>      <ul>
+>        <li>Open source</li>
+>        <li>Built alongside an application as a Gradle module</li>
+>        <li>
+>          Supports <a href="https://www.khronos.org/gltf/">glTF</a> instead of
+>          <code>SFA</code> and <code>SFB</code> Sceneform formats
+>        </li>
+>      </ul>
+>    </td>
+>  </tr>
+>  <tr>
+>    <td>Sceneform SDK<br>version <b>1.17.0</b></td>
+>    <td>Do not use</td>
+>  </tr>
+>  <tr>
+>    <td>Sceneform SDK<br>version <b>1.17.1</b></td>
+>    <td>Identical to version 1.15.0</td>
+>  </tr>
+>   <tr>
+>    <td>Sceneform SDK<br>version <b>1.18.0</b></td>
+>    <td>
+>      <ul>
+>        <li>Open source</li>
+>        <li>Avaiable on jCenter dependencies</li>
+>        <li>Based on AndroidX</li>
+>        <li>
+>          Supports <a href="https://www.khronos.org/gltf/">glTF</a> instead of
+>          olds <code>SFA</code> and <code>SFB</code> formats.
+>        </li>
+>        <li>
+>          Compatible with the latests versions of <a href="https://github.com/google-ar/arcore-android-sdk">ARCore SDK</a> and <a href="https://github.com/google/filament">Filament</a>
+>        </li>
+>      </ul>
+>    </td>
+>  </tr>
+> </table>
 
 ## Brand Guidelines
 
