@@ -43,7 +43,7 @@ public final class MaterialFactory {
    * Name of material parameter for controlling the roughness property of all {@link
    * MaterialFactory} materials. The roughness property controls the perceived smoothness of the
    * surface. When roughness is set to 0, the surface is perfectly smooth and highly glossy. The
-   * rougher a surface is, the “blurrier” the reflections are. The default value is 0.4.
+   * rougher a surface is, the "blurrier" the reflections are. The default value is 0.4.
    *
    * @see Material#setFloat(String, float)
    */

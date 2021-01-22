@@ -13,7 +13,6 @@
  * limitations under the License.
  */
 apply plugin: 'com.android.library'
-apply plugin: 'maven-publish'
 
 android {
     compileSdkVersion 30
@@ -21,8 +20,8 @@ android {
         // Sceneform requires minSdkVersion >= 24.
         minSdkVersion 24
         targetSdkVersion 30
-        versionCode 1
-        versionName "1.18.0"
+        versionCode 3
+        versionName "1.18.2"
     }
     compileOptions {
         // Sceneform libraries use language constructs from Java 8.
@@ -49,23 +48,4 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.2.0'
     implementation 'com.google.android.material:material:1.2.1'
 }
-
-// Generate Source Jar
-task sourceJar(type: Jar) {
-    from android.sourceSets.main.java.srcDirs
-    classifier "sources"
-}
-
-afterEvaluate {
-    publishing {
-        publications {
-            releasePublication(MavenPublication) {
-                groupId = project.mavenGroupId
-                artifactId = project.name
-                version = project.mavenVersion
-                artifact(sourceJar)
-                artifact("$buildDir/outputs/aar/${project.getName()}-release.aar")
-            }
-        }
-    }
-}
+apply from: rootProject.file('bintray.gradle')

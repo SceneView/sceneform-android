@@ -15,18 +15,6 @@
 // Top-level build file where you can add configuration options common to
 // all sub-projects/modules.
 
-project.ext {
-    mavenGroupId = 'com.gorisse.thomas.sceneform'
-    mavenVersion = '1.18.0'
-    mavenDesc = 'Sceneform Core'
-    mavenWebsiteUrl = 'https://github.com/thomasgorisse/sceneform-android-sdk'
-    mavenIssueTrackerUrl = 'https://github.com/thomasgorisse/sceneform-android-sdk/issues'
-    mavenVCSUrl = 'https://github.com/thomasgorisse/sceneform-android-sdk.git'
-    mavenLicenses = ['Apache-2.0']
-    mavenLabels = ['android', 'sceneform', 'arcore', 'filament']
-    mavenGithubRepo = 'thomasgorisse/sceneform-android-sdk'
-    mavenGithubReleaseNotesFile = 'README.md'
-}
 buildscript {
     repositories {
         google()
@@ -35,7 +23,7 @@ buildscript {
     }
     dependencies {
         classpath 'com.android.tools.build:gradle:4.1.1'
-        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.1'
+        classpath 'com.jfrog.bintray.gradle:gradle-bintray-plugin:1.8.5'
     }
 }
 
@@ -49,36 +37,4 @@ allprojects {
 
 task clean(type: Delete) {
     delete rootProject.buildDir
-}
-
-subprojects { project ->
-
-    apply plugin: 'com.jfrog.bintray'
-
-    Properties properties = new Properties()
-    properties.load(project.rootProject.file('local.properties').newDataInputStream())
-
-    bintray {
-        user = properties.getProperty("bintray.user")
-        key = properties.getProperty("bintray.apikey")
-        publications = ['releasePublication']
-        pkg {
-            repo = "maven"
-            name = "$project.mavenGroupId:$project.name"
-            desc = project.mavenDesc
-            websiteUrl = project.mavenWebsiteUrl
-            issueTrackerUrl = project.mavenIssueTrackerUrl
-            vcsUrl = project.mavenVCSUrl
-            licenses = project.mavenLicenses
-            labels = project.mavenLabels
-            publicDownloadNumbers = true
-            githubRepo = project.mavenGithubRepo
-            githubReleaseNotesFile = project.mavenGithubReleaseNotesFile
-            version {
-                name = project.mavenVersion
-                vcsTag = project.mavenVersion
-                released = new Date()
-            }
-        }
-    }
 }
