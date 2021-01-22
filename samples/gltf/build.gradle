@@ -40,9 +40,7 @@ android {
 }
 
 dependencies {
-    // Use the Sceneform UX Package built from the source files included in the sceneformux folder.
-    api project(":ux")
-
-    implementation 'com.google.ar:core:1.20.0'
     implementation 'androidx.appcompat:appcompat:1.2.0'
+
+    implementation("com.gorisse.thomas.sceneform:sceneform:1.18.+")
 }
