@@ -5,7 +5,7 @@ Copyright (c) 2018 Google Inc.  All rights reserved.
 [ ![jCenter](https://img.shields.io/badge/jCenter-1.18.3-blue) ](https://bintray.com/thomasgorisse/maven/com.gorisse.thomas.sceneform:sceneform/1.18.3/link)
 
 Sceneform is a 3D framework with a physically based renderer that's optimized
-for mobile devices and that makes it easy for you to build augmented reality
+for mobile devices and that makes it easy for you to build Augmented Reality (AR)
 apps without requiring OpenGL or Unity.
 
 This repository is the continuation of the [Archived version](https://github.com/google-ar/sceneform-android-sdk)
