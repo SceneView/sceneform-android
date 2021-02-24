@@ -3,7 +3,7 @@ apply plugin: 'com.jfrog.bintray'
 
 project.ext {
     mavenGroupId = 'com.gorisse.thomas.sceneform'
-    mavenVersion = '1.18.2'
+    mavenVersion = '1.18.3'
     mavenDesc = 'Sceneform Core'
     mavenWebsiteUrl = 'https://github.com/thomasgorisse/sceneform-android-sdk'
     mavenIssueTrackerUrl = 'https://github.com/thomasgorisse/sceneform-android-sdk/issues'
@@ -24,7 +24,7 @@ task sourcesJar(type: Jar) {
 task javadoc(type: Javadoc) {
     source = android.sourceSets.main.java.srcDirs
     classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
-    destinationDir = file("../javadoc/")
+    destinationDir = file("../docs/javadoc/")
     failOnError false
     exclude '**/BuildConfig.java'
     exclude '**/R.java'
