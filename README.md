@@ -17,7 +17,7 @@ apps without requiring OpenGL or Unity.
 * Based on AndroidX
 * Available has jCenter dependency
 * Supports <a href="https://www.khronos.org/gltf/">glTF</a> instead of olds <code>SFA</code> and <code>SFB</code> formats
-* East animations support
+* Easy animations support
 * Open source 
 
 
@@ -205,7 +205,7 @@ any ObjectAnimator operating time modifications on the same ModelAnimation.
 More information about Animator:
 [https://developer.android.com/guide/topics/graphics/prop-animation](https://developer.android.com/guide/topics/graphics/prop-animation)
 
-[more...](/docs/animations/)
+[more...](https://thomasgorisse.github.io/sceneform-android-sdk/animations/)
 
 
 ## Release notes
