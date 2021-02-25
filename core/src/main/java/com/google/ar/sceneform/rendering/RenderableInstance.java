@@ -12,8 +12,11 @@ import com.google.android.filament.EntityInstance;
 import com.google.android.filament.EntityManager;
 import com.google.android.filament.RenderableManager;
 import com.google.android.filament.TransformManager;
+import com.google.android.filament.gltfio.Animator;
 import com.google.android.filament.gltfio.AssetLoader;
 import com.google.android.filament.gltfio.FilamentAsset;
+import com.google.ar.sceneform.animation.AnimatableModel;
+import com.google.ar.sceneform.animation.ModelAnimation;
 import com.google.ar.sceneform.collision.Box;
 import com.google.ar.sceneform.common.TransformProvider;
 import com.google.ar.sceneform.math.Matrix;
@@ -27,6 +30,7 @@ import com.google.ar.sceneform.utilities.SceneformBufferUtils;
 import java.io.InputStream;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
+import java.util.ArrayList;
 import java.util.concurrent.Callable;
 import java.util.function.Function;
 
@@ -37,11 +41,11 @@ import java.util.function.Function;
  * @hide
  */
 @SuppressWarnings("AndroidJdkLibsChecker")
-public class RenderableInstance {
+public class RenderableInstance implements AnimatableModel {
 
     /**
      * Interface for modifying the bone transforms for this specific RenderableInstance. Used by
-     * {@link com.google.ar.sceneform.SkeletonNode} to make it possible to control a bone by moving a
+     * SkeletonNode to make it possible to control a bone by moving a
      * node.
      */
     public interface SkinningModifier {
@@ -71,6 +75,10 @@ public class RenderableInstance {
 
     @Nullable
     FilamentAsset filamentAsset;
+    @Nullable
+    Animator filamentAnimator;
+
+    private ArrayList<ModelAnimation> animations = new ArrayList<>();
 
     @Nullable
     private SkinningModifier skinningModifier;
@@ -163,6 +171,14 @@ public class RenderableInstance {
             transformManager.setParent(rootInstance, parentInstance);
 
             filamentAsset = createdAsset;
+
+            filamentAnimator = createdAsset.getAnimator();
+            animations = new ArrayList<>();
+            for (int i = 0; i < filamentAnimator.getAnimationCount(); i++) {
+                animations.add(new ModelAnimation(this, filamentAnimator.getAnimationName(i), i,
+                        filamentAnimator.getAnimationDuration(i),
+                        getRenderable().getAnimationFrameRate()));
+            }
         }
     }
 
@@ -173,6 +189,19 @@ public class RenderableInstance {
     @Nullable
     public FilamentAsset getFilamentAsset() {
         return filamentAsset;
+    }
+
+    /**
+     * <p>Animator is owned by <code>FilamentAsset</code> and can be used for two things:
+     * <ul>
+     * <li>Updating matrices in <code>TransformManager</code> components according to glTF <code>animation</code> definitions.</li>
+     * <li>Updating bone matrices in <code>RenderableManager</code> components according to glTF <code>skin</code> definitions.</li>
+     * </ul>
+     * </p>
+     */
+    @Nullable
+    Animator getFilamentAnimator() {
+        return filamentAnimator;
     }
 
     /**
@@ -212,6 +241,33 @@ public class RenderableInstance {
         this.skinningModifier = skinningModifier;
     }
 
+    /**
+     * Get the associated {@link ModelAnimation} at the given index or throw
+     * an {@link IndexOutOfBoundsException}.
+     *
+     * @param animationIndex Zero-based index for the animation of interest.
+     */
+    @Override
+    public ModelAnimation getAnimation(int animationIndex) {
+        Preconditions.checkElementIndex(animationIndex, getAnimationCount(), "No animation found at the given index");
+        return animations.get(animationIndex);
+    }
+
+    /**
+     * Returns the number of {@link ModelAnimation} definitions in the model.
+     */
+    @Override
+    public int getAnimationCount() {
+        return animations.size();
+    }
+
+    // We use our own {@link android.view.Choreographer} to update the animations so just return
+    // false (not applied)
+    @Override
+    public boolean applyAnimationChange(ModelAnimation animation) {
+        return false;
+    }
+
     private void setupSkeleton(IRenderableInternalData renderableInternalData) {
         return;
     }
@@ -230,11 +286,13 @@ public class RenderableInstance {
             renderableId = changeId.get();
             // First time we're rendering, so always update the skinning even if we aren't animating and
             // there is no skinModifier.
-            updateSkinning(true);
+            updateSkinning();
         } else {
             // Will only update the skinning if the renderable is animating or there is a skinModifier
             // that has been changed since the last draw.
-            updateSkinning(false);
+            if (updateAnimations(false)) {
+                updateSkinning();
+            }
         }
     }
 
@@ -332,6 +390,35 @@ public class RenderableInstance {
 
     private void updateSkinning(boolean force) {
         return;
+    }
+
+    /**
+     * Apply animations changes <code>if fore==true</code> or the animation has dirty values.
+     *
+     * @param force Update even if the animation time position didn't changed.
+     * @return true if any animation update has been made.
+     */
+    public boolean updateAnimations(boolean force) {
+        boolean hasUpdate = false;
+        for (int i = 0; i < getAnimationCount(); i++) {
+            ModelAnimation animation = getAnimation(i);
+            if (force || animation.isDirty()) {
+                getFilamentAnimator().applyAnimation(i, animation.getTimePosition());
+                hasUpdate = true;
+            }
+        }
+        return hasUpdate;
+    }
+
+
+    /**
+     * Computes root-to-node transforms for all bone nodes.
+     * Uses <code>TransformManager</code> and <code>RenderableManager</code>.
+     *
+     * <p>NOTE: this operation is independent of <code>animation</code>.</p>
+     */
+    private void updateSkinning() {
+        getFilamentAnimator().updateBoneMatrices();
     }
 
     void setBlendOrderAt(int index, int blendOrder) {

@@ -41,6 +41,8 @@ public abstract class Renderable {
     private int renderPriority = RENDER_PRIORITY_DEFAULT;
     private boolean isShadowCaster = true;
     private boolean isShadowReceiver = true;
+    //The number of frames per seconds defined in the asset
+    private int animationFrameRate;
     @Nullable
     protected CollisionShape collisionShape;
 
@@ -51,6 +53,8 @@ public abstract class Renderable {
     public static final int RENDER_PRIORITY_LAST = 7;
     // Allow stale data two weeks old by default.
     private static final long DEFAULT_MAX_STALE_CACHE = TimeUnit.DAYS.toSeconds(14);
+    // The default number of frames per seconds for this renderable animation
+    public static final int DEFAULT_ANIMATION_FRAME_RATE = 24;
 
     /**
      * @hide
@@ -68,6 +72,7 @@ public abstract class Renderable {
         if (builder.definition != null) {
             updateFromDefinition(builder.definition);
         }
+        animationFrameRate = builder.animationFrameRate;
     }
 
     @SuppressWarnings("initialization")
@@ -95,6 +100,8 @@ public abstract class Renderable {
         if (other.collisionShape != null) {
             collisionShape = other.collisionShape.makeCopy();
         }
+
+        animationFrameRate = other.animationFrameRate;
 
         changeId.update();
     }
@@ -213,6 +220,13 @@ public abstract class Renderable {
     public void setShadowReceiver(boolean isShadowReceiver) {
         this.isShadowReceiver = isShadowReceiver;
         changeId.update();
+    }
+
+    /**
+     * Gets the number of frames per seconds defined in the asset animation.
+     */
+    public int getAnimationFrameRate() {
+        return animationFrameRate;
     }
 
     /**
@@ -339,6 +353,8 @@ public abstract class Renderable {
         @Nullable
         private byte[] materialsBytes = null;
 
+        private int animationFrameRate = DEFAULT_ANIMATION_FRAME_RATE;
+
         /**
          * Used to programmatically construct a {@link Renderable}.
          */
@@ -388,6 +404,16 @@ public abstract class Renderable {
 
         public B setIsFilamentGltf(boolean isFilamentGltf) {
             this.isFilamentAsset = isFilamentGltf;
+            return getSelf();
+        }
+
+        /**
+         * Sets the number of frames per seconds defined in the asset.
+         *
+         * @param frameRate The number of frames during one second
+         */
+        public B setAnimationFrameRate(int frameRate) {
+            this.animationFrameRate = frameRate;
             return getSelf();
         }
 

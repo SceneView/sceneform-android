@@ -1,5 +1,6 @@
 Sceneform SDK for Android - Maintained
 ======================================
+
 #### This repository is a fork of [SceneForm](https://github.com/google-ar/sceneform-android-sdk)
 Copyright (c) 2018 Google Inc.  All rights reserved.
 
@@ -10,12 +11,15 @@ for mobile devices and that makes it easy for you to build Augmented Reality (AR
 apps without requiring OpenGL or Unity.
 
 
+
 ## Usage benefits
 * Continuous compatibility with the latests versions of [ARCore SDK](https://github.com/google-ar/arcore-android-sdk) and [Filament](https://github.com/google/filament) 
 * Based on AndroidX
 * Available has jCenter dependency
-* Supports <a href="https://www.khronos.org/gltf/">glTF</a> instead of olds <code>SFA</code> and <code>SFB</code> formats 
+* Supports <a href="https://www.khronos.org/gltf/">glTF</a> instead of olds <code>SFA</code> and <code>SFB</code> formats
+* East animations support
 * Open source 
+
 
 
 ## Dependencies
@@ -28,9 +32,10 @@ dependencies {
 }
 ```
 
+
+
 ## Usage
 
-You can check out the [Full source code samples](https://github.com/ThomasGorisse/sceneform-android-sdk/tree/master/samples).
 
 ### Update your AndroidManifest.xml
 
@@ -58,6 +63,7 @@ Modify your ```AndroidManifest.xml``` to indicate that your app uses (AR Optiona
 </application>
 ```
 
+
 ### Add the fragment to your layout
 ```xml
 <fragment android:name="com.google.ar.sceneform.ux.ArFragment"
@@ -65,6 +71,7 @@ Modify your ```AndroidManifest.xml``` to indicate that your app uses (AR Optiona
       android:layout_width="match_parent"
       android:layout_height="match_parent" />
 ```
+
 
 ### Add your renderable
 ```kotlin
@@ -87,6 +94,120 @@ Modify your ```AndroidManifest.xml``` to indicate that your app uses (AR Optiona
     }
 ```
 
+
+
+## Animations
+
+Until now, only `RenderableInstance` are animtable. Below `model` corresponds to a `RenderablaInstance` returned from a `node.getRenderableInstance()`
+
+
+### Simple usage
+
+On a very basic 3D model like a single infinite rotating sphere, you should not have to
+use ModelAnimator but probably instead just call:
+
+```java
+model.animate(repeat).start();
+```
+
+
+### Single Model with Single Animation
+
+If you want to animate a single model to a specific timeline position, use:
+```java
+ModelAnimator.ofAnimationFrame(model, "action", 100).start();
+```
+```java
+ModelAnimator.ofAnimationFraction(model, "action", 0.2f, 0.8f, 1f).start();
+```
+```java
+ModelAnimator.ofAnimationTime(model, "action", 10.0f)}.start();
+```
+
+#### Values
+* A single time, frame, fraction value will go from the actual position to the desired value
+* Two values means form value1 to value2
+* More than two values means form value1 to value2 then to value3
+
+
+### Single Model with Multiple Animations
+
+If the model is a character, for example, there may be one ModelAnimation for a walkcycle, a
+second for a jump, a third for sidestepping and so on:
+
+#### Play Sequentially
+```java
+AnimatorSet animatorSet = new AnimatorSet();
+animatorSet.playSequentially(ModelAnimator.ofMultipleAnimations(model, "walk", "run"));
+animatorSet.start();
+```
+
+#### Auto Cancel
+Here you can see that no call to `animator.cancel()` is required because the
+`animator.setAutoCancel(boolean)` is set to true by default
+```java
+ObjectAnimator walkAnimator = ModelAnimator.ofAnimation(model, "walk");
+walkButton.setOnClickListener(v -> walkAnimator.start());
+
+ObjectAnimator runAnimator = ModelAnimator.ofAnimation(model, "run");
+runButton.setOnClickListener(v -> runAnimator.start());
+```
+
+
+### Multiple Models with Multiple Animations
+
+For a synchronised animation set like animating a complete scene with multiple models
+time or sequentially, please consider using an `AnimatorSet` with one
+`ModelAnimator` parametrized per step
+```java
+AnimatorSet completeFly = new AnimatorSet();
+
+ObjectAnimator liftOff = ModelAnimator.ofAnimationFraction(airPlaneModel, "FlyAltitude",0, 40);
+liftOff.setInterpolator(new AccelerateInterpolator());
+
+AnimatorSet flying = new AnimatorSet();
+ObjectAnimator flyAround = ModelAnimator.ofAnimation(airPlaneModel, "FlyAround");
+flyAround.setRepeatCount(ValueAnimator.INFINITE);
+flyAround.setDuration(10000);
+ObjectAnimator airportBusHome = ModelAnimator.ofAnimationFraction(busModel, "Move", 0);
+flying.playTogether(flyAround, airportBusHome);
+
+ObjectAnimator land = ModelAnimator.ofAnimationFraction(airPlaneModel, "FlyAltitude", 0);
+land.setInterpolator(new DecelerateInterpolator());
+
+completeFly.playSequentially(liftOff, flying, land);
+```
+
+
+### Morphing animation
+
+Assuming a character object has a skeleton, one keyframe track could store the data for the
+position changes of the lower arm bone over time, a different track the data for the rotation
+changes of the same bone, a third the track position, rotation or scaling of another bone, and so
+on. It should be clear, that an ModelAnimation can act on lots of such tracks.
+
+Assuming the model has morph targets (for example one morph target showing a friendly face
+and another showing an angry face), each track holds the information as to how the influence of a
+certain morph target changes during the performance of the clip.
+
+In a glTF context, this {@link android.animation.Animator} updates matrices according to glTF
+animation and skin definitions.
+
+
+#### ModelAnimator can be used for two things
+* Updating matrices in `TransformManager` components according to the model animation definitions.
+* Updating bone matrices in `RenderableManager` com ## Animations
+
+Every PropertyValuesHolder that applies a modification on the time position of the animation
+must use the `ModelAnimation.TIME_POSITION` instead of its own Property in order to possibly cancel
+any ObjectAnimator operating time modifications on the same ModelAnimation.
+
+More information about Animator:
+[https://developer.android.com/guide/topics/graphics/prop-animation](https://developer.android.com/guide/topics/graphics/prop-animation)
+
+[more...](/docs/animations/)
+
+
 ## Release notes
 
 The SDK release notes are available on the
@@ -100,85 +221,13 @@ Please see the
 file.
 
 
-> ## OLD - Choosing the right Sceneform SDK version for your project
->
-> As of ARCore release 1.16.0, Google open-sourced the implementation of Sceneform
-allowing to extend Sceneform's features and capabilities. As part of the
-1.16.0 release, support for `SFA` and `SFB` assets was removed in favor of
-adding `glTF` support
->
-> You can continue to use Sceneform 1.15.0 (or earlier). There is no requirement
-that you migrate to Sceneform 1.16.0.
->
->Do not use Sceneform 1.17.0 as that release will not work correctly. (Sceneform
-1.17.1 can be used, but is otherwise identical to Sceneform 1.15.0.)
->
->
-> <table>
->  <tr>
->    <th>Sceneform SDK</th>
->    <th>Description</th>
->  </tr>
->  <tr>
->    <td>Sceneform SDK<br>versions <b>1.0.0 - 1.15.0</b></td>
->    <td>
->      <ul>
->        <li>Closed source</li>
->        <li>Included in your project as an external Gradle dependency</li>
->        <li>
->          <code>FBX</code> and <code>OBJ</code> files can be converted to
->          Sceneform's <code>SFA</code> and <code>SFB</code> Sceneform
->          formats
->        </li>
->      </ul>
->    </td>
->  </tr>
->  <tr>
->    <td>Sceneform SDK<br>version <b>1.16.0</b></td>
->    <td>
->      <ul>
->        <li>Open source</li>
->        <li>Built alongside an application as a Gradle module</li>
->        <li>
->          Supports <a href="https://www.khronos.org/gltf/">glTF</a> instead of
->          <code>SFA</code> and <code>SFB</code> Sceneform formats
->        </li>
->      </ul>
->    </td>
->  </tr>
->  <tr>
->    <td>Sceneform SDK<br>version <b>1.17.0</b></td>
->    <td>Do not use</td>
->  </tr>
->  <tr>
->    <td>Sceneform SDK<br>version <b>1.17.1</b></td>
->    <td>Identical to version 1.15.0</td>
->  </tr>
->   <tr>
->    <td>Sceneform SDK<br>version <b>1.18.0</b></td>
->    <td>
->      <ul>
->        <li>Open source</li>
->        <li>Avaiable on jCenter dependencies</li>
->        <li>Based on AndroidX</li>
->        <li>
->          Supports <a href="https://www.khronos.org/gltf/">glTF</a> instead of
->          olds <code>SFA</code> and <code>SFB</code> formats.
->        </li>
->        <li>
->          Compatible with the latests versions of <a href="https://github.com/google-ar/arcore-android-sdk">ARCore SDK</a> and <a href="https://github.com/google/filament">Filament</a>
->        </li>
->      </ul>
->    </td>
->  </tr>
-> </table>
-
 ## Brand Guidelines
 
 The Sceneform trademark is a trademark of Google, and is not subject to the
 copyright or patent license grants contained in the Apache 2.0-licensed
 Sceneform repositories on GitHub. Any uses of the Sceneform trademark other than
 those permitted in these guidelines must be approved by Google in advance.
+
 
 ### Purpose of the Brand Guidelines
 
@@ -187,6 +236,7 @@ technology under open source licenses while making sure that the "Sceneform"
 brand is protected as a meaningful source identifier in a way that's consistent
 with trademark law. By adhering to these guidelines, you help to promote the
 freedom to use and develop high-quality Sceneform technology.
+
 
 ### Acceptable uses
 

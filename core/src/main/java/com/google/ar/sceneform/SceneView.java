@@ -122,10 +122,10 @@ public class SceneView extends SurfaceView implements Choreographer.FrameCallbac
 
     /**
      * Resume Sceneform, which resumes the rendering thread.
+     * <p>
+     * Typically called from onResume().
      *
-     * <p>Typically called from onResume().
-     *
-     * @throws CameraNotAvailableException
+     * @throws CameraNotAvailableException if the camera can not be opened
      */
     public void resume() throws CameraNotAvailableException {
         if (renderer != null) {
@@ -273,7 +273,6 @@ public class SceneView extends SurfaceView implements Choreographer.FrameCallbac
             }
             scene = new Scene(this);
             renderer.setCameraProvider(scene.getCamera());
-            initializeAnimation();
         }
         isInitialized = true;
     }
@@ -337,19 +336,11 @@ public class SceneView extends SurfaceView implements Choreographer.FrameCallbac
 
         frameTime.update(frameTimeNanos);
 
-        // Update the AnimationEngine, this should be done before the hierarchy is updated
-        // in case any nodes are following the position of bones in the future.
-        updateAnimation(frameTimeNanos);
-
         scene.dispatchUpdate(frameTime);
 
         if (debugEnabled) {
             frameUpdateTracker.endSample();
         }
-    }
-
-    private void updateAnimation(long frameTimeNanos) {
-        return;
     }
 
     private void doRender() {
@@ -367,9 +358,5 @@ public class SceneView extends SurfaceView implements Choreographer.FrameCallbac
         if (debugEnabled) {
             frameRenderTracker.endSample();
         }
-    }
-
-    private void initializeAnimation() {
-        return;
     }
 }
