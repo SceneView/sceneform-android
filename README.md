@@ -133,14 +133,25 @@ model.animate(repeat).start();
 
 If you want to animate a single model to a specific timeline position, use:
 ```java
-ModelAnimator.ofAnimationFrame(model, "action", 100).start();
+ModelAnimator.ofAnimationFrame(model, "AnimationName", 100).start();
 ```
 ```java
-ModelAnimator.ofAnimationFraction(model, "action", 0.2f, 0.8f, 1f).start();
+ModelAnimator.ofAnimationFraction(model, "AnimationName", 0.2f, 0.8f, 1f).start();
 ```
 ```java
-ModelAnimator.ofAnimationTime(model, "action", 10.0f)}.start();
+ModelAnimator.ofAnimationTime(model, "AnimationName", 10.0f)}.start();
 ```
+
+#### Where can I find the "AnimationName" ?
+The animation names are definied at the 3D model level.  
+You can compare it to a track playing something corresponding to a particular behavior in you model.  
+\
+For example, on Blender "AnimationName" can correspond to
+* An action defined inside the `Non linear Animation View Port`  
+![Sample Lion Model](/docs/images/tutorials/screenshotl_blender_animation_01.jpg)
+* A single object behavior in the `Timeline ViewPort`
+
+**To know the actual animation names of a glb/gltf file, you can drag it on a glTF Viewer like [here](https://gltf-viewer.donmccurdy.com/) and find it in the animation list.**
 
 #### Values
 * A single time, frame, fraction value will go from the actual position to the desired value
