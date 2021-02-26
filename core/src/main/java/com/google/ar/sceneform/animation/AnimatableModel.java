@@ -121,6 +121,13 @@ public interface AnimatableModel {
     }
 
     /**
+     * Return true if {@link #getAnimationCount()} > 0
+     */
+    default boolean hasAnimations() {
+        return getAnimationCount() > 0;
+    }
+
+    /**
      * Sets the current position of (seeks) the animation to the specified time position in seconds.
      * This time should be
      * <p>

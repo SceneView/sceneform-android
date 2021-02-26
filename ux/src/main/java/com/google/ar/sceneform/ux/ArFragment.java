@@ -15,16 +15,25 @@
  */
 package com.google.ar.sceneform.ux;
 
+import android.net.Uri;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.widget.Toast;
 
+import com.google.ar.core.Anchor;
 import com.google.ar.core.Config;
+import com.google.ar.core.HitResult;
+import com.google.ar.core.Plane;
 import com.google.ar.core.Session;
 import com.google.ar.core.exceptions.UnavailableApkTooOldException;
 import com.google.ar.core.exceptions.UnavailableArcoreNotInstalledException;
 import com.google.ar.core.exceptions.UnavailableDeviceNotCompatibleException;
 import com.google.ar.core.exceptions.UnavailableException;
 import com.google.ar.core.exceptions.UnavailableSdkTooOldException;
+import com.google.ar.sceneform.AnchorNode;
+import com.google.ar.sceneform.rendering.ModelRenderable;
+import com.google.ar.sceneform.rendering.Renderable;
+import com.google.ar.sceneform.rendering.RenderableInstance;
 
 import java.util.Collections;
 import java.util.Set;
@@ -35,6 +44,8 @@ import java.util.Set;
  */
 public class ArFragment extends BaseArFragment {
     private static final String TAG = "StandardArFragment";
+
+    private Renderable onTapRenderable;
 
     @Override
     public boolean isArRequired() {
@@ -73,5 +84,69 @@ public class ArFragment extends BaseArFragment {
     @Override
     protected Set<Session.Feature> getSessionFeatures() {
         return Collections.emptySet();
+    }
+
+    /**
+     * Loads a monolithic binary glTF and add it to the fragment when the user tap on a detected
+     * plane surface.
+     * <p>
+     * Plays the animations automatically if the model has one.
+     * </p>
+     *
+     * @param glbSource Glb file source location can be come from the asset folder ("model.glb")
+     *                  or an http source ("http://domain.com/model.glb")
+     */
+    public void setOnTapPlaneGlbModel(String glbSource, OnTapModelListener listener) {
+        ModelRenderable.builder()
+                .setSource(
+                        getContext(),
+                        Uri.parse(glbSource))
+                .setIsFilamentGltf(true)
+                .build()
+                .thenAccept(
+                        modelRenderable -> {
+                            onTapRenderable = modelRenderable;
+                        })
+                .exceptionally(
+                        throwable -> {
+                            if (listener != null) {
+                                listener.onModelError(throwable);
+                            }
+                            return null;
+                        });
+
+        setOnTapArPlaneListener(
+                (HitResult hitResult, Plane plane, MotionEvent motionEvent) -> {
+                    if (onTapRenderable == null) {
+                        return;
+                    }
+
+                    // Create the Anchor.
+                    Anchor anchor = hitResult.createAnchor();
+                    AnchorNode anchorNode = new AnchorNode(anchor);
+                    anchorNode.setParent(getArSceneView().getScene());
+
+                    // Create the transformable model and add it to the anchor.
+                    TransformableNode model = new TransformableNode(getTransformationSystem());
+                    model.setParent(anchorNode);
+                    model.setRenderable(onTapRenderable);
+                    model.select();
+
+                    // Animate if has animation
+                    RenderableInstance renderableInstance = model.getRenderableInstance();
+                    if (renderableInstance != null && renderableInstance.hasAnimations()) {
+                        renderableInstance.animate(true);
+                    }
+
+                    if (listener != null) {
+                        listener.onModelAdded(renderableInstance);
+                    }
+                });
+    }
+
+    public interface OnTapModelListener {
+        void onModelAdded(RenderableInstance renderableInstance);
+
+        void onModelError(Throwable exception);
     }
 }
