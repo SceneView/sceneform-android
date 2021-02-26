@@ -1,99 +1,117 @@
-Sceneform SDK for Android - Maintained
-======================================
+Maintained Sceneform SDK for Android
+====================================
 
-#### This repository is a fork of [SceneForm](https://github.com/google-ar/sceneform-android-sdk)
+#### This repository is a fork of [Sceneform](https://github.com/google-ar/sceneform-android-sdk)
 Copyright (c) 2018 Google Inc.  All rights reserved.
 
-[ ![jCenter](https://img.shields.io/badge/jCenter-1.18.3-blue) ](https://bintray.com/thomasgorisse/maven/com.gorisse.thomas.sceneform:sceneform/1.18.3/link)
+[ ![jCenter](https://img.shields.io/badge/jCenter-1.18.4-blue) ](https://bintray.com/thomasgorisse/maven/com.gorisse.thomas.sceneform:sceneform/1.18.4/link)
 
 Sceneform is a 3D framework with a physically based renderer that's optimized
 for mobile devices and that makes it easy for you to build Augmented Reality (AR)
 apps without requiring OpenGL or Unity.
 
-
+![Sample Lion Model](/docs/images/samples/model_lion.jpg)
 
 ## Usage benefits
-* Continuous compatibility with the latests versions of [ARCore SDK](https://github.com/google-ar/arcore-android-sdk) and [Filament](https://github.com/google/filament) 
+* Continuous compatibility with the latests versions of [ARCore SDK](https://github.com/google-ar/arcore-android-sdk) and [Filament](https://github.com/google/filament)
 * Based on AndroidX
 * Available has jCenter dependency
-* Supports <a href="https://www.khronos.org/gltf/">glTF</a> instead of olds <code>SFA</code> and <code>SFB</code> formats
-* Easy animations support
-* Open source 
+* Supports <a href="https://www.khronos.org/gltf/">glTF</a> format
+* Animations made easy
+* Simple model loading for basic usage
 
 
 
 ## Dependencies
 
-Sceneform is available on `jCenter()`
-
+*app/build.gradle*
 ```gradle
 dependencies {
-     implementation("com.gorisse.thomas.sceneform:sceneform:1.18.3")
+     implementation("com.gorisse.thomas.sceneform:sceneform:1.18.4")
 }
 ```
 
 
 
-## Usage
+## Basic Usage (Simple model viewer)
 
 
-### Update your AndroidManifest.xml
+### Update your `AndroidManifest.xml`
 
-Modify your ```AndroidManifest.xml``` to indicate that your app uses (AR Optional) or requires (AR Required) ARCore and CAMERA access:
+*AndroidManifest.xml*
 ```xml
-<!-- Both "AR Optional" and "AR Required" apps require CAMERA permission. -->
 <uses-permission android:name="android.permission.CAMERA" />
-
-<!-- Sceneform requires OpenGL ES 3.0 or later. -->
-<uses-feature android:glEsVersion="0x00030000" android:required="true" />
-
-<!-- Indicates that app requires ARCore ("AR Required"). Ensures the app is
-     visible only in the Google Play Store on devices that support ARCore.
-     For "AR Optional" apps remove this line. -->
-<uses-feature android:name="android.hardware.camera.ar" />
 
 <application>
     …
-    <!-- Indicates that app requires ARCore ("AR Required"). Causes the Google
-         Play Store to download and install Google Play Services for AR along
-         with the app. For an "AR Optional" app, specify "optional" instead of
-         "required".
-    -->
-    <meta-data android:name="com.google.ar.core" android:value="required" />
+    <meta-data android:name="com.google.ar.core" android:value="optional" />
 </application>
 ```
 
 
-### Add the fragment to your layout
+### Add the `View` to your `layout`
+*res/layout/main_activity.xml*
 ```xml
-<fragment android:name="com.google.ar.sceneform.ux.ArFragment"
-      android:id="@+id/ux_fragment"
-      android:layout_width="match_parent"
-      android:layout_height="match_parent" />
+<androidx.fragment.app.FragmentContainerView
+    android:id="@+id/arFragment"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"/>
 ```
 
 
-### Add your renderable
-```kotlin
- ModelRenderable.builder()
-    .setSource(
-        this,
-        // Http source
-        Uri.parse("https://storage.googleapis.com/ar-answers-in-search-models/static/Tiger/model.glb")
-        // Or raw resource : model.glb
-        // R.raw.model
-    )
-    .setIsFilamentGltf(true)
-    .build()
-    .thenAccept { modelRenderable: ModelRenderable? ->
-        activity.renderable = modelRenderable
+### Edit your `Activity` or `Fragment`
+*src/main/java/…/MainActivity.java*
+```java
+@Override
+protected void onCreate(Bundle savedInstanceState) {
+    …
+    if (savedInstanceState == null) {
+        if (Sceneform.isSupported(this)) {
+            getSupportFragmentManager().beginTransaction()
+                    .add(R.id.arFragment, ArFragment.class)
+                    .commit();
+        }
     }
-    .exceptionally { throwable: Throwable? ->
-        Toast.makeText(this, "Unable to load renderable", Toast.LENGTH_LONG)
-        null
+}
+
+@Override
+public void onAttachFragment(@NonNull Fragment fragment) {
+    super.onAttachFragment(fragment);
+
+    if (fragment.getId() == R.id.arFragment) {
+        // Load model.glb from assets folder or http url
+        ((ArFragment) fragment).setOnTapPlaneGlbModel("model.glb", new ArFragment.OnTapModelListener() {
+            @Override
+            public void onModelAdded(RenderableInstance renderableInstance) {
+            }
+
+            @Override
+            public void onModelError(Throwable exception) {
+            }
+        });
     }
+}
 ```
 
+
+
+## Go further
+
+
+#### AR Required vs AR Optional
+
+If your app requires ARCore (AR Required) and is not only (AR Optional), use this manifest to indicates that this app requires Google Play Services for AR (AR Required) and results in
+the app only being visible in the Google Play Store on devices that support ARCore:
+```xml
+<uses-permission android:name="android.permission.CAMERA" />
+<uses-feature android:name="android.hardware.camera.ar" android:required="true"/>
+
+<application>
+    …
+    <meta-data android:name="com.google.ar.core" android:value="required" />
+</application>
+```
+[more...](https://developers.google.com/ar/develop/java/enable-arcore)
 
 
 ## Animations
@@ -101,7 +119,7 @@ Modify your ```AndroidManifest.xml``` to indicate that your app uses (AR Optiona
 Until now, only `RenderableInstance` are animtable. Below `model` corresponds to a `RenderablaInstance` returned from a `node.getRenderableInstance()`
 
 
-### Simple usage
+### Basic usage
 
 On a very basic 3D model like a single infinite rotating sphere, you should not have to
 use ModelAnimator but probably instead just call:
@@ -202,22 +220,14 @@ Every PropertyValuesHolder that applies a modification on the time position of t
 must use the `ModelAnimation.TIME_POSITION` instead of its own Property in order to possibly cancel
 any ObjectAnimator operating time modifications on the same ModelAnimation.
 
-More information about Animator:
-[https://developer.android.com/guide/topics/graphics/prop-animation](https://developer.android.com/guide/topics/graphics/prop-animation)
+[more...](/docs/animations/index.md)
 
-[more...](https://thomasgorisse.github.io/sceneform-android-sdk/animations/)
-
-
-## Release notes
-
-The SDK release notes are available on the
-[releases](https://github.com/ThomasGorisse/sceneform-android-sdk/releases) page.
 
 
 ## License
 
 Please see the
-[LICENSE](https://github.com/ThomasGorisse/sceneform-android-sdk/blob/master/LICENSE)
+[LICENSE](/LICENSE)
 file.
 
 
