@@ -172,7 +172,7 @@ public class RenderableInstance implements AnimatableModel {
 
             filamentAsset = createdAsset;
 
-            filamentAnimator = createdAsset.getAnimator();
+            filamentAnimator = createdAsset != null ? createdAsset.getAnimator() : null;
             animations = new ArrayList<>();
             for (int i = 0; i < filamentAnimator.getAnimationCount(); i++) {
                 animations.add(new ModelAnimation(this, filamentAnimator.getAnimationName(i), i,
@@ -388,10 +388,6 @@ public class RenderableInstance implements AnimatableModel {
         return cachedRelativeTransformInverse;
     }
 
-    private void updateSkinning(boolean force) {
-        return;
-    }
-
     /**
      * Apply animations changes <code>if fore==true</code> or the animation has dirty values.
      *
@@ -403,7 +399,9 @@ public class RenderableInstance implements AnimatableModel {
         for (int i = 0; i < getAnimationCount(); i++) {
             ModelAnimation animation = getAnimation(i);
             if (force || animation.isDirty()) {
-                getFilamentAnimator().applyAnimation(i, animation.getTimePosition());
+                if (getFilamentAnimator() != null) {
+                    getFilamentAnimator().applyAnimation(i, animation.getTimePosition());
+                }
                 hasUpdate = true;
             }
         }
@@ -418,7 +416,9 @@ public class RenderableInstance implements AnimatableModel {
      * <p>NOTE: this operation is independent of <code>animation</code>.</p>
      */
     private void updateSkinning() {
-        getFilamentAnimator().updateBoneMatrices();
+        if (getFilamentAnimator() != null) {
+            getFilamentAnimator().updateBoneMatrices();
+        }
     }
 
     void setBlendOrderAt(int index, int blendOrder) {
