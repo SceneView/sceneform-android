@@ -36,7 +36,11 @@ task javadocJar(type: Jar, dependsOn: javadoc) {
 }
 
 Properties properties = new Properties()
-properties.load(project.rootProject.file('local.properties').newDataInputStream())
+try {
+    properties.load(project.rootProject.file('local.properties').newDataInputStream())
+} catch (Exception e) {
+    println "Can not find local.properties file"
+}
 
 afterEvaluate {
     generateReleaseBuildConfig.enabled = false
