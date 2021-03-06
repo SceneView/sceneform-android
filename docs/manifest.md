@@ -24,3 +24,4 @@ Modify your ```AndroidManifest.xml``` to indicate that your app uses (AR Optiona
     <meta-data android:name="com.google.ar.core" android:value="required" />
 </application>
 ```
+**[more...](https://developers.google.com/ar/develop/java/enable-arcore)**

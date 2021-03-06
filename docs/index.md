@@ -220,7 +220,7 @@ Every PropertyValuesHolder that applies a modification on the time position of t
 must use the `ModelAnimation.TIME_POSITION` instead of its own Property in order to possibly cancel
 any ObjectAnimator operating time modifications on the same ModelAnimation.
 
-[more...](/docs/animations/index.md)
+[More...](docs/animations.md)
 
 
 
