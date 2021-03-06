@@ -10,7 +10,7 @@ Sceneform is a 3D framework with a physically based renderer that's optimized
 for mobile devices and that makes it easy for you to build Augmented Reality (AR)
 apps without requiring OpenGL or Unity.
 
-![Sample Lion Model](/docs/images/samples/model_lion.jpg)
+![Sample Lion Model](https://thomasgorisse.github.io/sceneform-android-sdk/images/samples/model_lion.jpg)
 
 ## Usage benefits
 * Continuous compatibility with the latests versions of [ARCore SDK](https://github.com/google-ar/arcore-android-sdk) and [Filament](https://github.com/google/filament)
@@ -30,6 +30,7 @@ dependencies {
      implementation("com.gorisse.thomas.sceneform:sceneform:1.18.5")
 }
 ```
+**[more...](https://thomasgorisse.github.io/sceneform-android-sdk/dependencies)**
 
 
 
@@ -47,6 +48,7 @@ dependencies {
     <meta-data android:name="com.google.ar.core" android:value="optional" />
 </application>
 ```
+**[more...](https://thomasgorisse.github.io/sceneform-android-sdk/manifest)**
 
 
 ### Add the `View` to your `layout`
@@ -111,7 +113,7 @@ the app only being visible in the Google Play Store on devices that support ARCo
     <meta-data android:name="com.google.ar.core" android:value="required" />
 </application>
 ```
-[more...](https://developers.google.com/ar/develop/java/enable-arcore)
+**[more...](https://thomasgorisse.github.io/sceneform-android-sdk/manifest)**
 
 
 ## Animations
@@ -133,14 +135,25 @@ model.animate(repeat).start();
 
 If you want to animate a single model to a specific timeline position, use:
 ```java
-ModelAnimator.ofAnimationFrame(model, "action", 100).start();
+ModelAnimator.ofAnimationFrame(model, "AnimationName", 100).start();
 ```
 ```java
-ModelAnimator.ofAnimationFraction(model, "action", 0.2f, 0.8f, 1f).start();
+ModelAnimator.ofAnimationFraction(model, "AnimationName", 0.2f, 0.8f, 1f).start();
 ```
 ```java
-ModelAnimator.ofAnimationTime(model, "action", 10.0f)}.start();
+ModelAnimator.ofAnimationTime(model, "AnimationName", 10.0f)}.start();
 ```
+
+#### Where can I find the "AnimationName" ?
+The animation names are definied at the 3D model level.  
+You can compare it to a track playing something corresponding to a particular behavior in you model.  
+\
+For example, on Blender "AnimationName" can correspond to
+* An action defined inside the `Non linear Animation View Port`  
+![Sample Lion Model](/docs/images/tutorials/screenshotl_blender_animation_01.jpg)
+* A single object behavior in the `Timeline ViewPort`
+
+**To know the actual animation names of a glb/gltf file, you can drag it on a glTF Viewer like [here](https://gltf-viewer.donmccurdy.com/) and find it in the animation list.**
 
 #### Values
 * A single time, frame, fraction value will go from the actual position to the desired value
@@ -220,7 +233,7 @@ Every PropertyValuesHolder that applies a modification on the time position of t
 must use the `ModelAnimation.TIME_POSITION` instead of its own Property in order to possibly cancel
 any ObjectAnimator operating time modifications on the same ModelAnimation.
 
-[More...](docs/animations.md)
+**[more...](https://thomasgorisse.github.io/sceneform-android-sdk/animations)**
 
 
 

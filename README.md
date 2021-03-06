@@ -10,7 +10,7 @@ Sceneform is a 3D framework with a physically based renderer that's optimized
 for mobile devices and that makes it easy for you to build Augmented Reality (AR)
 apps without requiring OpenGL or Unity.
 
-![Sample Lion Model](/docs/images/samples/model_lion.jpg)
+![Sample Lion Model](https://thomasgorisse.github.io/sceneform-android-sdk/images/samples/model_lion.jpg)
 
 ## Usage benefits
 * Continuous compatibility with the latests versions of [ARCore SDK](https://github.com/google-ar/arcore-android-sdk) and [Filament](https://github.com/google/filament) 
