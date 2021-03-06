@@ -150,7 +150,7 @@ You can compare it to a track playing something corresponding to a particular be
 \
 For example, on Blender "AnimationName" can correspond to
 * An action defined inside the `Non linear Animation View Port`  
-![Sample Lion Model](/docs/images/tutorials/screenshotl_blender_animation_01.jpg)
+![](https://thomasgorisse.github.io/sceneform-android-sdk/images/tutorials/screenshotl_blender_animation_01.jpg)
 * A single object behavior in the `Timeline ViewPort`
 
 **To know the actual animation names of a glb/gltf file, you can drag it on a glTF Viewer like [here](https://gltf-viewer.donmccurdy.com/) and find it in the animation list.**
