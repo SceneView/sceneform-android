@@ -30,6 +30,7 @@ dependencies {
      implementation("com.gorisse.thomas.sceneform:sceneform:1.18.5")
 }
 ```
+**[more...](https://thomasgorisse.github.io/sceneform-android-sdk/dependencies)**
 
 
 
@@ -47,6 +48,7 @@ dependencies {
     <meta-data android:name="com.google.ar.core" android:value="optional" />
 </application>
 ```
+**[more...](https://thomasgorisse.github.io/sceneform-android-sdk/manifest)**
 
 
 ### Add the `View` to your `layout`
@@ -111,7 +113,7 @@ the app only being visible in the Google Play Store on devices that support ARCo
     <meta-data android:name="com.google.ar.core" android:value="required" />
 </application>
 ```
-[more...](https://developers.google.com/ar/develop/java/enable-arcore)
+**[more...](https://thomasgorisse.github.io/sceneform-android-sdk/manifest)**
 
 
 ## Animations
@@ -231,7 +233,7 @@ Every PropertyValuesHolder that applies a modification on the time position of t
 must use the `ModelAnimation.TIME_POSITION` instead of its own Property in order to possibly cancel
 any ObjectAnimator operating time modifications on the same ModelAnimation.
 
-[more...](/docs/animations/index.md)
+**[more...](https://thomasgorisse.github.io/sceneform-android-sdk/animations)**
 
 
 
