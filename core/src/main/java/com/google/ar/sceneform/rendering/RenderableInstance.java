@@ -1,6 +1,7 @@
 package com.google.ar.sceneform.rendering;
 
 import android.net.Uri;
+import android.text.TextUtils;
 import android.util.Log;
 
 import androidx.annotation.Nullable;
@@ -10,6 +11,7 @@ import com.google.android.filament.Engine;
 import com.google.android.filament.Entity;
 import com.google.android.filament.EntityInstance;
 import com.google.android.filament.EntityManager;
+import com.google.android.filament.MaterialInstance;
 import com.google.android.filament.RenderableManager;
 import com.google.android.filament.TransformManager;
 import com.google.android.filament.gltfio.Animator;
@@ -66,7 +68,7 @@ public class RenderableInstance implements AnimatableModel {
     private final TransformProvider transformProvider;
     private final Renderable renderable;
     @Nullable
-    private Renderer attachedRenderer;
+    Renderer attachedRenderer;
     @Entity
     private int entity = 0;
     @Entity
@@ -83,6 +85,9 @@ public class RenderableInstance implements AnimatableModel {
     @Nullable
     private SkinningModifier skinningModifier;
 
+    private ArrayList<Material> materialBindings = new ArrayList<>();
+    private ArrayList<String> materialNames = new ArrayList<>();
+
     @Nullable
     private Matrix cachedRelativeTransform;
     @Nullable
@@ -94,6 +99,8 @@ public class RenderableInstance implements AnimatableModel {
         Preconditions.checkNotNull(renderable, "Parameter \"renderable\" was null.");
         this.transformProvider = transformProvider;
         this.renderable = renderable;
+        this.materialBindings = renderable.getMaterialBindings();
+        this.materialNames = renderable.getMaterialNames();
         entity = createFilamentEntity(EngineInstance.getEngine());
 
         // SFB's can be imported with re-centering or scaling; rather than perform those operations to
@@ -130,6 +137,7 @@ public class RenderableInstance implements AnimatableModel {
 
             FilamentAsset createdAsset = renderableData.isGltfBinary ? loader.createAssetFromBinary(renderableData.gltfByteBuffer)
                     : loader.createAssetFromJson(renderableData.gltfByteBuffer);
+            renderableData.resourceLoader.asyncBeginLoad(createdAsset);
 
             if (createdAsset == null) {
                 throw new IllegalStateException("Failed to load gltf");
@@ -161,6 +169,24 @@ public class RenderableInstance implements AnimatableModel {
                 }
             }
             renderableData.resourceLoader.loadResources(createdAsset);
+
+            RenderableManager renderableManager = EngineInstance.getEngine().getRenderableManager();
+
+            this.materialBindings.clear();
+            this.materialNames.clear();
+            for (int entity : createdAsset.getEntities()) {
+                @EntityInstance int renderableInstance = renderableManager.getInstance(entity);
+                if (renderableInstance == 0) {
+                    continue;
+                }
+                MaterialInstance materialInstance = renderableManager.getMaterialInstanceAt(renderableInstance, 0);
+                materialNames.add(materialInstance.getName());
+
+                MaterialInternalDataGltfImpl materialData = new MaterialInternalDataGltfImpl(materialInstance.getMaterial());
+                Material material = new Material(materialData);
+                material.updateGltfMaterialInstance(materialInstance);
+                materialBindings.add(material);
+            }
 
             TransformManager transformManager = EngineInstance.getEngine().getTransformManager();
 
@@ -230,6 +256,78 @@ public class RenderableInstance implements AnimatableModel {
         transformManager.setTransform(instance, transform);
     }
 
+    ArrayList<Material> getMaterialBindings() {
+        return materialBindings;
+    }
+
+    ArrayList<String> getMaterialNames() {
+        return materialNames;
+    }
+
+    /**
+     * Returns the material bound to the first submesh.
+     */
+    public Material getMaterial() {
+        return getMaterial(0);
+    }
+
+    /**
+     * Returns the number of materials.
+     */
+    public int getMaterialsCount() {
+        return materialBindings.size();
+    }
+
+    /**
+     * Returns the material bound to the specified index.
+     */
+    public Material getMaterial(int index) {
+        if (index < materialBindings.size()) {
+            return materialBindings.get(index);
+        }
+        return null;
+    }
+
+    /**
+     * Returns the material bound to the specified name.
+     */
+    public Material getMaterial(String name) {
+        for(int i=0;i<materialBindings.size();i++) {
+            if(TextUtils.equals(materialNames.get(i), name)) {
+                return materialBindings.get(i);
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Sets the material bound to the first index.
+     */
+    public void setMaterial(Material material) {
+        setMaterial(0, material);
+    }
+
+    /**
+     * Sets the material bound to the specified index.
+     */
+    public void setMaterial(int index, Material material) {
+        if (index < materialBindings.size()) {
+            materialBindings.set(index, material);
+            renderable.getId().update();
+        }
+    }
+
+    /**
+     * Returns the name associated with the specified index.
+     */
+    public String getMaterialName(int index) {
+        Preconditions.checkState(materialNames.size() == materialBindings.size());
+        if (index >= 0 && index < materialNames.size()) {
+            return materialNames.get(index);
+        }
+        return null;
+    }
+
     /**
      * @hide
      */
@@ -282,7 +380,7 @@ public class RenderableInstance implements AnimatableModel {
         if (changeId.checkChanged(renderableId)) {
             IRenderableInternalData renderableInternalData = renderable.getRenderableData();
             setupSkeleton(renderableInternalData);
-            renderableInternalData.buildInstanceData(renderable, getRenderedEntity());
+            renderableInternalData.buildInstanceData(this, getRenderedEntity());
             renderableId = changeId.get();
             // First time we're rendering, so always update the skinning even if we aren't animating and
             // there is no skinModifier.
@@ -303,6 +401,9 @@ public class RenderableInstance implements AnimatableModel {
             Preconditions.checkNotNull(attachedRenderer)
                     .getFilamentScene()
                     .addEntity(currentFilamentAsset.getRoot());
+            Preconditions.checkNotNull(attachedRenderer)
+                    .getFilamentScene()
+                    .addEntities(currentFilamentAsset.getEntities());
             Preconditions.checkNotNull(attachedRenderer).getFilamentScene().addEntities(entities);
         }
     }

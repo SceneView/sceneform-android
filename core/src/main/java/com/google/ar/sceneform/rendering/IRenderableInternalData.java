@@ -79,17 +79,17 @@ interface IRenderableInternalData {
   @NonNull
   List<String> getAnimationNames();
 
-  
-
-
-  
 
 
 
-  
 
 
-  void buildInstanceData(Renderable renderable, @Entity int renderedEntity);
+
+
+
+
+
+  void buildInstanceData(RenderableInstance instance, @Entity int renderedEntity);
   /**
    * Removes any memory used by the object.
    *

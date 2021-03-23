@@ -27,7 +27,7 @@ public class Material {
 
   private final MaterialParameters materialParameters = new MaterialParameters();
   @Nullable private final MaterialInternalData materialData;
-  private final IMaterialInstance internalMaterialInstance;
+  final IMaterialInstance internalMaterialInstance;
 
   /**
    * Creates a new instance of this Material.
@@ -40,7 +40,7 @@ public class Material {
     return new Material(this);
   }
 
-  
+
 
 
 
@@ -52,7 +52,7 @@ public class Material {
     }
   }
 
-  
+
 
 
 
@@ -64,7 +64,7 @@ public class Material {
     }
   }
 
-  
+
 
 
 
@@ -77,7 +77,7 @@ public class Material {
     }
   }
 
-  
+
 
 
 
@@ -90,7 +90,7 @@ public class Material {
     }
   }
 
-  
+
 
 
 
@@ -103,7 +103,7 @@ public class Material {
     }
   }
 
-  
+
 
 
 
@@ -115,7 +115,7 @@ public class Material {
     }
   }
 
-  
+
 
 
 
@@ -142,7 +142,7 @@ public class Material {
     }
   }
 
-  
+
 
 
 
@@ -162,7 +162,7 @@ public class Material {
     }
   }
 
-  
+
 
 
 
@@ -175,7 +175,7 @@ public class Material {
     }
   }
 
-  
+
 
 
 
@@ -187,7 +187,7 @@ public class Material {
     }
   }
 
-  
+
 
 
 
@@ -200,7 +200,7 @@ public class Material {
     }
   }
 
-  
+
 
 
 
@@ -213,7 +213,7 @@ public class Material {
     }
   }
 
-  
+
 
 
 
@@ -226,7 +226,7 @@ public class Material {
     }
   }
 
-  
+
 
 
 
@@ -269,7 +269,7 @@ public class Material {
     }
   }
 
-  
+
 
 
 
@@ -293,21 +293,21 @@ public class Material {
   }
 
   @SuppressWarnings("initialization")
-  private Material(MaterialInternalData materialData) {
+  Material(MaterialInternalData materialData) {
     this.materialData = materialData;
     materialData.retain();
     if (materialData instanceof MaterialInternalDataImpl) {
       // Do the legacy thing.
       internalMaterialInstance =
-          new InternalMaterialInstance(materialData.getFilamentMaterial().createInstance());
+              new InternalMaterialInstance(materialData.getFilamentMaterial().createInstance());
     } else {
       // Do the glTF thing.
       internalMaterialInstance = new InternalGltfMaterialInstance();
     }
 
     ResourceManager.getInstance()
-        .getMaterialCleanupRegistry()
-        .register(this, new CleanupCallback(internalMaterialInstance, materialData));
+            .getMaterialCleanupRegistry()
+            .register(this, new CleanupCallback(internalMaterialInstance, materialData));
   }
 
   void updateGltfMaterialInstance(MaterialInstance instance) {
@@ -403,14 +403,14 @@ public class Material {
      */
     public Builder setSource(Callable<InputStream> inputStreamCreator) {
       Preconditions.checkNotNull(
-          inputStreamCreator, "Parameter \"sourceInputStreamCallable\" was null.");
+              inputStreamCreator, "Parameter \"sourceInputStreamCallable\" was null.");
 
       this.inputStreamCreator = inputStreamCreator;
       sourceBuffer = null;
       return this;
     }
 
-    
+
 
 
 
@@ -450,7 +450,7 @@ public class Material {
         CompletableFuture<Material> result = new CompletableFuture<>();
         result.completeExceptionally(failedPrecondition);
         FutureHelper.logOnException(
-            TAG, result, "Unable to load Material registryId='" + registryId + "'");
+                TAG, result, "Unable to load Material registryId='" + registryId + "'");
         return result;
       }
 
@@ -467,7 +467,7 @@ public class Material {
 
       if (sourceBuffer != null) {
         MaterialInternalDataImpl materialData =
-            new MaterialInternalDataImpl(createFilamentMaterial(sourceBuffer));
+                new MaterialInternalDataImpl(createFilamentMaterial(sourceBuffer));
         Material material = new Material(materialData);
 
         // Register the new material in the registry.
@@ -478,11 +478,11 @@ public class Material {
 
         CompletableFuture<Material> result = CompletableFuture.completedFuture(material.makeCopy());
         FutureHelper.logOnException(
-            TAG, result, "Unable to load Material registryId='" + registryId + "'");
+                TAG, result, "Unable to load Material registryId='" + registryId + "'");
         return result;
       } else if (existingMaterial != null) {
         MaterialInternalDataGltfImpl materialData =
-            new MaterialInternalDataGltfImpl(existingMaterial);
+                new MaterialInternalDataGltfImpl(existingMaterial);
         Material material = new Material(materialData);
 
         // Register the new material in the registry.
@@ -495,7 +495,7 @@ public class Material {
         // The current existing (in use) material is returned.
         CompletableFuture<Material> result = CompletableFuture.completedFuture(material);
         FutureHelper.logOnException(
-            TAG, result, "Unable to load Material registryId='" + registryId + "'");
+                TAG, result, "Unable to load Material registryId='" + registryId + "'");
         return result;
       }
 
@@ -508,31 +508,31 @@ public class Material {
       }
 
       CompletableFuture<Material> result =
-          CompletableFuture.supplyAsync(
-                  () -> {
-                    @Nullable ByteBuffer byteBuffer;
-                    // Open and read the material file.
-                    try (InputStream inputStream = inputStreamCallable.call()) {
-                      byteBuffer = SceneformBufferUtils.readStream(inputStream);
-                    } catch (Exception e) {
-                      throw new CompletionException(e);
-                    }
+              CompletableFuture.supplyAsync(
+                      () -> {
+                        @Nullable ByteBuffer byteBuffer;
+                        // Open and read the material file.
+                        try (InputStream inputStream = inputStreamCallable.call()) {
+                          byteBuffer = SceneformBufferUtils.readStream(inputStream);
+                        } catch (Exception e) {
+                          throw new CompletionException(e);
+                        }
 
-                    if (byteBuffer == null) {
-                      throw new IllegalStateException("Unable to read data from input stream.");
-                    }
+                        if (byteBuffer == null) {
+                          throw new IllegalStateException("Unable to read data from input stream.");
+                        }
 
-                    return byteBuffer;
-                  },
-                  ThreadPools.getThreadPoolExecutor())
-              .thenApplyAsync(
-                  byteBuffer -> {
-                    MaterialInternalDataImpl materialData =
-                        new MaterialInternalDataImpl(createFilamentMaterial(byteBuffer));
-                    Material material = new Material(materialData);
-                    return material;
-                  },
-                  ThreadPools.getMainExecutor());
+                        return byteBuffer;
+                      },
+                      ThreadPools.getThreadPoolExecutor())
+                      .thenApplyAsync(
+                              byteBuffer -> {
+                                MaterialInternalDataImpl materialData =
+                                        new MaterialInternalDataImpl(createFilamentMaterial(byteBuffer));
+                                Material material = new Material(materialData);
+                                return material;
+                              },
+                              ThreadPools.getMainExecutor());
 
       if (registryId != null) {
         ResourceRegistry<Material> registry = ResourceManager.getInstance().getMaterialRegistry();
@@ -557,8 +557,8 @@ public class Material {
     private com.google.android.filament.Material createFilamentMaterial(ByteBuffer sourceBuffer) {
       try {
         return new com.google.android.filament.Material.Builder()
-            .payload(sourceBuffer, sourceBuffer.limit())
-            .build(EngineInstance.getEngine().getFilamentEngine());
+                .payload(sourceBuffer, sourceBuffer.limit())
+                .build(EngineInstance.getEngine().getFilamentEngine());
       } catch (Exception e) {
         throw new IllegalArgumentException("Unable to create material from source byte buffer.", e);
       }
@@ -633,8 +633,8 @@ public class Material {
     @Nullable private final IMaterialInstance materialInstance;
 
     CleanupCallback(
-        @Nullable IMaterialInstance materialInstance,
-        @Nullable MaterialInternalData materialInternalData) {
+            @Nullable IMaterialInstance materialInstance,
+            @Nullable MaterialInternalData materialInternalData) {
       this.materialInstance = materialInstance;
       this.materialInternalData = materialInternalData;
     }

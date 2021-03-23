@@ -58,7 +58,7 @@ class RenderableInternalData implements IRenderableInternalData {
   // Represents the set of meshes to render.
   private final ArrayList<MeshData> meshes = new ArrayList<>();
 
-  
+
 
 
 
@@ -189,7 +189,7 @@ class RenderableInternalData implements IRenderableInternalData {
     return rawColorBuffer;
   }
 
-  
+
   private void setupSkeleton(RenderableManager.Builder builder) {return ;}
 
 
@@ -197,7 +197,8 @@ class RenderableInternalData implements IRenderableInternalData {
 
 
   @Override
-  public void buildInstanceData(Renderable renderable, @Entity int renderedEntity) {
+  public void buildInstanceData(RenderableInstance instance, @Entity int renderedEntity) {
+    Renderable renderable = instance.getRenderable();
     IRenderableInternalData renderableData = renderable.getRenderableData();
     ArrayList<Material> materialBindings = renderable.getMaterialBindings();
     RenderableManager renderableManager = EngineInstance.getEngine().getRenderableManager();
@@ -206,7 +207,7 @@ class RenderableInternalData implements IRenderableInternalData {
     // Determine if a new filament Renderable needs to be created.
     int meshCount = renderableData.getMeshes().size();
     if (renderableInstance == 0
-        || renderableManager.getPrimitiveCount(renderableInstance) != meshCount) {
+            || renderableManager.getPrimitiveCount(renderableInstance) != meshCount) {
       // Destroy the old one if it exists.
       if (renderableInstance != 0) {
         renderableManager.destroy(renderedEntity);
@@ -214,10 +215,10 @@ class RenderableInternalData implements IRenderableInternalData {
 
       // Build the filament renderable.
       RenderableManager.Builder builder =
-          new RenderableManager.Builder(meshCount)
-              .priority(renderable.getRenderPriority())
-              .castShadows(renderable.isShadowCaster())
-              .receiveShadows(renderable.isShadowReceiver());
+              new RenderableManager.Builder(meshCount)
+                      .priority(renderable.getRenderPriority())
+                      .castShadows(renderable.isShadowCaster())
+                      .receiveShadows(renderable.isShadowReceiver());
 
       setupSkeleton(builder);
 
@@ -254,18 +255,18 @@ class RenderableInternalData implements IRenderableInternalData {
         throw new AssertionError("Internal Error: Failed to get vertex or index buffer");
       }
       renderableManager.setGeometryAt(
-          renderableInstance,
-          mesh,
-          primitiveType,
-          vertexBuffer,
-          indexBuffer,
-          meshData.indexStart,
-          meshData.indexEnd - meshData.indexStart);
+              renderableInstance,
+              mesh,
+              primitiveType,
+              vertexBuffer,
+              indexBuffer,
+              meshData.indexStart,
+              meshData.indexEnd - meshData.indexStart);
 
       // Update the material instances assigned to the filament renderable.
       Material material = materialBindings.get(mesh);
       renderableManager.setMaterialInstanceAt(
-          renderableInstance, mesh, material.getFilamentMaterialInstance());
+              renderableInstance, mesh, material.getFilamentMaterialInstance());
     }
   }
 
@@ -278,18 +279,18 @@ class RenderableInternalData implements IRenderableInternalData {
     return Collections.emptyList();
   }
 
-  
-
-
-
-  
 
 
 
 
 
 
-  
+
+
+
+
+
+
 
 
 

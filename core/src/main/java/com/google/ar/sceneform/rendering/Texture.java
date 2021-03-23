@@ -55,8 +55,8 @@ public class Texture {
     this.textureData = textureData;
     textureData.retain();
     ResourceManager.getInstance()
-        .getTextureCleanupRegistry()
-        .register(this, new CleanupCallback(textureData));
+            .getTextureCleanupRegistry()
+            .register(this, new CleanupCallback(textureData));
   }
 
   Sampler getSampler() {
@@ -73,7 +73,7 @@ public class Texture {
   }
 
   private static com.google.android.filament.Texture.InternalFormat getInternalFormatForUsage(
-      Usage usage) {
+          Usage usage) {
     com.google.android.filament.Texture.InternalFormat format;
 
     switch (usage) {
@@ -175,9 +175,9 @@ public class Texture {
 
       if (bitmap.getConfig() != Bitmap.Config.ARGB_8888) {
         throw new IllegalArgumentException(
-            "Invalid Bitmap: Bitmap's configuration must be "
-                + "ARGB_8888, but it was "
-                + bitmap.getConfig());
+                "Invalid Bitmap: Bitmap's configuration must be "
+                        + "ARGB_8888, but it was "
+                        + bitmap.getConfig());
       }
 
       if (bitmap.hasAlpha() && !bitmap.isPremultiplied()) {
@@ -186,12 +186,12 @@ public class Texture {
 
       if (bitmap.getWidth() > MAX_BITMAP_SIZE || bitmap.getHeight() > MAX_BITMAP_SIZE) {
         throw new IllegalArgumentException(
-            "Invalid Bitmap: Bitmap width and height must be "
-                + "smaller than 4096. Bitmap was "
-                + bitmap.getWidth()
-                + " width and "
-                + bitmap.getHeight()
-                + " height.");
+                "Invalid Bitmap: Bitmap width and height must be "
+                        + "smaller than 4096. Bitmap was "
+                        + bitmap.getWidth()
+                        + " width and "
+                        + bitmap.getHeight()
+                        + " height.");
       }
 
       this.bitmap = bitmap;
@@ -294,13 +294,13 @@ public class Texture {
         }
 
         result =
-            bitmapFuture.thenApplyAsync(
-                loadedBitmap -> {
-                  TextureInternalData textureData =
-                      makeTextureData(loadedBitmap, sampler, usage, MIP_LEVELS_TO_GENERATE);
-                  return new Texture(textureData);
-                },
-                ThreadPools.getMainExecutor());
+                bitmapFuture.thenApplyAsync(
+                        loadedBitmap -> {
+                          TextureInternalData textureData =
+                                  makeTextureData(loadedBitmap, sampler, usage, MIP_LEVELS_TO_GENERATE);
+                          return new Texture(textureData);
+                        },
+                        ThreadPools.getMainExecutor());
       }
 
       if (registryId != null) {
@@ -309,62 +309,62 @@ public class Texture {
       }
 
       FutureHelper.logOnException(
-          TAG, result, "Unable to load Texture registryId='" + registryId + "'");
+              TAG, result, "Unable to load Texture registryId='" + registryId + "'");
       return result;
     }
 
     private static CompletableFuture<Bitmap> makeBitmap(
-        Callable<InputStream> inputStreamCreator, boolean inPremultiplied) {
+            Callable<InputStream> inputStreamCreator, boolean inPremultiplied) {
       return CompletableFuture.supplyAsync(
-          () -> {
-            // Read the texture file.
-            final BitmapFactory.Options options = new BitmapFactory.Options();
-            options.inScaled = false;
-            options.inPremultiplied = inPremultiplied;
-            Bitmap bitmap;
+              () -> {
+                // Read the texture file.
+                final BitmapFactory.Options options = new BitmapFactory.Options();
+                options.inScaled = false;
+                options.inPremultiplied = inPremultiplied;
+                Bitmap bitmap;
 
-            // Open and read the texture file.
-            try (InputStream inputStream = inputStreamCreator.call()) {
-              bitmap = BitmapFactory.decodeStream(inputStream, null, options);
-            } catch (Exception e) {
-              throw new IllegalStateException(e);
-            }
+                // Open and read the texture file.
+                try (InputStream inputStream = inputStreamCreator.call()) {
+                  bitmap = BitmapFactory.decodeStream(inputStream, null, options);
+                } catch (Exception e) {
+                  throw new IllegalStateException(e);
+                }
 
-            if (bitmap == null) {
-              throw new IllegalStateException(
-                  "Failed to decode the texture bitmap. The InputStream was not a valid bitmap.");
-            }
+                if (bitmap == null) {
+                  throw new IllegalStateException(
+                          "Failed to decode the texture bitmap. The InputStream was not a valid bitmap.");
+                }
 
-            if (bitmap.getConfig() != Bitmap.Config.ARGB_8888) {
-              throw new IllegalStateException("Texture must use ARGB8 format.");
-            }
+                if (bitmap.getConfig() != Bitmap.Config.ARGB_8888) {
+                  throw new IllegalStateException("Texture must use ARGB8 format.");
+                }
 
-            return bitmap;
-          },
-          ThreadPools.getThreadPoolExecutor());
+                return bitmap;
+              },
+              ThreadPools.getThreadPoolExecutor());
     }
 
     private static TextureInternalData makeTextureData(
-        Bitmap bitmap, Sampler sampler, Usage usage, int mipLevels) {
+            Bitmap bitmap, Sampler sampler, Usage usage, int mipLevels) {
       IEngine engine = EngineInstance.getEngine();
 
       // Due to fun ambiguities between Texture (RenderCore) and Texture (Filament)
       // Texture references must be fully qualified giving rise to the following monstrosity
       // of verbosity.
       final com.google.android.filament.Texture.InternalFormat textureInternalFormat =
-          getInternalFormatForUsage(usage);
+              getInternalFormatForUsage(usage);
       final com.google.android.filament.Texture.Sampler textureSampler =
-          com.google.android.filament.Texture.Sampler.SAMPLER_2D;
+              com.google.android.filament.Texture.Sampler.SAMPLER_2D;
 
       com.google.android.filament.Texture filamentTexture =
-          new com.google.android.filament.Texture.Builder()
-              .width(bitmap.getWidth())
-              .height(bitmap.getHeight())
-              .depth(1)
-              .levels(mipLevels)
-              .sampler(textureSampler)
-              .format(textureInternalFormat)
-              .build(engine.getFilamentEngine());
+              new com.google.android.filament.Texture.Builder()
+                      .width(bitmap.getWidth())
+                      .height(bitmap.getHeight())
+                      .depth(1)
+                      .levels(mipLevels)
+                      .sampler(textureSampler)
+                      .format(textureInternalFormat)
+                      .build(engine.getFilamentEngine());
 
       TextureHelper.setBitmap(engine.getFilamentEngine(), filamentTexture, 0, bitmap);
 
@@ -423,7 +423,7 @@ public class Texture {
     private final WrapMode wrapModeT;
     private final WrapMode wrapModeR;
 
-    
+
 
 
 
@@ -483,9 +483,9 @@ public class Texture {
 
     public static Builder builder() {
       return new Sampler.Builder()
-          .setMinFilter(MinFilter.LINEAR_MIPMAP_LINEAR)
-          .setMagFilter(MagFilter.LINEAR)
-          .setWrapMode(WrapMode.CLAMP_TO_EDGE);
+              .setMinFilter(MinFilter.LINEAR_MIPMAP_LINEAR)
+              .setMagFilter(MagFilter.LINEAR)
+              .setWrapMode(WrapMode.CLAMP_TO_EDGE);
     }
 
     /** Builder for constructing Sampler objects. */
@@ -497,7 +497,7 @@ public class Texture {
       private WrapMode wrapModeR;
 
       /** Set both the texture minifying function and magnification function. */
-      Builder setMinMagFilter(MagFilter minMagFilter) {
+      public Builder setMinMagFilter(MagFilter minMagFilter) {
         return setMinFilter(MinFilter.values()[minMagFilter.ordinal()]).setMagFilter(minMagFilter);
       }
 

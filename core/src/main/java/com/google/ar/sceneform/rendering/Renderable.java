@@ -287,6 +287,12 @@ public abstract class Renderable {
      * parameters.
      */
     void prepareForDraw() {
+        if (getRenderableData() instanceof RenderableInternalFilamentAssetData) {
+            RenderableInternalFilamentAssetData renderableData =
+                    (RenderableInternalFilamentAssetData) getRenderableData();
+            // Allow the resource loader to finalize textures that have become ready.
+            renderableData.resourceLoader.asyncUpdateLoad();
+        }
     }
 
     void attachToRenderer(Renderer renderer) {

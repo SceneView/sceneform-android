@@ -2,23 +2,24 @@ package com.google.ar.sceneform.rendering;
 
 import android.content.Context;
 import android.net.Uri;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
+import com.google.android.filament.EntityInstance;
 import com.google.android.filament.IndexBuffer;
+import com.google.android.filament.RenderableManager;
 import com.google.android.filament.VertexBuffer;
 import com.google.android.filament.gltfio.MaterialProvider;
 import com.google.android.filament.gltfio.ResourceLoader;
-
-
 import com.google.ar.sceneform.math.Vector3;
 import com.google.ar.sceneform.rendering.RenderableInternalData.MeshData;
+
 import java.nio.Buffer;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.util.ArrayList;
-
 import java.util.List;
-
 import java.util.function.Function;
 
 /** Represents the data used by a {@link Renderable} for rendering natively loaded glTF data. */
@@ -91,7 +92,7 @@ public class RenderableInternalFilamentAssetData implements IRenderableInternalD
   @Override
   public ArrayList<MeshData> getMeshes() {
     // Not Implemented
-    return new ArrayList<>();
+    return new ArrayList<>(1);
   }
 
   public ArrayList<Integer> getMaterialBindingIds() {
@@ -195,13 +196,6 @@ public class RenderableInternalFilamentAssetData implements IRenderableInternalD
     return new ArrayList<>();
   }
 
-  
-
-
-
-
-
-  
 
 
 
@@ -209,14 +203,33 @@ public class RenderableInternalFilamentAssetData implements IRenderableInternalD
 
 
 
-  
+
+
+
+
+
+
+
+
 
 
 
 
 
   @Override
-  public void buildInstanceData(Renderable renderable, int renderedEntity) {}
+  public void buildInstanceData(RenderableInstance instance, int renderedEntity) {
+    Renderable renderable = instance.getRenderable();
+    RenderableManager renderableManager = EngineInstance.getEngine().getRenderableManager();
+    for (int entity : instance.getFilamentAsset().getEntities()) {
+      @EntityInstance int renderableInstance = renderableManager.getInstance(entity);
+      if (renderableInstance == 0) {
+        continue;
+      }
+      renderableManager.setPriority(renderableInstance, renderable.getRenderPriority());
+      renderableManager.setCastShadows(renderableInstance, renderable.isShadowCaster());
+      renderableManager.setReceiveShadows(renderableInstance, renderable.isShadowReceiver());
+    }
+  }
 
   @Override
   public void dispose() {}
