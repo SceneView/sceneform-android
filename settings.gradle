@@ -1,2 +1,3 @@
+include ':core-kt'
 include ':core', ':ux', ':sceneform', ':samples-gltf'
 project(':samples-gltf').projectDir = new File('samples/gltf')

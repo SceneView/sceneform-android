@@ -40,6 +40,7 @@ import java.util.concurrent.CompletionException;
  */
 public class LightProbe {
   private static final String TAG = LightProbe.class.getSimpleName();
+
   private static final int CUBEMAP_MIN_WIDTH = 4;
   private static final int CUBEMAP_FACE_COUNT = 6;
   private static final int RGBM_BYTES_PER_PIXEL = 4;
@@ -49,12 +50,15 @@ public class LightProbe {
   private static final int RGBA_BYTES_PER_PIXEL = 8;
   private static final int RGB_BYTES_PER_PIXEL = 6;
   private static final int RGB_CHANNEL_COUNT = 3;
+
   // The Light estimate scale and offset allow the final change in intensity to be controlled to
   // avoid over darkening or changes that are too drastic: appliedEstimate = estimate*scale + offset
   private static final float LIGHT_ESTIMATE_SCALE = 1.8f;
   private static final float LIGHT_ESTIMATE_OFFSET = 0.0f;
+
   // The number of required SH vectors = SH_ORDER^2
   private static final int SH_VECTORS_FOR_THIRD_ORDER = SH_ORDER * SH_ORDER;
+
   // Filament expects the face order to be "px", "nx", "py", "ny", "pz", "nz"
   private static final int[] FACE_TO_FILAMENT_MAPPING = {
     LightingCubeFaceType.px,
@@ -158,7 +162,7 @@ public class LightProbe {
 
   /** @hide */
   @Nullable
-  com.google.android.filament.IndirectLight buildIndirectLight() {
+  IndirectLight buildIndirectLight() {
     Preconditions.checkNotNull(irradianceData, "\"irradianceData\" was null.");
     Preconditions.checkState(
         irradianceData.length >= FLOATS_PER_VECTOR,
@@ -264,8 +268,8 @@ public class LightProbe {
     changeId = new ChangeId();
   }
 
-  private void setCubeMapFromTexture(com.google.android.filament.Texture nextCubemap) {
-    com.google.android.filament.Texture prevTexture = reflectCubemap;
+  private void setCubeMapFromTexture(Texture nextCubemap) {
+    Texture prevTexture = reflectCubemap;
     IEngine engine = EngineInstance.getEngine();
     if (prevTexture != null && engine != null && engine.isValid()) {
       engine.destroyTexture(prevTexture);
@@ -577,20 +581,20 @@ public class LightProbe {
     IEngine engine = EngineInstance.getEngine();
     int levels = (int) (1 + Math.log(width) / Math.log(2.0));
     Texture cubemapTexture =
-        new com.google.android.filament.Texture.Builder()
+        new Texture.Builder()
             .width(width)
             .height(height)
             .levels(levels)
-            .sampler(com.google.android.filament.Texture.Sampler.SAMPLER_CUBEMAP)
-            .format(com.google.android.filament.Texture.InternalFormat.R11F_G11F_B10F)
+            .sampler(Texture.Sampler.SAMPLER_CUBEMAP)
+            .format(Texture.InternalFormat.R11F_G11F_B10F)
             .build(engine.getFilamentEngine());
-    com.google.android.filament.Texture.PixelBufferDescriptor pixelBuf =
-        new com.google.android.filament.Texture.PixelBufferDescriptor(
+    Texture.PixelBufferDescriptor pixelBuf =
+        new Texture.PixelBufferDescriptor(
             cubemapBuffer,
-            com.google.android.filament.Texture.Format.RGB,
-            com.google.android.filament.Texture.Type.HALF);
-    com.google.android.filament.Texture.PrefilterOptions options =
-        new com.google.android.filament.Texture.PrefilterOptions();
+            Texture.Format.RGB,
+            Texture.Type.HALF);
+    Texture.PrefilterOptions options =
+        new Texture.PrefilterOptions();
     options.mirror = false;
     cubemapTexture.generatePrefilterMipmap(
         engine.getFilamentEngine(), pixelBuf, faceOffsets, options);
@@ -632,12 +636,12 @@ public class LightProbe {
 
     // Create the Filament texture resource.
     Texture filamentTexture =
-        new com.google.android.filament.Texture.Builder()
+        new Texture.Builder()
             .width(width)
             .height(height)
             .levels(mipCount)
-            .format(com.google.android.filament.Texture.InternalFormat.R11F_G11F_B10F)
-            .sampler(com.google.android.filament.Texture.Sampler.SAMPLER_CUBEMAP)
+            .format(Texture.InternalFormat.R11F_G11F_B10F)
+            .sampler(Texture.Sampler.SAMPLER_CUBEMAP)
             .build(engine.getFilamentEngine());
 
     // Loop through all of the mip maps and load the image data.
@@ -670,11 +674,11 @@ public class LightProbe {
       }
       buffer.rewind();
 
-      final com.google.android.filament.Texture.PixelBufferDescriptor descriptor =
-          new com.google.android.filament.Texture.PixelBufferDescriptor(
+      final Texture.PixelBufferDescriptor descriptor =
+          new Texture.PixelBufferDescriptor(
               buffer,
-              com.google.android.filament.Texture.Format.RGB,
-              com.google.android.filament.Texture.Type.UINT_10F_11F_11F_REV);
+              Texture.Format.RGB,
+              Texture.Type.UINT_10F_11F_11F_REV);
 
       filamentTexture.setImage(engine.getFilamentEngine(), m, descriptor, faceOffsetsInBytes);
 

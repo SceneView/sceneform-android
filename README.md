@@ -54,7 +54,7 @@ dependencies {
 ### Add the `View` to your `layout`
 *res/layout/main_activity.xml*
 ```xml
-<androidx.fragment.app.FragmentContainerView
+<FrameLayout
     android:id="@+id/arFragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"/>
@@ -67,30 +67,27 @@ dependencies {
 @Override
 protected void onCreate(Bundle savedInstanceState) {
     …
+    getSupportFragmentManager().addFragmentOnAttachListener((fragmentManager, fragment) -> {
+        if (fragment.getId() == R.id.arFragment) {
+            arFragment = (ArFragment) fragment;
+            // Load model.glb from assets folder or http url
+            arFragment.setOnTapPlaneGlbModel("model.glb", new ArFragment.OnTapModelListener() {
+                @Override
+                public void onModelAdded(RenderableInstance renderableInstance) {
+                }
+    
+                @Override
+                public void onModelError(Throwable exception) {
+                }
+            });
+        }
+    });
     if (savedInstanceState == null) {
         if (Sceneform.isSupported(this)) {
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.arFragment, ArFragment.class)
+                    .add(R.id.arFragment, ArFragment.class, null)
                     .commit();
         }
-    }
-}
-
-@Override
-public void onAttachFragment(@NonNull Fragment fragment) {
-    super.onAttachFragment(fragment);
-
-    if (fragment.getId() == R.id.arFragment) {
-        // Load model.glb from assets folder or http url
-        ((ArFragment) fragment).setOnTapPlaneGlbModel("model.glb", new ArFragment.OnTapModelListener() {
-            @Override
-            public void onModelAdded(RenderableInstance renderableInstance) {
-            }
-
-            @Override
-            public void onModelError(Throwable exception) {
-            }
-        });
     }
 }
 ```

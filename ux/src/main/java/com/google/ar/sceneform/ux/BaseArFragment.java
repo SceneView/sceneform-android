@@ -398,6 +398,10 @@ public abstract class BaseArFragment extends Fragment
                 Config config = getSessionConfiguration(session);
                 // Force the non-blocking mode for the session.
 
+                config.setDepthMode(Config.DepthMode.DISABLED);
+                config.setPlaneFindingMode(Config.PlaneFindingMode.HORIZONTAL_AND_VERTICAL);
+                config.setFocusMode(Config.FocusMode.AUTO);
+
                 config.setUpdateMode(Config.UpdateMode.LATEST_CAMERA_IMAGE);
                 session.configure(config);
                 getArSceneView().setupSession(session);
