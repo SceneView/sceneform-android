@@ -4,7 +4,7 @@ Maintained Sceneform SDK for Android
 #### This repository is a fork of [Sceneform](https://github.com/google-ar/sceneform-android-sdk)
 Copyright (c) 2018 Google Inc.  All rights reserved.
 
-[ ![jCenter](https://img.shields.io/badge/jCenter-1.18.5-blue) ](https://bintray.com/thomasgorisse/maven/com.gorisse.thomas.sceneform:sceneform/1.18.5/link)
+[ ![jCenter](https://img.shields.io/badge/jCenter-1.18.6-blue) ](https://bintray.com/thomasgorisse/maven/com.gorisse.thomas.sceneform:sceneform/1.18.6/link)
 
 Sceneform is a 3D framework with a physically based renderer that's optimized
 for mobile devices and that makes it easy for you to build Augmented Reality (AR)
@@ -27,7 +27,7 @@ apps without requiring OpenGL or Unity.
 *app/build.gradle*
 ```gradle
 dependencies {
-     implementation("com.gorisse.thomas.sceneform:sceneform:1.18.5")
+     implementation("com.gorisse.thomas.sceneform:sceneform:1.18.6")
 }
 ```
 **[more...](https://thomasgorisse.github.io/sceneform-android-sdk/dependencies)**

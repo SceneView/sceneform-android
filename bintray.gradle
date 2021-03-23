@@ -3,7 +3,7 @@ apply plugin: 'com.jfrog.bintray'
 
 project.ext {
     mavenGroupId = 'com.gorisse.thomas.sceneform'
-    mavenVersion = '1.18.5'
+    mavenVersion = '1.18.6'
     mavenDesc = 'Sceneform Core'
     mavenWebsiteUrl = 'https://github.com/thomasgorisse/sceneform-android-sdk'
     mavenIssueTrackerUrl = 'https://github.com/thomasgorisse/sceneform-android-sdk/issues'
