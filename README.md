@@ -59,6 +59,7 @@ dependencies {
     android:layout_width="match_parent"
     android:layout_height="match_parent"/>
 ```
+**[sample...](https://github.com/ThomasGorisse/sceneform-android-sdk/blob/master/samples/texture/src/main/res/layout/activity_main.xml)**
 
 
 ### Edit your `Activity` or `Fragment`
@@ -92,6 +93,7 @@ protected void onCreate(Bundle savedInstanceState) {
 }
 ```
 
+**[sample...](https://github.com/ThomasGorisse/sceneform-android-sdk/blob/master/samples/texture/src/main/java/com/google/ar/sceneform/samples/texture/MainActivity.java)**
 
 
 ## Go further
@@ -111,6 +113,36 @@ the app only being visible in the Google Play Store on devices that support ARCo
 </application>
 ```
 **[more...](https://thomasgorisse.github.io/sceneform-android-sdk/manifest)**
+
+
+## Nodes
+
+To add a node or multiply nodes to the Scene when the user press on a surface, you can override the `onTapPlane` function from a `BaseArFragment.OnTapArPlaneListener`:
+```java
+arFragment.setOnTapArPlaneListener(MainActivity.this);
+```
+
+```java
+@Override
+public void onTapPlane(HitResult hitResult, Plane plane, MotionEvent motionEvent) {
+   if (renderable == null) {
+       Toast.makeText(this, "Loading...", Toast.LENGTH_SHORT).show();
+       return;
+   }
+
+   // Create the Anchor.
+   Anchor anchor = hitResult.createAnchor();
+   AnchorNode anchorNode = new AnchorNode(anchor);
+   anchorNode.setParent(arFragment.getArSceneView().getScene());
+
+   // Create the transformable model and add it to the anchor.
+   TransformableNode model = new TransformableNode(arFragment.getTransformationSystem());
+   model.setParent(anchorNode);
+   model.setRenderable(renderable);
+   model.select();
+}
+```
+**[sample...](https://github.com/ThomasGorisse/sceneform-android-sdk/blob/master/samples/texture/src/main/java/com/google/ar/sceneform/samples/texture/MainActivity.java)**
 
 
 ## Animations
