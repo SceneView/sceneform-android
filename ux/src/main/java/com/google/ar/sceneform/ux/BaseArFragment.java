@@ -88,6 +88,22 @@ public abstract class BaseArFragment extends Fragment
     }
 
     /**
+     * Invoked when the ARCore Session is to be configured.
+     */
+    public interface OnSessionConfigurationListener {
+        /**
+         * The callback will only be invoked once after a Session is initialized and before it is
+         * resumed for the first time.
+         *
+         * @param session The ARCore Session.
+         * @param config The ARCore Session Config.
+         *
+         * @see #setOnSessionConfigurationListener(OnSessionConfigurationListener)
+         */
+        void onSessionConfiguration(Session session, Config config);
+    }
+
+    /**
      * Invoked when an ARCore plane is tapped.
      */
     public interface OnTapArPlaneListener {
@@ -115,6 +131,8 @@ public abstract class BaseArFragment extends Fragment
     private boolean canRequestDangerousPermissions = true;
     @Nullable
     private OnSessionInitializationListener onSessionInitializationListener;
+    @Nullable
+    private OnSessionConfigurationListener onSessionConfigurationListener;
     @Nullable
     private OnTapArPlaneListener onTapArPlaneListener;
 
@@ -153,6 +171,18 @@ public abstract class BaseArFragment extends Fragment
     public void setOnSessionInitializationListener(
             @Nullable OnSessionInitializationListener onSessionInitializationListener) {
         this.onSessionInitializationListener = onSessionInitializationListener;
+    }
+
+    /**
+     * Registers a callback to be invoked when the ARCore Session is to configured. The callback will
+     * only be invoked once after the Session default config has been applied and before it is
+     * configured on the Session.
+     *
+     * @param onSessionConfigurationListener the {@link OnSessionConfigurationListener} to attach.
+     */
+    public void setOnSessionConfigurationListener(
+            @Nullable OnSessionConfigurationListener onSessionConfigurationListener) {
+        this.onSessionConfigurationListener = onSessionConfigurationListener;
     }
 
     /**
@@ -396,13 +426,16 @@ public abstract class BaseArFragment extends Fragment
                 }
 
                 Config config = getSessionConfiguration(session);
-                // Force the non-blocking mode for the session.
-
                 config.setDepthMode(Config.DepthMode.DISABLED);
                 config.setPlaneFindingMode(Config.PlaneFindingMode.HORIZONTAL_AND_VERTICAL);
                 config.setFocusMode(Config.FocusMode.AUTO);
-
+                // Force the non-blocking mode for the session.
                 config.setUpdateMode(Config.UpdateMode.LATEST_CAMERA_IMAGE);
+
+                if (this.onSessionConfigurationListener != null) {
+                    this.onSessionConfigurationListener.onSessionConfiguration(session, config);
+                }
+
                 session.configure(config);
                 getArSceneView().setupSession(session);
                 return;
