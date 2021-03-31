@@ -24,8 +24,7 @@ material {
         }
     ],
     "variables" : [
-        "texCoordsAlpha",
-        "smoothWorldPosition"
+        "texCoordsAlpha"
     ],
     "requires" : [
         "position"
@@ -44,7 +43,6 @@ vertex {
         // Zero out the Y vertex and compute the world position.
         pos.y = 0.0;
         material.worldPosition = mulMat4x4Float3(getWorldFromModelMatrix(), pos);
-        material.smoothWorldPosition = material.worldPosition;
 
         // Compute the texture coordinates.
         // The X axis of the texture corresponds to the local X axis of the plane.
@@ -64,8 +62,8 @@ fragment {
         float textureAlpha = material.baseColor.a;
 
         // Create a spotlight effect around the focus point.
-        float distToFocus = distance(variable_smoothWorldPosition.xyz, materialParams.focusPoint);
-        float alpha = smoothstep(materialParams.radius, materialParams.radius * .5f, distToFocus);
+        float distToFocus = distance(getWorldPosition() + getWorldOffset(), materialParams.focusPoint);
+        float alpha = 1.0 - smoothstep(materialParams.radius * 0.5, materialParams.radius, distToFocus);
 
         // Transparent blending uses pre-multiplied alpha,
         // so multiply the entire baseColor by the alpha for this fragment.
