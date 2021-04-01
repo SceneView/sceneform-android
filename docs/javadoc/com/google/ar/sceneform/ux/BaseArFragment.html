@@ -17,7 +17,7 @@
     catch(err) {
     }
 //-->
-var methods = {"i0":10,"i1":6,"i2":10,"i3":10,"i4":10,"i5":6,"i6":6,"i7":10,"i8":6,"i9":10,"i10":6,"i11":10,"i12":10,"i13":10,"i14":10,"i15":10,"i16":10,"i17":10,"i18":10,"i19":10,"i20":10,"i21":10,"i22":10,"i23":10,"i24":10,"i25":10,"i26":10};
+var methods = {"i0":10,"i1":6,"i2":10,"i3":10,"i4":10,"i5":6,"i6":6,"i7":10,"i8":6,"i9":10,"i10":6,"i11":10,"i12":10,"i13":10,"i14":10,"i15":10,"i16":10,"i17":10,"i18":10,"i19":10,"i20":10,"i21":10,"i22":10,"i23":10,"i24":10,"i25":10,"i26":10,"i27":10};
 var tabs = {65535:["t0","All Methods"],2:["t2","Instance Methods"],4:["t3","Abstract Methods"],8:["t4","Concrete Methods"]};
 var altColor = "altColor";
 var rowColor = "rowColor";
@@ -47,7 +47,7 @@ var activeTableTab = "activeTableTab";
 <div class="subNav">
 <ul class="navList">
 <li><a href="../../../../../com/google/ar/sceneform/ux/ArFragment.OnTapModelListener.html" title="interface in com.google.ar.sceneform.ux"><span class="typeNameLink">Prev&nbsp;Class</span></a></li>
-<li><a href="../../../../../com/google/ar/sceneform/ux/BaseArFragment.OnSessionInitializationListener.html" title="interface in com.google.ar.sceneform.ux"><span class="typeNameLink">Next&nbsp;Class</span></a></li>
+<li><a href="../../../../../com/google/ar/sceneform/ux/BaseArFragment.OnSessionConfigurationListener.html" title="interface in com.google.ar.sceneform.ux"><span class="typeNameLink">Next&nbsp;Class</span></a></li>
 </ul>
 <ul class="navList">
 <li><a href="../../../../../index.html?com/google/ar/sceneform/ux/BaseArFragment.html" target="_top">Frames</a></li>
@@ -138,11 +138,17 @@ extends Fragment</pre>
 </tr>
 <tr class="altColor">
 <td class="colFirst"><code>static interface&nbsp;</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/google/ar/sceneform/ux/BaseArFragment.OnSessionConfigurationListener.html" title="interface in com.google.ar.sceneform.ux">BaseArFragment.OnSessionConfigurationListener</a></span></code>
+<div class="block">Invoked when the ARCore Session is to be configured.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>static interface&nbsp;</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/google/ar/sceneform/ux/BaseArFragment.OnSessionInitializationListener.html" title="interface in com.google.ar.sceneform.ux">BaseArFragment.OnSessionInitializationListener</a></span></code>
 <div class="block">Invoked when the ARCore Session is initialized.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>static interface&nbsp;</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/google/ar/sceneform/ux/BaseArFragment.OnTapArPlaneListener.html" title="interface in com.google.ar.sceneform.ux">BaseArFragment.OnTapArPlaneListener</a></span></code>
 <div class="block">Invoked when an ARCore plane is tapped.</div>
@@ -313,17 +319,23 @@ extends Fragment</pre>
 </tr>
 <tr id="i24" class="altColor">
 <td class="colFirst"><code>void</code></td>
+<td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/google/ar/sceneform/ux/BaseArFragment.html#setOnSessionConfigurationListener-com.google.ar.sceneform.ux.BaseArFragment.OnSessionConfigurationListener-">setOnSessionConfigurationListener</a></span>(<a href="../../../../../com/google/ar/sceneform/ux/BaseArFragment.OnSessionConfigurationListener.html" title="interface in com.google.ar.sceneform.ux">BaseArFragment.OnSessionConfigurationListener</a>&nbsp;onSessionConfigurationListener)</code>
+<div class="block">Registers a callback to be invoked when the ARCore Session is to configured.</div>
+</td>
+</tr>
+<tr id="i25" class="rowColor">
+<td class="colFirst"><code>void</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/google/ar/sceneform/ux/BaseArFragment.html#setOnSessionInitializationListener-com.google.ar.sceneform.ux.BaseArFragment.OnSessionInitializationListener-">setOnSessionInitializationListener</a></span>(<a href="../../../../../com/google/ar/sceneform/ux/BaseArFragment.OnSessionInitializationListener.html" title="interface in com.google.ar.sceneform.ux">BaseArFragment.OnSessionInitializationListener</a>&nbsp;onSessionInitializationListener)</code>
 <div class="block">Registers a callback to be invoked when the ARCore Session is initialized.</div>
 </td>
 </tr>
-<tr id="i25" class="rowColor">
+<tr id="i26" class="altColor">
 <td class="colFirst"><code>void</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/google/ar/sceneform/ux/BaseArFragment.html#setOnTapArPlaneListener-com.google.ar.sceneform.ux.BaseArFragment.OnTapArPlaneListener-">setOnTapArPlaneListener</a></span>(<a href="../../../../../com/google/ar/sceneform/ux/BaseArFragment.OnTapArPlaneListener.html" title="interface in com.google.ar.sceneform.ux">BaseArFragment.OnTapArPlaneListener</a>&nbsp;onTapArPlaneListener)</code>
 <div class="block">Registers a callback to be invoked when an ARCore Plane is tapped.</div>
 </td>
 </tr>
-<tr id="i26" class="altColor">
+<tr id="i27" class="rowColor">
 <td class="colFirst"><code>protected void</code></td>
 <td class="colLast"><code><span class="memberNameLink"><a href="../../../../../com/google/ar/sceneform/ux/BaseArFragment.html#setupSelectionRenderable-com.google.ar.sceneform.ux.FootprintSelectionVisualizer-">setupSelectionRenderable</a></span>(<a href="../../../../../com/google/ar/sceneform/ux/FootprintSelectionVisualizer.html" title="class in com.google.ar.sceneform.ux">FootprintSelectionVisualizer</a>&nbsp;selectionVisualizer)</code>&nbsp;</td>
 </tr>
@@ -409,6 +421,22 @@ extends Fragment</pre>
 <dl>
 <dt><span class="paramLabel">Parameters:</span></dt>
 <dd><code>onSessionInitializationListener</code> - the <a href="../../../../../com/google/ar/sceneform/ux/BaseArFragment.OnSessionInitializationListener.html" title="interface in com.google.ar.sceneform.ux"><code>BaseArFragment.OnSessionInitializationListener</code></a> to attach.</dd>
+</dl>
+</li>
+</ul>
+<a name="setOnSessionConfigurationListener-com.google.ar.sceneform.ux.BaseArFragment.OnSessionConfigurationListener-">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>setOnSessionConfigurationListener</h4>
+<pre>public&nbsp;void&nbsp;setOnSessionConfigurationListener(<a href="../../../../../com/google/ar/sceneform/ux/BaseArFragment.OnSessionConfigurationListener.html" title="interface in com.google.ar.sceneform.ux">BaseArFragment.OnSessionConfigurationListener</a>&nbsp;onSessionConfigurationListener)</pre>
+<div class="block">Registers a callback to be invoked when the ARCore Session is to configured. The callback will
+ only be invoked once after the Session default config has been applied and before it is
+ configured on the Session.</div>
+<dl>
+<dt><span class="paramLabel">Parameters:</span></dt>
+<dd><code>onSessionConfigurationListener</code> - the <a href="../../../../../com/google/ar/sceneform/ux/BaseArFragment.OnSessionConfigurationListener.html" title="interface in com.google.ar.sceneform.ux"><code>BaseArFragment.OnSessionConfigurationListener</code></a> to attach.</dd>
 </dl>
 </li>
 </ul>
@@ -705,7 +733,7 @@ extends Fragment</pre>
 <div class="subNav">
 <ul class="navList">
 <li><a href="../../../../../com/google/ar/sceneform/ux/ArFragment.OnTapModelListener.html" title="interface in com.google.ar.sceneform.ux"><span class="typeNameLink">Prev&nbsp;Class</span></a></li>
-<li><a href="../../../../../com/google/ar/sceneform/ux/BaseArFragment.OnSessionInitializationListener.html" title="interface in com.google.ar.sceneform.ux"><span class="typeNameLink">Next&nbsp;Class</span></a></li>
+<li><a href="../../../../../com/google/ar/sceneform/ux/BaseArFragment.OnSessionConfigurationListener.html" title="interface in com.google.ar.sceneform.ux"><span class="typeNameLink">Next&nbsp;Class</span></a></li>
 </ul>
 <ul class="navList">
 <li><a href="../../../../../index.html?com/google/ar/sceneform/ux/BaseArFragment.html" target="_top">Frames</a></li>
