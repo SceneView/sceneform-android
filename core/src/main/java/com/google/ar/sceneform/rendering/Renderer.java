@@ -148,6 +148,15 @@ public class Renderer implements UiHelper.RendererCallback {
     return renderer;
   }
 
+  /**
+   * Access to the underlying Filament view.
+   *
+   * @hide
+   */
+  public com.google.android.filament.View getFilamentView() {
+    return view;
+  }
+
   public SurfaceView getSurfaceView() {
     return surfaceView;
   }
@@ -155,10 +164,13 @@ public class Renderer implements UiHelper.RendererCallback {
   /** @hide */
   public void setClearColor(Color color) {
     com.google.android.filament.Renderer.ClearOptions options = new com.google.android.filament.Renderer.ClearOptions();
-    options.clearColor[0] = color.r;
-    options.clearColor[1] = color.g;
-    options.clearColor[2] = color.b;
-    options.clearColor[3] = color.a;
+    options.clear = true;
+    if(color.a > 0) {
+      options.clearColor[0] = color.r;
+      options.clearColor[1] = color.g;
+      options.clearColor[2] = color.b;
+      options.clearColor[3] = color.a;
+    }
     renderer.setClearOptions(options);
   }
 
@@ -527,7 +539,7 @@ public class Renderer implements UiHelper.RendererCallback {
     renderableInstances.remove(instance);
   }
 
-  Scene getFilamentScene() {
+  public Scene getFilamentScene() {
     return scene;
   }
 

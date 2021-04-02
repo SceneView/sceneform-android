@@ -2,6 +2,7 @@ package com.google.ar.sceneform;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.graphics.PixelFormat;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
@@ -13,6 +14,7 @@ import android.view.SurfaceView;
 
 import androidx.annotation.Nullable;
 
+import com.google.android.filament.View;
 import com.google.ar.core.exceptions.CameraNotAvailableException;
 import com.google.ar.sceneform.rendering.Color;
 import com.google.ar.sceneform.rendering.Renderer;
@@ -97,7 +99,7 @@ public class SceneView extends SurfaceView implements Choreographer.FrameCallbac
             ColorDrawable colorDrawable = (ColorDrawable) background;
             backgroundColor = new Color(colorDrawable.getColor());
             if (renderer != null) {
-                renderer.setClearColor(backgroundColor.inverseTonemap());
+                renderer.setClearColor(backgroundColor);
             }
         } else {
             backgroundColor = null;
@@ -106,6 +108,15 @@ public class SceneView extends SurfaceView implements Choreographer.FrameCallbac
             }
             super.setBackground(background);
         }
+    }
+
+    /**
+     * Set the background to transparent.
+     */
+    public void setTransparent(boolean transparent) {
+        setZOrderOnTop(transparent);
+        getHolder().setFormat(transparent ? PixelFormat.TRANSLUCENT : PixelFormat.OPAQUE);
+        renderer.getFilamentView().setBlendMode(transparent ? View.BlendMode.TRANSLUCENT : View.BlendMode.OPAQUE);
     }
 
     /**
@@ -269,7 +280,7 @@ public class SceneView extends SurfaceView implements Choreographer.FrameCallbac
         } else {
             renderer = new Renderer(this);
             if (backgroundColor != null) {
-                renderer.setClearColor(backgroundColor.inverseTonemap());
+                renderer.setClearColor(backgroundColor);
             }
             scene = new Scene(this);
             renderer.setCameraProvider(scene.getCamera());
