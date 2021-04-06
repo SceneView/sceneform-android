@@ -3,7 +3,7 @@ apply plugin: 'com.android.application'
 android {
     compileSdkVersion 30
     defaultConfig {
-        applicationId "com.google.ar.sceneform.samples.sceneview"
+        applicationId "com.google.ar.sceneform.samples.background"
 
         // Sceneform requires minSdkVersion >= 24.
         minSdkVersion 24

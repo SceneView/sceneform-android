@@ -1,4 +1,4 @@
-include ':core', ':ux', ':sceneform', ':samples-gltf', ':samples-texture', ':samples-sceneview'
+include ':core', ':ux', ':sceneform', ':samples-gltf', ':samples-texture', ':samples-background'
 project(':samples-gltf').projectDir = new File('samples/gltf')
 project(':samples-texture').projectDir = new File('samples/texture')
-project(':samples-sceneview').projectDir = new File('samples/sceneview')
+project(':samples-background').projectDir = new File('samples/background')

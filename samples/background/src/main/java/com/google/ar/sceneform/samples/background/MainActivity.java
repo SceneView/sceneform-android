@@ -1,4 +1,4 @@
-package com.google.ar.sceneform.samples.sceneview;
+package com.google.ar.sceneform.samples.background;
 
 import android.net.Uri;
 import android.os.Bundle;
