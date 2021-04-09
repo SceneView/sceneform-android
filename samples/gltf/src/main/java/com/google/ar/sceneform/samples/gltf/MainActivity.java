@@ -7,7 +7,6 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.google.android.filament.gltfio.Animator;
 import com.google.ar.core.Anchor;
 import com.google.ar.core.HitResult;
 import com.google.ar.core.Plane;
@@ -29,22 +28,6 @@ public class MainActivity extends AppCompatActivity implements BaseArFragment.On
     private ArFragment arFragment;
     private Renderable model;
     private ViewRenderable viewRenderable;
-
-    private static class AnimationInstance {
-        Animator animator;
-        Long startTime;
-        float duration;
-        int index;
-
-        AnimationInstance(Animator animator, int index, Long startTime) {
-            this.animator = animator;
-            this.startTime = startTime;
-            this.duration = animator.getAnimationDuration(index);
-            this.index = index;
-        }
-    }
-
-//    private final Set<AnimationInstance> animators = new ArraySet<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -126,26 +109,4 @@ public class MainActivity extends AppCompatActivity implements BaseArFragment.On
         tigerTitleNode.setRenderable(viewRenderable);
         tigerTitleNode.setEnabled(true);
     }
-//
-//        arFragment
-//                .getArSceneView()
-//                .
-//
-//    getScene()
-//                .
-//
-//    addOnUpdateListener(
-//            frameTime ->
-//
-//    {
-//        Long time = System.nanoTime();
-//        for (AnimationInstance animator : animators) {
-//            animator.animator.applyAnimation(
-//                    animator.index,
-//                    (float) ((time - animator.startTime) / (double) SECONDS.toNanos(1))
-//                            % animator.duration);
-//            animator.animator.updateBoneMatrices();
-//        }
-//    });
-//}
 }
