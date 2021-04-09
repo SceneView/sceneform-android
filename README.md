@@ -59,7 +59,7 @@ dependencies {
     android:layout_width="match_parent"
     android:layout_height="match_parent"/>
 ```
-**[sample...](https://github.com/ThomasGorisse/sceneform-android-sdk/blob/master/samples/texture/src/main/res/layout/activity_main.xml)**
+**[sample...](samples/gltf/src/main/res/layout/activity_main.xml)**
 
 
 ### Edit your `Activity` or `Fragment`
@@ -93,13 +93,46 @@ protected void onCreate(Bundle savedInstanceState) {
 }
 ```
 
-**[sample...](https://github.com/ThomasGorisse/sceneform-android-sdk/blob/master/samples/texture/src/main/java/com/google/ar/sceneform/samples/texture/MainActivity.java)**
+**[sample...](samples/gltf/src/main/java/com/google/ar/sceneform/samples/gltf/MainActivity.java)**
+
+
+
+## Samples
+
+
+### glTF with animation
+
+![screenrecord_gltf.gif](docs/images/samples/screenrecord_gltf.gif)
+
+**[sample project...](samples/gltf/)**
+
+
+### Image texture
+
+<img src="docs/images/samples/screenshot_image_texture.png" alt="drawing" width="400"/>
+
+**[sample project...](samples/image-texture/)**
+
+
+### Video texture
+
+![screenrecord_video_texture_plain.gif](docs/images/samples/screenrecord_video_texture_plain.gif)
+![screenrecord_video_texture_chromakey.gif](docs/images/samples/screenrecord_video_texture_chromakey.gif)
+
+**[sample project...](samples/video-texture/)**
+
+
+### Non AR usage
+
+<img src="docs/images/samples/screenshot_sceneview_background.png" alt="drawing" width="400"/>
+
+**[sample project...](samples/sceneview-background/)**
 
 
 ## Go further
 
 
-#### AR Required vs AR Optional
+### AR Required vs AR Optional
 
 If your app requires ARCore (AR Required) and is not only (AR Optional), use this manifest to indicates that this app requires Google Play Services for AR (AR Required) and results in
 the app only being visible in the Google Play Store on devices that support ARCore:
@@ -115,7 +148,7 @@ the app only being visible in the Google Play Store on devices that support ARCo
 **[more...](https://thomasgorisse.github.io/sceneform-android-sdk/manifest)**
 
 
-## Nodes
+### Nodes
 
 To add a node or multiply nodes to the Scene when the user press on a surface, you can override the `onTapPlane` function from a `BaseArFragment.OnTapArPlaneListener`:
 ```java
