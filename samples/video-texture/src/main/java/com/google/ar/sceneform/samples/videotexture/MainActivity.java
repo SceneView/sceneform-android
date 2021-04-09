@@ -6,15 +6,12 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
-import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.core.view.OnApplyWindowInsetsListener;
 import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 
 import com.google.android.filament.Engine;
 import com.google.android.filament.filamat.MaterialBuilder;
@@ -28,7 +25,6 @@ import com.google.ar.sceneform.rendering.Color;
 import com.google.ar.sceneform.rendering.EngineInstance;
 import com.google.ar.sceneform.rendering.ExternalTexture;
 import com.google.ar.sceneform.rendering.Material;
-import com.google.ar.sceneform.rendering.MaterialInternalDataImpl;
 import com.google.ar.sceneform.rendering.ModelRenderable;
 import com.google.ar.sceneform.rendering.Renderable;
 import com.google.ar.sceneform.rendering.RenderableInstance;
@@ -59,12 +55,9 @@ public class MainActivity extends AppCompatActivity implements BaseArFragment.On
         setContentView(R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        ViewCompat.setOnApplyWindowInsetsListener(toolbar, new OnApplyWindowInsetsListener() {
-            @Override
-            public WindowInsetsCompat onApplyWindowInsets(View v, WindowInsetsCompat insets) {
-                ((ViewGroup.MarginLayoutParams) toolbar.getLayoutParams()).topMargin = insets.getSystemWindowInsetTop();
-                return insets.consumeSystemWindowInsets();
-            }
+        ViewCompat.setOnApplyWindowInsetsListener(toolbar, (v, insets) -> {
+            ((ViewGroup.MarginLayoutParams) toolbar.getLayoutParams()).topMargin = insets.getSystemWindowInsetTop();
+            return insets.consumeSystemWindowInsets();
         });
 
         getSupportFragmentManager().addFragmentOnAttachListener((fragmentManager, fragment) -> {
@@ -178,15 +171,15 @@ public class MainActivity extends AppCompatActivity implements BaseArFragment.On
                 .build(filamentEngine);
         if (plainVideoMaterialPackage.isValid()) {
             ByteBuffer buffer = plainVideoMaterialPackage.getBuffer();
-             Material.builder()
+            Material.builder()
                     .setSource(buffer)
                     .build()
                     .thenAccept(material -> {
-                MainActivity activity = weakActivity.get();
-                if (activity != null) {
-                    activity.plainVideoMaterial = material;
-                }
-            })
+                        MainActivity activity = weakActivity.get();
+                        if (activity != null) {
+                            activity.plainVideoMaterial = material;
+                        }
+                    })
                     .exceptionally(
                             throwable -> {
                                 Toast.makeText(this, "Unable to load material", Toast.LENGTH_LONG).show();

@@ -61,7 +61,7 @@ public class MainActivity extends AppCompatActivity implements BaseArFragment.On
                 .thenAccept(model -> {
                     MainActivity activity = weakActivity.get();
                     if (activity != null) {
-                        activity.model = this.model;
+                        activity.model = model;
                     }
                 })
                 .exceptionally(
