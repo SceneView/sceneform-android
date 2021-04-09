@@ -1,0 +1,14 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/menuPlainVideo"
+            android:title="Plain Video"
+            android:checked="true"
+            app:showAsAction="never|withText" />
+        <item
+            android:id="@+id/menuChromaKeyVideo"
+            android:title="ChromaKey Video"
+            app:showAsAction="never|withText" />
+    </group>
+</menu>
