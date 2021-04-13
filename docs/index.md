@@ -4,7 +4,7 @@ Maintained Sceneform SDK for Android
 #### This repository is a fork of [Sceneform](https://github.com/google-ar/sceneform-android-sdk)
 Copyright (c) 2018 Google Inc.  All rights reserved.
 
-[ ![jCenter](https://img.shields.io/badge/jCenter-1.18.8-blue) ](https://bintray.com/thomasgorisse/maven/com.gorisse.thomas.sceneform:sceneform/1.18.8/link)
+[ ![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.gorisse.thomas.sceneform/sceneform/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.gorisse.thomas.sceneform/sceneform)
 
 Sceneform is a 3D framework with a physically based renderer that's optimized
 for mobile devices and that makes it easy for you to build Augmented Reality (AR)
@@ -15,7 +15,7 @@ apps without requiring OpenGL or Unity.
 ## Usage benefits
 * Continuous compatibility with the latests versions of [ARCore SDK](https://github.com/google-ar/arcore-android-sdk) and [Filament](https://github.com/google/filament)
 * Based on AndroidX
-* Available has jCenter dependency
+* Available has gradle `mavenCentral()` dependency
 * Supports <a href="https://www.khronos.org/gltf/">glTF</a> format
 * Animations made easy
 * Simple model loading for basic usage

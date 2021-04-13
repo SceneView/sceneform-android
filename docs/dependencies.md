@@ -1,7 +1,17 @@
-## Dependencies
+# Dependencies
 
 
-### RELEASES
+## RELEASES
+
+*/build.gradle*
+```gradle
+allprojects {
+    repositories {
+        ...
+        mavenCentral()
+    }
+}
+```
 
 *app/build.gradle*
 ```gradle
@@ -11,7 +21,7 @@ dependencies {
 ```
 
 
-### SNAPSHOT
+## SNAPSHOT
 
 */build.gradle*
 ```gradle

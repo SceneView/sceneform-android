@@ -25,4 +25,4 @@ dependencies {
     api project(":ux")
 }
 
-apply from: rootProject.file('bintray.gradle')
+apply plugin: "com.vanniktech.maven.publish"
