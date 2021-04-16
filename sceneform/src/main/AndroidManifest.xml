@@ -16,5 +16,5 @@
 -->
 <manifest
     xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.google.ar.sceneform">
+    package="com.google.ar.sceneform.sceneform">
 </manifest>
