@@ -15,7 +15,7 @@ apps without requiring OpenGL or Unity.
 ## Usage benefits
 * Continuous compatibility with the latests versions of [ARCore SDK](https://github.com/google-ar/arcore-android-sdk) and [Filament](https://github.com/google/filament) 
 * Based on AndroidX
-* Available has gradle `mavenCentral()` dependency
+* Available as gradle `mavenCentral()` dependency
 * Supports <a href="https://www.khronos.org/gltf/">glTF</a> format
 * Animations made easy
 * Simple model loading for basic usage
