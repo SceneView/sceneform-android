@@ -228,12 +228,6 @@ public class RenderableInternalFilamentAssetData implements IRenderableInternalD
       renderableManager.setPriority(renderableInstance, renderable.getRenderPriority());
       renderableManager.setCastShadows(renderableInstance, renderable.isShadowCaster());
       renderableManager.setReceiveShadows(renderableInstance, renderable.isShadowReceiver());
-      ArrayList<Material> materialBindings = instance.getMaterialBindings();
-      for(int i=0;i<materialBindings.size();i++) {
-        Material material = materialBindings.get(i);
-        renderableManager.setMaterialInstanceAt(renderableInstance, i,
-                material.getFilamentMaterialInstance());
-      }
     }
   }
 

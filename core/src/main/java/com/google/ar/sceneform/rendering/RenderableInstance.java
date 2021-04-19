@@ -313,7 +313,15 @@ public class RenderableInstance implements AnimatableModel {
     public void setMaterial(int index, Material material) {
         if (index < materialBindings.size()) {
             materialBindings.set(index, material);
-            renderable.getId().update();
+            RenderableManager renderableManager = EngineInstance.getEngine().getRenderableManager();
+            for (int entity : getFilamentAsset().getEntities()) {
+                @EntityInstance int renderableInstance = renderableManager.getInstance(entity);
+                if (renderableInstance == 0) {
+                    continue;
+                }
+                renderableManager.setMaterialInstanceAt(renderableInstance, index,
+                        material.getFilamentMaterialInstance());
+            }
         }
     }
 
