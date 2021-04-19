@@ -55,7 +55,8 @@ public class MainActivity extends AppCompatActivity implements BaseArFragment.On
     public void loadModels() {
         WeakReference<MainActivity> weakActivity = new WeakReference<>(this);
         ModelRenderable.builder()
-                .setSource(this, Uri.parse("https://storage.googleapis.com/ar-answers-in-search-models/static/Tiger/model.glb"))
+//                .setSource(this, Uri.parse("https://storage.googleapis.com/ar-answers-in-search-models/static/Tiger/model.glb"))
+                .setSource(this, Uri.parse("models/Rabbit.glb"))
                 .setIsFilamentGltf(true)
                 .build()
                 .thenAccept(model -> {

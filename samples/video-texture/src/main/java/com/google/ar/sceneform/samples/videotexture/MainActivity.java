@@ -155,7 +155,6 @@ public class MainActivity extends AppCompatActivity implements BaseArFragment.On
                 // Defaults to UNLIT because it's the only emissive one
                 .shading(MaterialBuilder.Shading.UNLIT)
                 .doubleSided(true)
-
                 .samplerParameter(MaterialBuilder.SamplerType.SAMPLER_EXTERNAL, MaterialBuilder.SamplerFormat.FLOAT
                         , MaterialBuilder.SamplerPrecision.DEFAULT, "videoTexture")
                 .optimization(MaterialBuilder.Optimization.NONE);

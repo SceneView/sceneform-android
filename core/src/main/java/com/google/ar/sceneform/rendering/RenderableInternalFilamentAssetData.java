@@ -218,17 +218,6 @@ public class RenderableInternalFilamentAssetData implements IRenderableInternalD
 
   @Override
   public void buildInstanceData(RenderableInstance instance, int renderedEntity) {
-    Renderable renderable = instance.getRenderable();
-    RenderableManager renderableManager = EngineInstance.getEngine().getRenderableManager();
-    for (int entity : instance.getFilamentAsset().getEntities()) {
-      @EntityInstance int renderableInstance = renderableManager.getInstance(entity);
-      if (renderableInstance == 0) {
-        continue;
-      }
-      renderableManager.setPriority(renderableInstance, renderable.getRenderPriority());
-      renderableManager.setCastShadows(renderableInstance, renderable.isShadowCaster());
-      renderableManager.setReceiveShadows(renderableInstance, renderable.isShadowReceiver());
-    }
   }
 
   @Override

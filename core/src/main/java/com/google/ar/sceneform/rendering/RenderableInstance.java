@@ -4,6 +4,7 @@ import android.net.Uri;
 import android.text.TextUtils;
 import android.util.Log;
 
+import androidx.annotation.IntRange;
 import androidx.annotation.Nullable;
 import androidx.annotation.Size;
 
@@ -85,8 +86,12 @@ public class RenderableInstance implements AnimatableModel {
     @Nullable
     private SkinningModifier skinningModifier;
 
-    private ArrayList<Material> materialBindings = new ArrayList<>();
-    private ArrayList<String> materialNames = new ArrayList<>();
+    private int renderPriority = Renderable.RENDER_PRIORITY_DEFAULT;
+    private boolean isShadowCaster = true;
+    private boolean isShadowReceiver = true;
+
+    private ArrayList<Material> materialBindings;
+    private ArrayList<String> materialNames;
 
     @Nullable
     private Matrix cachedRelativeTransform;
@@ -256,6 +261,72 @@ public class RenderableInstance implements AnimatableModel {
         transformManager.setTransform(instance, transform);
     }
 
+    /**
+     * Get the render priority that controls the order of rendering. The priority is between a range
+     * of 0 (rendered first) and 7 (rendered last). The default value is 4.
+     */
+    public int getRenderPriority() {
+        return renderPriority;
+    }
+
+    /**
+     * Set the render priority to control the order of rendering. The priority is between a range of 0
+     * (rendered first) and 7 (rendered last). The default value is 4.
+     */
+    public void setRenderPriority(int entityIndex,
+                                  @IntRange(from = Renderable.RENDER_PRIORITY_FIRST, to = Renderable.RENDER_PRIORITY_LAST) int renderPriority) {
+        int[] entities = getFilamentAsset().getEntities();
+        Preconditions.checkElementIndex(entityIndex, entities.length, "No entity found at the given index");
+        this.renderPriority = Math.min(Renderable.RENDER_PRIORITY_LAST, Math.max(Renderable.RENDER_PRIORITY_FIRST, renderPriority));
+        RenderableManager renderableManager = EngineInstance.getEngine().getRenderableManager();
+        @EntityInstance int renderableInstance = renderableManager.getInstance(entities[entityIndex]);
+        if (renderableInstance != 0) {
+            renderableManager.setPriority(renderableInstance, this.renderPriority);
+        }
+    }
+
+    /**
+     * Returns true if configured to cast shadows on other renderables.
+     */
+    public boolean isShadowCaster() {
+        return isShadowCaster;
+    }
+
+    /**
+     * Sets whether the renderable casts shadow on other renderables in the scene.
+     */
+    public void setShadowCaster(int entityIndex, boolean isShadowCaster) {
+        int[] entities = getFilamentAsset().getEntities();
+        Preconditions.checkElementIndex(entityIndex, entities.length, "No entity found at the given index");
+        this.isShadowCaster = isShadowCaster;
+        RenderableManager renderableManager = EngineInstance.getEngine().getRenderableManager();
+        @EntityInstance int renderableInstance = renderableManager.getInstance(entities[entityIndex]);
+        if (renderableInstance != 0) {
+            renderableManager.setCastShadows(renderableInstance, isShadowCaster);
+        }
+    }
+
+    /**
+     * Returns true if configured to receive shadows cast by other renderables.
+     */
+    public boolean isShadowReceiver() {
+        return isShadowReceiver;
+    }
+
+    /**
+     * Sets whether the renderable receives shadows cast by other renderables in the scene.
+     */
+    public void setShadowReceiver(int entityIndex, boolean isShadowReceiver) {
+        int[] entities = getFilamentAsset().getEntities();
+        Preconditions.checkElementIndex(entityIndex, entities.length, "No entity found at the given index");
+        this.isShadowReceiver = isShadowReceiver;
+        RenderableManager renderableManager = EngineInstance.getEngine().getRenderableManager();
+        @EntityInstance int renderableInstance = renderableManager.getInstance(entities[entityIndex]);
+        if (renderableInstance != 0) {
+            renderableManager.setReceiveShadows(renderableInstance, isShadowReceiver);
+        }
+    }
+
     ArrayList<Material> getMaterialBindings() {
         return materialBindings;
     }
@@ -310,18 +381,24 @@ public class RenderableInstance implements AnimatableModel {
     /**
      * Sets the material bound to the specified index.
      */
-    public void setMaterial(int index, Material material) {
-        if (index < materialBindings.size()) {
-            materialBindings.set(index, material);
-            RenderableManager renderableManager = EngineInstance.getEngine().getRenderableManager();
-            for (int entity : getFilamentAsset().getEntities()) {
-                @EntityInstance int renderableInstance = renderableManager.getInstance(entity);
-                if (renderableInstance == 0) {
-                    continue;
-                }
-                renderableManager.setMaterialInstanceAt(renderableInstance, index,
-                        material.getFilamentMaterialInstance());
-            }
+    public void setMaterial(@IntRange(from = 0) int primitiveIndex, Material material) {
+        for (int i = 0; i < getFilamentAsset().getEntities().length; i++) {
+            setMaterial(i, primitiveIndex, material);
+        }
+    }
+
+    /**
+     * Sets the material bound to the specified index and entityIndex
+     */
+    public void setMaterial(int entityIndex, @IntRange(from = 0) int primitiveIndex, Material material) {
+        int[] entities = getFilamentAsset().getEntities();
+        Preconditions.checkElementIndex(entityIndex, entities.length, "No entity found at the given index");
+        materialBindings.set(entityIndex, material);
+        RenderableManager renderableManager = EngineInstance.getEngine().getRenderableManager();
+        @EntityInstance int renderableInstance = renderableManager.getInstance(entities[entityIndex]);
+        if (renderableInstance != 0) {
+            renderableManager.setMaterialInstanceAt(renderableInstance, primitiveIndex,
+                    material.getFilamentMaterialInstance());
         }
     }
 
