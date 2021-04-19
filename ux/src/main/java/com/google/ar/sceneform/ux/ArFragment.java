@@ -16,6 +16,7 @@
 package com.google.ar.sceneform.ux;
 
 import android.net.Uri;
+import android.os.Bundle;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.widget.Toast;
@@ -46,6 +47,22 @@ public class ArFragment extends BaseArFragment {
     private static final String TAG = "StandardArFragment";
 
     private Renderable onTapRenderable;
+
+    /**
+     * Creates a new fragment instance with the supplied arguments
+     * @param fullscreen whether the fragment enables the fullscreen mode
+     * @return the new fragment instance
+     */
+    public static ArFragment newInstance(boolean fullscreen) {
+        ArFragment fragment = new ArFragment();
+
+        Bundle bundle = new Bundle();
+        bundle.putBoolean(ARGUMENT_FULLSCREEN, fullscreen);
+
+        fragment.setArguments(bundle);
+
+        return fragment;
+    }
 
     @Override
     public boolean isArRequired() {

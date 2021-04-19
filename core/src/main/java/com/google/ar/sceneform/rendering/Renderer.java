@@ -2,6 +2,8 @@ package com.google.ar.sceneform.rendering;
 
 import android.content.Context;
 import android.os.Build;
+
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
@@ -539,6 +541,7 @@ public class Renderer implements UiHelper.RendererCallback {
     renderableInstances.remove(instance);
   }
 
+  @NonNull
   public Scene getFilamentScene() {
     return scene;
   }
