@@ -203,6 +203,10 @@ public class RenderableInstance implements AnimatableModel {
 
             filamentAsset = createdAsset;
 
+            setRenderPriority(renderable.getRenderPriority());
+            setShadowCaster(renderable.isShadowCaster());
+            setShadowReceiver(renderable.isShadowReceiver());
+
             filamentAnimator = createdAsset != null ? createdAsset.getAnimator() : null;
             animations = new ArrayList<>();
             for (int i = 0; i < filamentAnimator.getAnimationCount(); i++) {
@@ -273,15 +277,15 @@ public class RenderableInstance implements AnimatableModel {
      * Set the render priority to control the order of rendering. The priority is between a range of 0
      * (rendered first) and 7 (rendered last). The default value is 4.
      */
-    public void setRenderPriority(int entityIndex,
-                                  @IntRange(from = Renderable.RENDER_PRIORITY_FIRST, to = Renderable.RENDER_PRIORITY_LAST) int renderPriority) {
+    public void setRenderPriority(@IntRange(from = Renderable.RENDER_PRIORITY_FIRST, to = Renderable.RENDER_PRIORITY_LAST) int renderPriority) {
         int[] entities = getFilamentAsset().getEntities();
-        Preconditions.checkElementIndex(entityIndex, entities.length, "No entity found at the given index");
         this.renderPriority = Math.min(Renderable.RENDER_PRIORITY_LAST, Math.max(Renderable.RENDER_PRIORITY_FIRST, renderPriority));
         RenderableManager renderableManager = EngineInstance.getEngine().getRenderableManager();
-        @EntityInstance int renderableInstance = renderableManager.getInstance(entities[entityIndex]);
-        if (renderableInstance != 0) {
-            renderableManager.setPriority(renderableInstance, this.renderPriority);
+        for (int i = 0; i < entities.length; i++) {
+            @EntityInstance int renderableInstance = renderableManager.getInstance(entities[i]);
+            if (renderableInstance != 0) {
+                renderableManager.setPriority(renderableInstance, this.renderPriority);
+            }
         }
     }
 
@@ -295,14 +299,15 @@ public class RenderableInstance implements AnimatableModel {
     /**
      * Sets whether the renderable casts shadow on other renderables in the scene.
      */
-    public void setShadowCaster(int entityIndex, boolean isShadowCaster) {
+    public void setShadowCaster(boolean isShadowCaster) {
         int[] entities = getFilamentAsset().getEntities();
-        Preconditions.checkElementIndex(entityIndex, entities.length, "No entity found at the given index");
         this.isShadowCaster = isShadowCaster;
         RenderableManager renderableManager = EngineInstance.getEngine().getRenderableManager();
-        @EntityInstance int renderableInstance = renderableManager.getInstance(entities[entityIndex]);
-        if (renderableInstance != 0) {
-            renderableManager.setCastShadows(renderableInstance, isShadowCaster);
+        for (int i = 0; i < entities.length; i++) {
+            @EntityInstance int renderableInstance = renderableManager.getInstance(entities[i]);
+            if (renderableInstance != 0) {
+                renderableManager.setCastShadows(renderableInstance, isShadowCaster);
+            }
         }
     }
 
@@ -316,14 +321,15 @@ public class RenderableInstance implements AnimatableModel {
     /**
      * Sets whether the renderable receives shadows cast by other renderables in the scene.
      */
-    public void setShadowReceiver(int entityIndex, boolean isShadowReceiver) {
+    public void setShadowReceiver(boolean isShadowReceiver) {
         int[] entities = getFilamentAsset().getEntities();
-        Preconditions.checkElementIndex(entityIndex, entities.length, "No entity found at the given index");
         this.isShadowReceiver = isShadowReceiver;
         RenderableManager renderableManager = EngineInstance.getEngine().getRenderableManager();
-        @EntityInstance int renderableInstance = renderableManager.getInstance(entities[entityIndex]);
-        if (renderableInstance != 0) {
-            renderableManager.setReceiveShadows(renderableInstance, isShadowReceiver);
+        for (int i = 0; i < entities.length; i++) {
+            @EntityInstance int renderableInstance = renderableManager.getInstance(entities[i]);
+            if (renderableInstance != 0) {
+                renderableManager.setReceiveShadows(renderableInstance, isShadowReceiver);
+            }
         }
     }
 
