@@ -399,7 +399,7 @@ public class RenderableInstance implements AnimatableModel {
     public void setMaterial(int entityIndex, @IntRange(from = 0) int primitiveIndex, Material material) {
         int[] entities = getFilamentAsset().getEntities();
         Preconditions.checkElementIndex(entityIndex, entities.length, "No entity found at the given index");
-        materialBindings.set(entityIndex, material);
+//        materialBindings.set(entityIndex, material);
         RenderableManager renderableManager = EngineInstance.getEngine().getRenderableManager();
         @EntityInstance int renderableInstance = renderableManager.getInstance(entities[entityIndex]);
         if (renderableInstance != 0) {

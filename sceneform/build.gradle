@@ -25,4 +25,6 @@ dependencies {
     api project(":ux")
 }
 
-apply plugin: "com.vanniktech.maven.publish"
+if (project.hasProperty('mavenCentralRepositoryUsername') && project.hasProperty('mavenCentralRepositoryPassword')) {
+    apply plugin: "com.vanniktech.maven.publish"
+}
