@@ -2,9 +2,9 @@ Maintained Sceneform SDK for Android
 ====================================
 
 #### This repository is a fork of [Sceneform](https://github.com/google-ar/sceneform-android-sdk)
-Copyright (c) 2018 Google Inc.  All rights reserved.
+Copyright (c) 2021 Google Inc.  All rights reserved.
 
-[ ![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.gorisse.thomas.sceneform/sceneform/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.gorisse.thomas.sceneform/sceneform)
+[![Maven Central](https://img.shields.io/maven-central/v/com.gorisse.thomas.sceneform/sceneform.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:%22com.gorisse.thomas.sceneform%22%20AND%20a:%22sceneform%22)
 
 Sceneform is a 3D framework with a physically based renderer that's optimized
 for mobile devices and that makes it easy for you to build Augmented Reality (AR)
