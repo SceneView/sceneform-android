@@ -27,7 +27,7 @@ apps without requiring OpenGL or Unity.
 *app/build.gradle*
 ```gradle
 dependencies {
-     implementation("com.gorisse.thomas.sceneform:sceneform:1.18.9")
+     implementation("com.gorisse.thomas.sceneform:sceneform:1.18.10")
 }
 ```
 **[more...](https://thomasgorisse.github.io/sceneform-android-sdk/dependencies)**
