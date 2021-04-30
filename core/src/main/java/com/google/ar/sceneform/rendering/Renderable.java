@@ -35,6 +35,8 @@ public abstract class Renderable {
     // Data that can be shared between Renderables with makeCopy()
     private final IRenderableInternalData renderableData;
 
+    protected boolean asyncLoadEnabled;
+
     // Data that is unique per-Renderable.
     private final ArrayList<Material> materialBindings = new ArrayList<>();
     private final ArrayList<String> materialNames = new ArrayList<>();
@@ -72,6 +74,7 @@ public abstract class Renderable {
         if (builder.definition != null) {
             updateFromDefinition(builder.definition);
         }
+        asyncLoadEnabled = builder.asyncLoadEnabled;
         animationFrameRate = builder.animationFrameRate;
     }
 
@@ -101,6 +104,7 @@ public abstract class Renderable {
             collisionShape = other.collisionShape.makeCopy();
         }
 
+        asyncLoadEnabled = other.asyncLoadEnabled;
         animationFrameRate = other.animationFrameRate;
 
         changeId.update();
@@ -352,6 +356,7 @@ public abstract class Renderable {
         private RenderableDefinition definition = null;
         private boolean isGltf = false;
         private boolean isFilamentAsset = false;
+        private boolean asyncLoadEnabled = false;
         @Nullable
         private LoadGltfListener loadGltfListener;
         @Nullable
@@ -410,6 +415,15 @@ public abstract class Renderable {
 
         public B setIsFilamentGltf(boolean isFilamentGltf) {
             this.isFilamentAsset = isFilamentGltf;
+            return getSelf();
+        }
+
+        /**
+         * Enable textures async loading after first rendering.
+         * Default is false.
+         */
+        public B setAsyncLoadEnabled(boolean asyncLoadEnabled) {
+            this.asyncLoadEnabled = asyncLoadEnabled;
             return getSelf();
         }
 

@@ -57,6 +57,7 @@ public class MainActivity extends AppCompatActivity implements BaseArFragment.On
         ModelRenderable.builder()
                 .setSource(this, Uri.parse("https://storage.googleapis.com/ar-answers-in-search-models/static/Tiger/model.glb"))
                 .setIsFilamentGltf(true)
+                .setAsyncLoadEnabled(true)
                 .build()
                 .thenAccept(model -> {
                     MainActivity activity = weakActivity.get();
