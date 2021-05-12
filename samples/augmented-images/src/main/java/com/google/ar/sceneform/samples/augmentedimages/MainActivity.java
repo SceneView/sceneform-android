@@ -1,9 +1,5 @@
 package com.google.ar.sceneform.samples.augmentedimages;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-import androidx.core.view.ViewCompat;
-
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.MediaPlayer;
@@ -11,6 +7,14 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.view.ViewGroup;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.view.ViewCompat;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentOnAttachListener;
 
 import com.google.android.filament.Engine;
 import com.google.android.filament.filamat.MaterialBuilder;
@@ -21,10 +25,8 @@ import com.google.ar.core.Config;
 import com.google.ar.core.Frame;
 import com.google.ar.core.Session;
 import com.google.ar.core.TrackingState;
-import com.google.ar.core.exceptions.CameraNotAvailableException;
 import com.google.ar.sceneform.AnchorNode;
 import com.google.ar.sceneform.FrameTime;
-import com.google.ar.sceneform.Scene;
 import com.google.ar.sceneform.Sceneform;
 import com.google.ar.sceneform.math.Quaternion;
 import com.google.ar.sceneform.math.Vector3;
@@ -43,17 +45,12 @@ import java.nio.ByteBuffer;
 import java.util.Collection;
 
 public class MainActivity extends AppCompatActivity implements
-        BaseArFragment.OnSessionInitializationListener {
+        FragmentOnAttachListener, BaseArFragment.OnSessionConfigurationListener {
 
     private ArFragment arFragment;
 
-    private Scene scene;
     private boolean matrixDetected = false;
     private boolean rabbitDetected = false;
-    private boolean isDetected = false;
-
-    private boolean configureSession = false;
-    private Session session;
 
     private AugmentedImageDatabase database;
 
@@ -72,13 +69,7 @@ public class MainActivity extends AppCompatActivity implements
             ((ViewGroup.MarginLayoutParams) toolbar.getLayoutParams()).topMargin = insets.getSystemWindowInsetTop();
             return insets.consumeSystemWindowInsets();
         });
-
-        getSupportFragmentManager().addFragmentOnAttachListener((fragmentManager, fragment) -> {
-            if (fragment.getId() == R.id.arFragment) {
-                this.arFragment = (ArFragment) fragment;
-                this.arFragment.setOnSessionInitializationListener(MainActivity.this);
-            }
-        });
+        getSupportFragmentManager().addFragmentOnAttachListener(this);
 
         if (savedInstanceState == null) {
             if (Sceneform.isSupported(this)) {
@@ -88,10 +79,44 @@ public class MainActivity extends AppCompatActivity implements
             }
         }
 
-        //.glb models can be loaded at runtime when needed or when app starts
-        //this method loads ModelRenderable when app starts
+        // .glb models can be loaded at runtime when needed or when app starts
+        // This method loads ModelRenderable when app starts
         loadMatrixModel();
         loadMatrixMaterial();
+    }
+
+    @Override
+    public void onAttachFragment(@NonNull FragmentManager fragmentManager, @NonNull Fragment fragment) {
+        if (fragment.getId() == R.id.arFragment) {
+            this.arFragment = (ArFragment) fragment;
+            this.arFragment.setOnSessionConfigurationListener(this);
+        }
+    }
+
+    @Override
+    public void onSessionConfiguration(Session session, Config config) {
+        // Hide plane indicating dots
+        this.arFragment.getArSceneView().getPlaneRenderer().setVisible(false);
+
+        // Disable plane detection
+        config.setPlaneFindingMode(Config.PlaneFindingMode.DISABLED);
+
+        // Images to be detected by our AR need to be added in AugmentedImageDatabase
+        // This is how database is created at runtime
+        // You can also prebuild database in you computer and load it directly (see: https://developers.google.com/ar/develop/java/augmented-images/guide#database)
+
+        database = new AugmentedImageDatabase(session);
+
+        Bitmap matrixImage = BitmapFactory.decodeResource(getResources(), R.drawable.matrix);
+        Bitmap rabbitImage = BitmapFactory.decodeResource(getResources(), R.drawable.rabbit);
+        // Every image has to have its own unique String identifier
+        database.addImage("matrix", matrixImage);
+        database.addImage("rabbit", rabbitImage);
+
+        config.setAugmentedImageDatabase(database);
+
+        // Check for image detection
+        this.arFragment.getArSceneView().getScene().addOnUpdateListener(this::onUpdate);
     }
 
     @Override
@@ -167,104 +192,53 @@ public class MainActivity extends AppCompatActivity implements
         MaterialBuilder.shutdown();
     }
 
-    @Override
-    public void onSessionInitialization(Session session) {
-        this.scene = this.arFragment.getArSceneView().getScene();
-        this.scene.addOnUpdateListener(this::onUpdate);
-
-        setupSession();
-    }
-
-    private void setupSession() {
-        if (session == null) {
-            try {
-                session = new Session(this);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            configureSession = true;
-        }
-
-        if (configureSession) {
-            Config config = new Config(session);
-            config.setUpdateMode(Config.UpdateMode.LATEST_CAMERA_IMAGE);
-
-            //Images to be detected by our AR need to be added in AugmentedImageDatabase
-            //This is how database is created at runtime
-            //You can also prebuild database in you computer and load it directly (see: https://developers.google.com/ar/develop/java/augmented-images/guide#database)
-
-            database = new AugmentedImageDatabase(session);
-
-            Bitmap matrixImage = BitmapFactory.decodeResource(getResources(), R.drawable.matrix);
-            Bitmap rabbitImage = BitmapFactory.decodeResource(getResources(), R.drawable.rabbit);
-            //Every image has to have its own unique String identifier
-            database.addImage("matrix", matrixImage);
-            database.addImage("rabbit", rabbitImage);
-
-            config.setAugmentedImageDatabase(database);
-
-            session.configure(config);
-
-            configureSession = false;
-            arFragment.getArSceneView().setupSession(session);
-            //hiding plane indicating dots
-            arFragment.getArSceneView().getPlaneRenderer().setVisible(false);
-        }
-
-        try {
-            session.resume();
-            arFragment.getArSceneView().resume();
-        } catch (CameraNotAvailableException e) {
-            e.printStackTrace();
-            session = null;
-        }
-    }
-
-    //every time new image is processed by ARCore and ready, this method is called
+    // Every time new image is processed by ARCore and ready, this method is called
     public void onUpdate(FrameTime frameTime) {
-        //if there are both images already detected, for better CPU usage we do not need scan for them
+        // If there are both images already detected, for better CPU usage we do not need scan for them
         if (matrixDetected && rabbitDetected)
             return;
 
         Frame frame = this.arFragment.getArSceneView().getArFrame();
         try {
-            //this is collection of all images from our AugmentedImageDatabase that are currently detected by ARCore in this session
+            // This is collection of all images from our AugmentedImageDatabase that are currently detected by ARCore in this session
             Collection<AugmentedImage> augmentedImageCollection = frame.getUpdatedTrackables(AugmentedImage.class);
 
             for (AugmentedImage image : augmentedImageCollection) {
                 if (image.getTrackingState() == TrackingState.TRACKING) {
-                    //if matrix video haven't been placed yet and detected image has String identifier of "matrix"
+                    this.arFragment.getPlaneDiscoveryController().hide();
+
+                    // If matrix video haven't been placed yet and detected image has String identifier of "matrix"
                     if (!matrixDetected && image.getName().equals("matrix")) {
                         matrixDetected = true;
                         Toast.makeText(this, "Matrix tag detected", Toast.LENGTH_LONG).show();
 
-                        //new AnchorNode placed to the detected tag and set it to the real size of the tag
-                        //this will cause deformation if your AR tag has different aspect ratio than your video
+                        // New AnchorNode placed to the detected tag and set it to the real size of the tag
+                        // This will cause deformation if your AR tag has different aspect ratio than your video
                         AnchorNode anchorNode = new AnchorNode(image.createAnchor(image.getCenterPose()));
                         anchorNode.setWorldScale(new Vector3(image.getExtentX(), 1f, image.getExtentZ()));
                         arFragment.getArSceneView().getScene().addChild(anchorNode);
 
                         TransformableNode videoNode = new TransformableNode(arFragment.getTransformationSystem());
                         videoNode.setParent(anchorNode);
-                        //for some reason it is shown upside down so this will rotate it correctly
+                        // For some reason it is shown upside down so this will rotate it correctly
                         videoNode.setLocalRotation(Quaternion.axisAngle(new Vector3(0, 1f, 0), 180f));
 
-                        //setting texture
+                        // Setting texture
                         ExternalTexture externalTexture = new ExternalTexture();
                         RenderableInstance renderableInstance;
                         videoNode.setRenderable(plainVideoModel);
                         renderableInstance = videoNode.getRenderableInstance();
                         renderableInstance.setMaterial(plainVideoMaterial);
 
-                        //setting MediaPLayer
+                        // Setting MediaPLayer
                         renderableInstance.getMaterial().setExternalTexture("videoTexture", externalTexture);
                         mediaPlayer = MediaPlayer.create(this, R.raw.matrix);
                         mediaPlayer.setLooping(true);
                         mediaPlayer.setSurface(externalTexture.getSurface());
                         mediaPlayer.start();
                     }
-                    //if rabbit model haven't been placed yet and detected image has String identifier of "rabbit"
-                    //this is also example of model loading and placing at runtime
+                    // If rabbit model haven't been placed yet and detected image has String identifier of "rabbit"
+                    // This is also example of model loading and placing at runtime
                     if (!rabbitDetected && image.getName().equals("rabbit")) {
                         rabbitDetected = true;
                         Toast.makeText(this, "Rabbit tag detected", Toast.LENGTH_LONG).show();
@@ -278,7 +252,7 @@ public class MainActivity extends AppCompatActivity implements
                                     MainActivity activity = weakActivity.get();
                                     if (activity != null) {
 
-                                        //setting anchor to the center of AR tag
+                                        // Setting anchor to the center of AR tag
                                         AnchorNode anchorNode = new AnchorNode(image.createAnchor(image.getCenterPose()));
 
                                         arFragment.getArSceneView().getScene().addChild(anchorNode);
@@ -287,7 +261,7 @@ public class MainActivity extends AppCompatActivity implements
                                         modelNode.setParent(anchorNode);
                                         modelNode.setRenderable(rabbitModel);
 
-                                        //removing shadows
+                                        // Removing shadows
                                         modelNode.getRenderableInstance().setShadowCaster(true);
                                         modelNode.getRenderableInstance().setShadowReceiver(true);
                                     }
