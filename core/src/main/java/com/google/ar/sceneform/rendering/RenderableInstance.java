@@ -142,11 +142,6 @@ public class RenderableInstance implements AnimatableModel {
 
             FilamentAsset createdAsset = renderableData.isGltfBinary ? loader.createAssetFromBinary(renderableData.gltfByteBuffer)
                     : loader.createAssetFromJson(renderableData.gltfByteBuffer);
-            if(renderable.asyncLoadEnabled) {
-                renderableData.resourceLoader.asyncBeginLoad(createdAsset);
-            } else {
-                renderableData.resourceLoader.loadResources(createdAsset);
-            }
 
             if (createdAsset == null) {
                 throw new IllegalStateException("Failed to load gltf");
@@ -177,7 +172,12 @@ public class RenderableInstance implements AnimatableModel {
                     Log.e(TAG, "Failed to download data uri " + dataUri, e);
                 }
             }
-            renderableData.resourceLoader.loadResources(createdAsset);
+
+            if(renderable.asyncLoadEnabled) {
+                renderableData.resourceLoader.asyncBeginLoad(createdAsset);
+            } else {
+                renderableData.resourceLoader.loadResources(createdAsset);
+            }
 
             RenderableManager renderableManager = EngineInstance.getEngine().getRenderableManager();
 
