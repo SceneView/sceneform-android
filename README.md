@@ -129,6 +129,18 @@ protected void onCreate(Bundle savedInstanceState) {
 **[sample project...](samples/sceneview-background/)**
 
 
+
+## Emulator
+
+
+### Known working configuration
+
+
+![image](https://user-images.githubusercontent.com/6597529/117983402-3513df00-b337-11eb-841d-49548429363e.png)
+
+**[more...](https://thomasgorisse.github.io/sceneform-android-sdk/emulator)**
+
+
 ## Go further
 
 
