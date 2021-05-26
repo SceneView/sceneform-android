@@ -26,6 +26,7 @@ import com.google.ar.core.Frame;
 import com.google.ar.core.Session;
 import com.google.ar.core.TrackingState;
 import com.google.ar.sceneform.AnchorNode;
+import com.google.ar.sceneform.ArSceneView;
 import com.google.ar.sceneform.FrameTime;
 import com.google.ar.sceneform.Sceneform;
 import com.google.ar.sceneform.math.Quaternion;
@@ -45,7 +46,9 @@ import java.nio.ByteBuffer;
 import java.util.Collection;
 
 public class MainActivity extends AppCompatActivity implements
-        FragmentOnAttachListener, BaseArFragment.OnSessionConfigurationListener {
+        FragmentOnAttachListener,
+        BaseArFragment.OnSessionConfigurationListener,
+        ArFragment.OnViewCreatedListener {
 
     private ArFragment arFragment;
 
@@ -90,6 +93,7 @@ public class MainActivity extends AppCompatActivity implements
         if (fragment.getId() == R.id.arFragment) {
             this.arFragment = (ArFragment) fragment;
             this.arFragment.setOnSessionConfigurationListener(this);
+            this.arFragment.setOnViewCreatedListener(this);
         }
     }
 
@@ -117,6 +121,11 @@ public class MainActivity extends AppCompatActivity implements
 
         // Check for image detection
         this.arFragment.getArSceneView().getScene().addOnUpdateListener(this::onUpdate);
+    }
+
+    @Override
+    public void onViewCreated(ArFragment arFragment, ArSceneView arSceneView) {
+        arSceneView.getPlaneRenderer().setEnabled(false);
     }
 
     @Override

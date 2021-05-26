@@ -19,7 +19,11 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MotionEvent;
+import android.view.View;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.google.ar.core.Anchor;
 import com.google.ar.core.Config;
@@ -32,6 +36,7 @@ import com.google.ar.core.exceptions.UnavailableDeviceNotCompatibleException;
 import com.google.ar.core.exceptions.UnavailableException;
 import com.google.ar.core.exceptions.UnavailableSdkTooOldException;
 import com.google.ar.sceneform.AnchorNode;
+import com.google.ar.sceneform.ArSceneView;
 import com.google.ar.sceneform.rendering.ModelRenderable;
 import com.google.ar.sceneform.rendering.Renderable;
 import com.google.ar.sceneform.rendering.RenderableInstance;
@@ -46,10 +51,12 @@ import java.util.Set;
 public class ArFragment extends BaseArFragment {
     private static final String TAG = "StandardArFragment";
 
+    private OnViewCreatedListener onViewCreatedListener;
     private Renderable onTapRenderable;
 
     /**
      * Creates a new fragment instance with the supplied arguments
+     *
      * @param fullscreen whether the fragment enables the fullscreen mode
      * @return the new fragment instance
      */
@@ -62,6 +69,15 @@ public class ArFragment extends BaseArFragment {
         fragment.setArguments(bundle);
 
         return fragment;
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        if (onViewCreatedListener != null) {
+            onViewCreatedListener.onViewCreated(this, getArSceneView());
+        }
     }
 
     @Override
@@ -101,6 +117,14 @@ public class ArFragment extends BaseArFragment {
     @Override
     protected Set<Session.Feature> getSessionFeatures() {
         return Collections.emptySet();
+    }
+
+    /**
+     * Invoked when the ARSceneView is created and added to the fragment.
+     * You can use it to configure the ARSceneView and other ArFragment parameters.
+     */
+    public void setOnViewCreatedListener(OnViewCreatedListener onViewCreatedListener) {
+        this.onViewCreatedListener = onViewCreatedListener;
     }
 
     /**
@@ -161,9 +185,39 @@ public class ArFragment extends BaseArFragment {
                 });
     }
 
+    /**
+     * Invoked when an ARCore plane is tapped and model is added or an error occurred during the
+     * model loading.
+     */
     public interface OnTapModelListener {
+        /**
+         * Called when an ARCore plane is tapped and the model is added to the scene.
+         * The callback will only be invoked if no {@link com.google.ar.sceneform.Node} was tapped.
+         *
+         * @param renderableInstance the added instance of the model.
+         * @see #setOnTapArPlaneListener(BaseArFragment.OnTapArPlaneListener)
+         */
         void onModelAdded(RenderableInstance renderableInstance);
 
+        /**
+         * An error occurred while loading the ModelRenderable from the source.
+         *
+         * @param exception
+         */
         void onModelError(Throwable exception);
+    }
+
+    /**
+     * Invoked when the ARSceneView is created and added to the fragment.
+     * You can use it to configure the ARSceneView.
+     */
+    public interface OnViewCreatedListener {
+        /**
+         * Called at the end of the fragment onCreateView() call.
+         *
+         * @param arFragment  the onViewCreated fragment.
+         * @param arSceneView the created ARSceneView ready to be configured.
+         */
+        void onViewCreated(ArFragment arFragment, ArSceneView arSceneView);
     }
 }
