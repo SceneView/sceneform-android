@@ -26,8 +26,7 @@ public class GLHelper {
   public static EGLContext makeContext(EGLContext shareContext) {
     EGLDisplay display = EGL14.eglGetDisplay(EGL14.EGL_DEFAULT_DISPLAY);
 
-    int[] minorMajor = null;
-    EGL14.eglInitialize(display, minorMajor, 0, minorMajor, 0);
+    EGL14.eglInitialize(display, null, 0, null, 0);
     EGLConfig[] configs = new EGLConfig[1];
     int[] numConfig = {0};
     int[] attribs = {EGL14.EGL_RENDERABLE_TYPE, EGL_OPENGL_ES3_BIT, EGL14.EGL_NONE};

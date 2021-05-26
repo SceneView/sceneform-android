@@ -5,7 +5,11 @@ import android.os.Bundle;
 import android.view.MotionEvent;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentOnAttachListener;
 
 import com.google.ar.core.Anchor;
 import com.google.ar.core.HitResult;
@@ -23,7 +27,8 @@ import com.google.ar.sceneform.ux.TransformableNode;
 
 import java.lang.ref.WeakReference;
 
-public class MainActivity extends AppCompatActivity implements BaseArFragment.OnTapArPlaneListener {
+public class MainActivity extends AppCompatActivity implements FragmentOnAttachListener,
+        BaseArFragment.OnTapArPlaneListener {
 
     private ArFragment arFragment;
     private Renderable model;
@@ -34,12 +39,7 @@ public class MainActivity extends AppCompatActivity implements BaseArFragment.On
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_main);
-        getSupportFragmentManager().addFragmentOnAttachListener((fragmentManager, fragment) -> {
-            if (fragment.getId() == R.id.arFragment) {
-                arFragment = (ArFragment) fragment;
-                arFragment.setOnTapArPlaneListener(MainActivity.this);
-            }
-        });
+        getSupportFragmentManager().addFragmentOnAttachListener(this);
 
         if (savedInstanceState == null) {
             if (Sceneform.isSupported(this)) {
@@ -50,6 +50,14 @@ public class MainActivity extends AppCompatActivity implements BaseArFragment.On
         }
 
         loadModels();
+    }
+
+    @Override
+    public void onAttachFragment(@NonNull FragmentManager fragmentManager, @NonNull Fragment fragment) {
+        if (fragment.getId() == R.id.arFragment) {
+            arFragment = (ArFragment) fragment;
+            arFragment.setOnTapArPlaneListener(MainActivity.this);
+        }
     }
 
     public void loadModels() {

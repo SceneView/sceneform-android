@@ -245,14 +245,14 @@ public class Renderer implements UiHelper.RendererCallback {
   }
 
   /** @hide */
-  public void render(boolean debugEnabled) {
+  public void render(long frameTimeNanos, boolean debugEnabled) {
     synchronized (this) {
       if (recreateSwapChain) {
         final IEngine engine = EngineInstance.getEngine();
         if (swapChain != null) {
           engine.destroySwapChain(swapChain);
         }
-        swapChain = engine.createSwapChain(surface, SwapChain.CONFIG_READABLE);
+        swapChain = engine.createSwapChain(surface);
         recreateSwapChain = false;
       }
     }
@@ -279,22 +279,26 @@ public class Renderer implements UiHelper.RendererCallback {
 
       CameraProvider cameraProvider = this.cameraProvider;
       if (cameraProvider != null) {
-        final float[] projectionMatrixData = cameraProvider.getProjectionMatrix().data;
-        for (int i = 0; i < 16; ++i) {
-          cameraProjectionMatrix[i] = projectionMatrixData[i];
-        }
 
-        camera.setModelMatrix(cameraProvider.getWorldModelMatrix().data);
-        camera.setCustomProjection(
-            cameraProjectionMatrix,
-            cameraProvider.getNearClipPlane(),
-            cameraProvider.getFarClipPlane());
         @Nullable SwapChain swapChainLocal = swapChain;
         if (swapChainLocal == null) {
           throw new AssertionError("Internal Error: Failed to get swap chain");
         }
 
-        if (renderer.beginFrame(swapChainLocal, 0)) {
+        // Render the scene, unless the renderer wants to skip the frame.
+        // This means you are sending frames too quickly to the GPU
+        if (renderer.beginFrame(swapChainLocal, frameTimeNanos)) {
+          final float[] projectionMatrixData = cameraProvider.getProjectionMatrix().data;
+          for (int i = 0; i < 16; ++i) {
+            cameraProjectionMatrix[i] = projectionMatrixData[i];
+          }
+
+          camera.setModelMatrix(cameraProvider.getWorldModelMatrix().data);
+          camera.setCustomProjection(
+                  cameraProjectionMatrix,
+                  cameraProvider.getNearClipPlane(),
+                  cameraProvider.getFarClipPlane());
+
           if (preRenderCallback != null) {
             preRenderCallback.preRender(renderer, swapChainLocal, camera);
           }

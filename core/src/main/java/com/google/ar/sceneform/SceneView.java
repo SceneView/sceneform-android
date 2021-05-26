@@ -327,7 +327,7 @@ public class SceneView extends SurfaceView implements Choreographer.FrameCallbac
 
         if (onBeginFrame(frameTimeNanos)) {
             doUpdate(frameTimeNanos);
-            doRender();
+            doRender(frameTimeNanos);
         }
 
         if (debugEnabled) {
@@ -354,7 +354,7 @@ public class SceneView extends SurfaceView implements Choreographer.FrameCallbac
         }
     }
 
-    private void doRender() {
+    private void doRender(long frameTimeNanos) {
         Renderer renderer = this.renderer;
         if (renderer == null) {
             return;
@@ -364,7 +364,7 @@ public class SceneView extends SurfaceView implements Choreographer.FrameCallbac
             frameRenderTracker.beginSample();
         }
 
-        renderer.render(debugEnabled);
+        renderer.render(frameTimeNanos, debugEnabled);
 
         if (debugEnabled) {
             frameRenderTracker.endSample();
