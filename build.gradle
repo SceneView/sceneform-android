@@ -21,3 +21,7 @@ allprojects {
         google()
     }
 }
+
+task printProjectProperties {
+    project.properties.each {println "   $it"}
+}
