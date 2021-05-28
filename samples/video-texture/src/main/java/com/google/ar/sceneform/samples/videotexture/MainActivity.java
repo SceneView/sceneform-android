@@ -13,6 +13,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.ViewCompat;
 
+import com.google.android.filament.ColorGrading;
 import com.google.android.filament.Engine;
 import com.google.android.filament.filamat.MaterialBuilder;
 import com.google.android.filament.filamat.MaterialPackage;
@@ -20,6 +21,7 @@ import com.google.ar.core.Anchor;
 import com.google.ar.core.HitResult;
 import com.google.ar.core.Plane;
 import com.google.ar.sceneform.AnchorNode;
+import com.google.ar.sceneform.ArSceneView;
 import com.google.ar.sceneform.Sceneform;
 import com.google.ar.sceneform.rendering.Color;
 import com.google.ar.sceneform.rendering.EngineInstance;
@@ -28,6 +30,7 @@ import com.google.ar.sceneform.rendering.Material;
 import com.google.ar.sceneform.rendering.ModelRenderable;
 import com.google.ar.sceneform.rendering.Renderable;
 import com.google.ar.sceneform.rendering.RenderableInstance;
+import com.google.ar.sceneform.rendering.Renderer;
 import com.google.ar.sceneform.ux.ArFragment;
 import com.google.ar.sceneform.ux.BaseArFragment;
 import com.google.ar.sceneform.ux.TransformableNode;
@@ -37,7 +40,9 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements BaseArFragment.OnTapArPlaneListener {
+public class MainActivity extends AppCompatActivity implements
+        BaseArFragment.OnTapArPlaneListener,
+        ArFragment.OnViewCreatedListener {
 
     private ArFragment arFragment;
     private Renderable plainVideoModel;
@@ -64,6 +69,7 @@ public class MainActivity extends AppCompatActivity implements BaseArFragment.On
             if (fragment.getId() == R.id.arFragment) {
                 arFragment = (ArFragment) fragment;
                 arFragment.setOnTapArPlaneListener(MainActivity.this);
+                arFragment.setOnViewCreatedListener(MainActivity.this);
             }
         });
 
@@ -77,6 +83,23 @@ public class MainActivity extends AppCompatActivity implements BaseArFragment.On
 
         loadModel();
         loadMaterials();
+    }
+
+    @Override
+    public void onViewCreated(ArFragment arFragment, ArSceneView arSceneView) {
+        // Currently, the tone-mapping should be changed to FILMIC
+        // because with other tone-mapping operators except LINEAR
+        // the inverseTonemapSRGB function in the materials can produce incorrect results.
+        // The LINEAR tone-mapping cannot be used together with the inverseTonemapSRGB function.
+        Renderer renderer = arSceneView.getRenderer();
+
+        if (renderer != null) {
+            renderer.getFilamentView().setColorGrading(
+                    new ColorGrading.Builder()
+                            .toneMapping(ColorGrading.ToneMapping.FILMIC)
+                            .build(EngineInstance.getEngine().getFilamentEngine())
+            );
+        }
     }
 
     @Override
