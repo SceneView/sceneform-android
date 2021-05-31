@@ -16,6 +16,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentOnAttachListener;
 
+import com.google.android.filament.ColorGrading;
 import com.google.android.filament.Engine;
 import com.google.android.filament.filamat.MaterialBuilder;
 import com.google.android.filament.filamat.MaterialPackage;
@@ -37,6 +38,7 @@ import com.google.ar.sceneform.rendering.Material;
 import com.google.ar.sceneform.rendering.ModelRenderable;
 import com.google.ar.sceneform.rendering.Renderable;
 import com.google.ar.sceneform.rendering.RenderableInstance;
+import com.google.ar.sceneform.rendering.Renderer;
 import com.google.ar.sceneform.ux.ArFragment;
 import com.google.ar.sceneform.ux.BaseArFragment;
 import com.google.ar.sceneform.ux.TransformableNode;
@@ -91,16 +93,16 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public void onAttachFragment(@NonNull FragmentManager fragmentManager, @NonNull Fragment fragment) {
         if (fragment.getId() == R.id.arFragment) {
-            this.arFragment = (ArFragment) fragment;
-            this.arFragment.setOnSessionConfigurationListener(this);
-            this.arFragment.setOnViewCreatedListener(this);
+            arFragment = (ArFragment) fragment;
+            arFragment.setOnSessionConfigurationListener(this);
+            arFragment.setOnViewCreatedListener(this);
         }
     }
 
     @Override
     public void onSessionConfiguration(Session session, Config config) {
         // Hide plane indicating dots
-        this.arFragment.getArSceneView().getPlaneRenderer().setVisible(false);
+        arFragment.getArSceneView().getPlaneRenderer().setVisible(false);
 
         // Disable plane detection
         config.setPlaneFindingMode(Config.PlaneFindingMode.DISABLED);
@@ -120,11 +122,25 @@ public class MainActivity extends AppCompatActivity implements
         config.setAugmentedImageDatabase(database);
 
         // Check for image detection
-        this.arFragment.getArSceneView().getScene().addOnUpdateListener(this::onUpdate);
+        arFragment.getArSceneView().getScene().addOnUpdateListener(this::onUpdate);
     }
 
     @Override
     public void onViewCreated(ArFragment arFragment, ArSceneView arSceneView) {
+        // Currently, the tone-mapping should be changed to FILMIC
+        // because with other tone-mapping operators except LINEAR
+        // the inverseTonemapSRGB function in the materials can produce incorrect results.
+        // The LINEAR tone-mapping cannot be used together with the inverseTonemapSRGB function.
+        Renderer renderer = arSceneView.getRenderer();
+
+        if (renderer != null) {
+            renderer.getFilamentView().setColorGrading(
+                    new ColorGrading.Builder()
+                            .toneMapping(ColorGrading.ToneMapping.FILMIC)
+                            .build(EngineInstance.getEngine().getFilamentEngine())
+            );
+        }
+
         arSceneView.getPlaneRenderer().setEnabled(false);
     }
 
@@ -207,14 +223,14 @@ public class MainActivity extends AppCompatActivity implements
         if (matrixDetected && rabbitDetected)
             return;
 
-        Frame frame = this.arFragment.getArSceneView().getArFrame();
+        Frame frame = arFragment.getArSceneView().getArFrame();
         try {
             // This is collection of all images from our AugmentedImageDatabase that are currently detected by ARCore in this session
             Collection<AugmentedImage> augmentedImageCollection = frame.getUpdatedTrackables(AugmentedImage.class);
 
             for (AugmentedImage image : augmentedImageCollection) {
                 if (image.getTrackingState() == TrackingState.TRACKING) {
-                    this.arFragment.getPlaneDiscoveryController().hide();
+                    arFragment.getPlaneDiscoveryController().hide();
 
                     // If matrix video haven't been placed yet and detected image has String identifier of "matrix"
                     if (!matrixDetected && image.getName().equals("matrix")) {
