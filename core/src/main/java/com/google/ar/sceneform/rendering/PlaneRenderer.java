@@ -15,6 +15,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -62,6 +63,8 @@ public class PlaneRenderer {
   private boolean isEnabled = true;
   private boolean isVisible = true;
   private boolean isShadowReceiver = true;
+
+  private PlaneRendererMode mPlaneRendererMode = PlaneRendererMode.RENDER_ALL;
 
   // Per-plane overrides
   private final Map<Plane, Material> materialOverrides = new HashMap<>();
@@ -131,32 +134,14 @@ public class PlaneRenderer {
     return planeMaterialFuture;
   }
 
-  
 
+  public PlaneRendererMode getPlaneRendererMode() {
+    return mPlaneRendererMode;
+  }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-  
-
-
-
-
-
-
+  public void setPlaneRendererMode(PlaneRendererMode planeRendererMode) {
+    this.mPlaneRendererMode = planeRendererMode;
+  }
 
   /** @hide PlaneRenderer is constructed in a different package, but not part of external API. */
   @SuppressWarnings("initialization")
@@ -170,7 +155,8 @@ public class PlaneRenderer {
   /** @hide PlaneRenderer is updated in a different package, but not part of external API. */
   public void update(Frame frame, int viewWidth, int viewHeight) {
     Collection<Plane> updatedPlanes = frame.getUpdatedTrackables(Plane.class);
-    Vector3 focusPoint = getFocusPoint(frame, viewWidth, viewHeight);
+    HitResult hitResult = getHitResult(frame, viewWidth, viewHeight);
+    Vector3 focusPoint = getFocusPoint(frame, hitResult);
 
     @SuppressWarnings("nullness")
     @Nullable
@@ -180,32 +166,12 @@ public class PlaneRenderer {
       planeMaterial.setFloat(MATERIAL_SPOTLIGHT_RADIUS, SPOTLIGHT_RADIUS);
     }
 
-    for (Plane plane : updatedPlanes) {
-      PlaneVisualizer planeVisualizer;
-
-      // Find the plane visualizer if it already exists.
-      // If not, create a new plane visualizer for this plane.
-      if (visualizerMap.containsKey(plane)) {
-        planeVisualizer = visualizerMap.get(plane);
-      } else {
-        planeVisualizer = new PlaneVisualizer(plane, renderer);
-        Material overrideMaterial = materialOverrides.get(plane);
-        if (overrideMaterial != null) {
-          planeVisualizer.setPlaneMaterial(overrideMaterial);
-        } else if (planeMaterial != null) {
-          planeVisualizer.setPlaneMaterial(planeMaterial);
-        }
-        if (shadowMaterial != null) {
-          planeVisualizer.setShadowMaterial(shadowMaterial);
-        }
-        planeVisualizer.setShadowReceiver(isShadowReceiver);
-        planeVisualizer.setVisible(isVisible);
-        planeVisualizer.setEnabled(isEnabled);
-        visualizerMap.put(plane, planeVisualizer);
-      }
-
-      // Update the plane visualizer.
-      planeVisualizer.updatePlane();
+    if(mPlaneRendererMode == PlaneRendererMode.RENDER_ALL) {
+      renderAll(updatedPlanes, planeMaterial);
+    } else if(mPlaneRendererMode == PlaneRendererMode.RENDER_TOP_MOST && hitResult != null){
+      Plane topMostPlane = (Plane) hitResult.getTrackable();
+      Optional.ofNullable(topMostPlane)
+              .ifPresent(plane -> renderPlane(plane, planeMaterial));
     }
 
     // Remove plane visualizers for old planes that are no longer tracking.
@@ -224,6 +190,63 @@ public class PlaneRenderer {
         continue;
       }
     }
+  }
+
+  /**
+   * <pre>
+   *     Render all tracked Planes
+   * </pre>
+   *
+   * @param updatedPlanes {@link Collection}<{@link Plane}>
+   * @param planeMaterial {@link Material}
+   */
+  private void renderAll(
+          Collection<Plane> updatedPlanes,
+          Material planeMaterial
+  ) {
+    for (Plane plane : updatedPlanes) {
+      renderPlane(plane, planeMaterial);
+    }
+  }
+
+  /**
+   * <pre>
+   *     This function is responsible to update the rendering
+   *     of a {@link PlaneVisualizer}. If for the given {@link Plane}
+   *     no {@link PlaneVisualizer} exists, create a new one and add
+   *     it to the <code>visualizerMap</code>.
+   * </pre>
+   *
+   * @param plane {@link Plane}
+   * @param planeMaterial {@link Material}
+   */
+  private void renderPlane(Plane plane, Material planeMaterial) {
+    PlaneVisualizer planeVisualizer;
+
+    // Find the plane visualizer if it already exists.
+    // If not, create a new plane visualizer for this plane.
+    if (visualizerMap.containsKey(plane)) {
+      planeVisualizer = visualizerMap.get(plane);
+    } else {
+      planeVisualizer = new PlaneVisualizer(plane, renderer);
+      Material overrideMaterial = materialOverrides.get(plane);
+      if (overrideMaterial != null) {
+        planeVisualizer.setPlaneMaterial(overrideMaterial);
+      } else if (planeMaterial != null) {
+        planeVisualizer.setPlaneMaterial(planeMaterial);
+      }
+      if (shadowMaterial != null) {
+        planeVisualizer.setShadowMaterial(shadowMaterial);
+      }
+      planeVisualizer.setShadowReceiver(isShadowReceiver);
+      planeVisualizer.setVisible(isVisible);
+      planeVisualizer.setEnabled(isEnabled);
+      visualizerMap.put(plane, planeVisualizer);
+    }
+
+    // Update the plane visualizer.
+    Optional.ofNullable(planeVisualizer)
+            .ifPresent(PlaneVisualizer::updatePlane);
   }
 
   @SuppressWarnings({"AndroidApiChecker", "FutureReturnValueIgnored"})
@@ -295,21 +318,27 @@ public class PlaneRenderer {
                 });
   }
 
-  private Vector3 getFocusPoint(Frame frame, int width, int height) {
-    Vector3 focusPoint;
-
+  @Nullable
+  private HitResult getHitResult(Frame frame, int width, int height) {
     // If we hit a plane, return the hit point.
-    List<HitResult> hits = frame.hitTest(width / 2, height / 2);
+    List<HitResult> hits = frame.hitTest(width / 2f, height / 2f);
     if (hits != null && !hits.isEmpty()) {
       for (HitResult hit : hits) {
         Trackable trackable = hit.getTrackable();
         Pose hitPose = hit.getHitPose();
         if (trackable instanceof Plane && ((Plane) trackable).isPoseInPolygon(hitPose)) {
-          focusPoint = new Vector3(hitPose.tx(), hitPose.ty(), hitPose.tz());
-          lastPlaneHitDistance = hit.getDistance();
-          return focusPoint;
+          return hit;
         }
       }
+    }
+    return null;
+  }
+
+  private Vector3 getFocusPoint(Frame frame, HitResult hit) {
+    if(hit != null) {
+      Pose hitPose = hit.getHitPose();
+      lastPlaneHitDistance = hit.getDistance();
+      return new Vector3(hitPose.tx(), hitPose.ty(), hitPose.tz());
     }
 
     // If we didn't hit anything, project a point in front of the camera so that the spotlight
@@ -319,8 +348,21 @@ public class PlaneRenderer {
     float[] zAxis = cameraPose.getZAxis();
     Vector3 backwards = new Vector3(zAxis[0], zAxis[1], zAxis[2]);
 
-    focusPoint = Vector3.add(cameraPosition, backwards.scaled(-lastPlaneHitDistance));
+    return Vector3.add(cameraPosition, backwards.scaled(-lastPlaneHitDistance));
+  }
 
-    return focusPoint;
+
+  /**
+   * <pre>
+   *     Use this enum to configure the Plane Rendering.
+   *     Choose <code>RENDER_ALL</code> to render all possible
+   *     Planes which are visible to the user.
+   *     Choose <code>RENDER_TOP_MOST</code> to render only the top
+   *     most Plane.
+   * </pre>
+   */
+  public enum PlaneRendererMode {
+    RENDER_ALL,
+    RENDER_TOP_MOST
   }
 }
