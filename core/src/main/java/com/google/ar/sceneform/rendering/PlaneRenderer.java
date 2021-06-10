@@ -436,16 +436,18 @@ public class PlaneRenderer {
     /**
      * <pre>
      *     Use this enum to configure the Plane Rendering.
-     *     Choose <code>RENDER_ALL</code> to render all possible
-     *     Planes which are visible to the user.
-     *     Choose <code>RENDER_TOP_MOST</code> to render only the top
-     *     most Plane.
      *
      *     For performance reasons use <code>RENDER_TOP_MOST</code>.
      * </pre>
      */
     public enum PlaneRendererMode {
+        /**
+         * Render all possible {@link Plane}s which are visible to the camera.
+         */
         RENDER_ALL,
+        /**
+         * Render only the top most {@link Plane} which is visible to the camera.
+         */
         RENDER_TOP_MOST
     }
 }
