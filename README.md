@@ -63,7 +63,7 @@ dependencies {
 **[sample...](samples/gltf/src/main/res/layout/activity_main.xml)**
 
 
-### Edit your `Activity` or `Fragment`
+### Edit your `Activity`
 *src/main/java/…/MainActivity.java*
 ```java
 @Override
@@ -93,7 +93,32 @@ protected void onCreate(Bundle savedInstanceState) {
     }
 }
 ```
+**[sample...](samples/gltf/src/main/java/com/google/ar/sceneform/samples/gltf/MainActivity.java)**
 
+
+### Or `Fragment`
+*src/main/java/…/MainFragment.java*
+```java
+@Override
+public void onCreate(Bundle savedInstanceState) {
+    …
+    if (savedInstanceState == null) {
+        if (Sceneform.isSupported(this)) {
+            getChildFragmentManager().beginTransaction()
+                    .add(R.id.arFragment, ArFragment.class, null)
+                    .commit();
+        }
+    }
+}
+
+@Override
+public void onAttachFragment(Fragment childFragment) {
+    if (fragment.getId() == R.id.arFragment) {
+        // Load model.glb from assets folder or http url
+        ((ArFragment) fragment).setOnTapPlaneGlbModel("model.glb", null);
+    }
+}
+```
 **[sample...](samples/gltf/src/main/java/com/google/ar/sceneform/samples/gltf/MainActivity.java)**
 
 
