@@ -103,6 +103,8 @@ public class MainActivity extends AppCompatActivity implements
     public void onSessionConfiguration(Session session, Config config) {
         // Hide plane indicating dots
         arFragment.getArSceneView().getPlaneRenderer().setVisible(false);
+        // Disable the rendering of detected planes.
+        arFragment.getArSceneView().getPlaneRenderer().setEnabled(false);
 
         // Disable plane detection
         config.setPlaneFindingMode(Config.PlaneFindingMode.DISABLED);

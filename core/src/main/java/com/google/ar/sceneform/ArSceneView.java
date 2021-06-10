@@ -472,7 +472,8 @@ public class ArSceneView extends SceneView {
         // Update the light estimate.
         updateLightEstimate(frame);
         // Update the plane renderer.
-        planeRenderer.update(frame, getWidth(), getHeight());
+        if(planeRenderer.isEnabled())
+          planeRenderer.update(frame, getWidth(), getHeight());
       }
     }
 
