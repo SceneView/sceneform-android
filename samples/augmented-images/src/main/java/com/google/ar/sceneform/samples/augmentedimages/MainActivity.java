@@ -101,11 +101,6 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public void onSessionConfiguration(Session session, Config config) {
-        // Hide plane indicating dots
-        arFragment.getArSceneView().getPlaneRenderer().setVisible(false);
-        // Disable the rendering of detected planes.
-        arFragment.getArSceneView().getPlaneRenderer().setEnabled(false);
-
         // Disable plane detection
         config.setPlaneFindingMode(Config.PlaneFindingMode.DISABLED);
 
@@ -143,6 +138,9 @@ public class MainActivity extends AppCompatActivity implements
             );
         }
 
+        // Hide plane indicating dots
+        arSceneView.getPlaneRenderer().setVisible(false);
+        // Disable the rendering of detected planes.
         arSceneView.getPlaneRenderer().setEnabled(false);
     }
 
@@ -185,7 +183,7 @@ public class MainActivity extends AppCompatActivity implements
         MaterialBuilder.init();
         MaterialBuilder materialBuilder = new MaterialBuilder()
                 .platform(MaterialBuilder.Platform.MOBILE)
-                .name("Plain Video Material")
+                .name("External Video Material")
                 .require(MaterialBuilder.VertexAttribute.UV0)
                 .shading(MaterialBuilder.Shading.UNLIT)
                 .doubleSided(true)
