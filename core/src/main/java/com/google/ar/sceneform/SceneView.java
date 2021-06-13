@@ -22,6 +22,8 @@ import com.google.ar.sceneform.utilities.AndroidPreconditions;
 import com.google.ar.sceneform.utilities.MovingAverageMillisecondsTracker;
 import com.google.ar.sceneform.utilities.Preconditions;
 
+import java.util.concurrent.TimeUnit;
+
 
 /**
  * A Sceneform SurfaceView that manages rendering and interaction with the scene.
@@ -48,6 +50,9 @@ public class SceneView extends SurfaceView implements Choreographer.FrameCallbac
             new MovingAverageMillisecondsTracker();
     private final MovingAverageMillisecondsTracker frameRenderTracker =
             new MovingAverageMillisecondsTracker();
+
+    private final Long maxFramesPerSecond = 60L;
+    private Long lastTick = 0L;
 
     /**
      * Constructs a SceneView object and binds it to an Android Context.
@@ -309,6 +314,14 @@ public class SceneView extends SurfaceView implements Choreographer.FrameCallbac
     public void doFrame(long frameTimeNanos) {
         // Always post the callback for the next frame.
         Choreographer.getInstance().postFrameCallback(this);
+
+        long nanoTime = System.nanoTime();
+        Long tick = nanoTime / (TimeUnit.SECONDS.toNanos(1) / maxFramesPerSecond);
+        if(lastTick.equals(tick))
+            return;
+
+        lastTick = tick;
+
         doFrameNoRepost(frameTimeNanos);
     }
 

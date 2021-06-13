@@ -4,6 +4,8 @@ import android.graphics.SurfaceTexture;
 import androidx.annotation.Nullable;
 import android.view.Surface;
 import com.google.android.filament.Stream;
+import com.google.android.filament.Texture;
+import com.google.android.filament.TextureSampler;
 import com.google.ar.sceneform.utilities.AndroidPreconditions;
 import com.google.ar.sceneform.utilities.Preconditions;
 
@@ -97,18 +99,15 @@ public class ExternalTexture {
     this.filamentStream = filamentStream;
 
     // Create the filament texture.
-    final com.google.android.filament.Texture.Sampler textureSampler =
-        com.google.android.filament.Texture.Sampler.SAMPLER_EXTERNAL;
-    final com.google.android.filament.Texture.InternalFormat textureInternalFormat =
-        com.google.android.filament.Texture.InternalFormat.RGB8;
-
     filamentTexture =
         new com.google.android.filament.Texture.Builder()
-            .sampler(textureSampler)
-            .format(textureInternalFormat)
+            .sampler(Texture.Sampler.SAMPLER_EXTERNAL)
+            .format(Texture.InternalFormat.RGB8)
             .build(engine.getFilamentEngine());
 
-    filamentTexture.setExternalStream(engine.getFilamentEngine(), filamentStream);
+    filamentTexture.setExternalStream(
+            engine.getFilamentEngine(),
+            filamentStream);
     ResourceManager.getInstance()
         .getExternalTextureCleanupRegistry()
         .register(this, new CleanupCallback(filamentTexture, filamentStream));

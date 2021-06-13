@@ -8,6 +8,7 @@ import androidx.annotation.RequiresApi;
 import com.google.android.filament.MaterialInstance;
 
 
+import com.google.android.filament.TextureSampler;
 import com.google.ar.sceneform.math.Vector3;
 import com.google.ar.sceneform.resources.ResourceRegistry;
 import com.google.ar.sceneform.utilities.AndroidPreconditions;
@@ -224,6 +225,18 @@ public class Material {
     if (internalMaterialInstance.isValidInstance()) {
       materialParameters.applyTo(internalMaterialInstance.getInstance());
     }
+  }
+
+
+  public void setDepthTexture(String name, com.google.android.filament.Texture texture) {
+    TextureSampler TextureSampler2D = new TextureSampler(
+            //TextureSampler.MinFilter.LINEAR_MIPMAP_LINEAR,
+            TextureSampler.MinFilter.LINEAR_MIPMAP_LINEAR,
+            TextureSampler.MagFilter.LINEAR,
+            TextureSampler.WrapMode.REPEAT
+    );
+
+    internalMaterialInstance.getInstance().setParameter(name, texture, TextureSampler2D);
   }
 
 

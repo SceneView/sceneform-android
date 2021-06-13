@@ -8,6 +8,7 @@ final class RenderingResources {
 
   public static enum Resource {
     CAMERA_MATERIAL,
+    OCCLUSION_CAMERA_MATERIAL,
     OPAQUE_COLORED_MATERIAL,
     TRANSPARENT_COLORED_MATERIAL,
     OPAQUE_TEXTURED_MATERIAL,
@@ -22,7 +23,9 @@ final class RenderingResources {
   private static int GetSceneformSourceResource(Context context, Resource resource) {
     switch (resource) {
       case CAMERA_MATERIAL:
-        return LoadHelper.rawResourceNameToIdentifier(context, "sceneform_camera_material");
+        return LoadHelper.rawResourceNameToIdentifier(context, "ar_environment_material_flat");
+      case OCCLUSION_CAMERA_MATERIAL:
+        return LoadHelper.rawResourceNameToIdentifier(context, "ar_environment_material_depth");
       case OPAQUE_COLORED_MATERIAL:
         return LoadHelper.rawResourceNameToIdentifier(context, "sceneform_opaque_colored_material");
       case TRANSPARENT_COLORED_MATERIAL:

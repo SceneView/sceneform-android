@@ -22,6 +22,7 @@ import com.google.ar.core.TrackingState;
 import com.google.ar.core.exceptions.CameraNotAvailableException;
 import com.google.ar.core.exceptions.FatalException;
 
+import com.google.ar.core.exceptions.NotYetAvailableException;
 import com.google.ar.sceneform.math.Vector3;
 import com.google.ar.sceneform.rendering.CameraStream;
 import com.google.ar.sceneform.rendering.Color;
@@ -434,6 +435,7 @@ public class ArSceneView extends SceneView {
         return false;
       }
 
+
       // Setup Camera Stream if needed.
       if (!cameraStream.isTextureInitialized()) {
         cameraStream.initializeTexture(frame);
@@ -443,7 +445,7 @@ public class ArSceneView extends SceneView {
       if (shouldRecalculateCameraUvs(frame)) {
         cameraStream.recalculateCameraUvs(frame);
       }
-
+      
       if (currentFrame != null && currentFrame.getTimestamp() == frame.getTimestamp()) {
         updated = false;
       }
@@ -478,6 +480,20 @@ public class ArSceneView extends SceneView {
     }
 
     return updated;
+  }
+
+  @Override
+  public void doFrame(long frameTimeNanos) {
+    super.doFrame(frameTimeNanos);
+
+    if(currentFrame != null) {
+      try (Image depthImage = currentFrame.acquireDepthImage()) {
+        Log.d("ArSceneView", "recalculateOcclusion");
+        cameraStream.recalculateOcclusion(depthImage);
+      } catch (NotYetAvailableException e) {
+
+      }
+    }
   }
 
   private boolean shouldRecalculateCameraUvs(Frame frame) {
