@@ -13,8 +13,10 @@ import androidx.fragment.app.FragmentOnAttachListener;
 
 import com.google.android.filament.ColorGrading;
 import com.google.ar.core.Anchor;
+import com.google.ar.core.Config;
 import com.google.ar.core.HitResult;
 import com.google.ar.core.Plane;
+import com.google.ar.core.Session;
 import com.google.ar.sceneform.AnchorNode;
 import com.google.ar.sceneform.ArSceneView;
 import com.google.ar.sceneform.Node;
@@ -34,7 +36,7 @@ import java.lang.ref.WeakReference;
 public class MainActivity extends AppCompatActivity implements
         FragmentOnAttachListener,
         BaseArFragment.OnTapArPlaneListener,
-        ArFragment.OnViewCreatedListener {
+        ArFragment.OnViewCreatedListener, BaseArFragment.OnSessionConfigurationListener {
 
     private ArFragment arFragment;
     private Renderable model;
@@ -64,6 +66,7 @@ public class MainActivity extends AppCompatActivity implements
             arFragment = (ArFragment) fragment;
             arFragment.setOnTapArPlaneListener(this);
             arFragment.setOnViewCreatedListener(this);
+            arFragment.setOnSessionConfigurationListener(this);
         }
     }
 
@@ -141,5 +144,11 @@ public class MainActivity extends AppCompatActivity implements
         tigerTitleNode.setLocalPosition(new Vector3(0.0f, 1.0f, 0.0f));
         tigerTitleNode.setRenderable(viewRenderable);
         tigerTitleNode.setEnabled(true);
+    }
+
+    @Override
+    public void onSessionConfiguration(Session session, Config config) {
+        if(session.isDepthModeSupported(Config.DepthMode.AUTOMATIC))
+            config.setDepthMode(Config.DepthMode.AUTOMATIC);
     }
 }
