@@ -287,6 +287,7 @@ public class Renderer implements UiHelper.RendererCallback {
 
         // Render the scene, unless the renderer wants to skip the frame.
         // This means you are sending frames too quickly to the GPU
+        //renderer.beginFrame(swapChainLocal, frameTimeNanos);
         if (renderer.beginFrame(swapChainLocal, frameTimeNanos)) {
           final float[] projectionMatrixData = cameraProvider.getProjectionMatrix().data;
           for (int i = 0; i < 16; ++i) {

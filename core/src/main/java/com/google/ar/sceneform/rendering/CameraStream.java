@@ -391,6 +391,7 @@ public class CameraStream {
                 .height(90)
                 .sampler(Texture.Sampler.SAMPLER_2D)
                 .format(Texture.InternalFormat.RG8)
+                //.format(Texture.InternalFormat.RGBA32F)
                 .levels(1)//(int) Math.floor(Math.log(Math.max(90,160))/Math.log(2))
                 .build(EngineInstance.getEngine().getFilamentEngine());
 

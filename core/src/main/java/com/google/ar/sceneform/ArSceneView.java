@@ -476,6 +476,13 @@ public class ArSceneView extends SceneView {
         // Update the plane renderer.
         if(planeRenderer.isEnabled())
           planeRenderer.update(frame, getWidth(), getHeight());
+
+        try (Image depthImage = currentFrame.acquireDepthImage()) {
+          Log.d("ArSceneView", "recalculateOcclusion");
+          cameraStream.recalculateOcclusion(depthImage);
+        } catch (NotYetAvailableException e) {
+
+        }
       }
     }
 
@@ -486,14 +493,9 @@ public class ArSceneView extends SceneView {
   public void doFrame(long frameTimeNanos) {
     super.doFrame(frameTimeNanos);
 
-    if(currentFrame != null) {
-      try (Image depthImage = currentFrame.acquireDepthImage()) {
-        Log.d("ArSceneView", "recalculateOcclusion");
-        cameraStream.recalculateOcclusion(depthImage);
-      } catch (NotYetAvailableException e) {
+    /*if(currentFrame != null) {
 
-      }
-    }
+    }*/
   }
 
   private boolean shouldRecalculateCameraUvs(Frame frame) {

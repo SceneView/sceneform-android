@@ -51,8 +51,6 @@ public class SceneView extends SurfaceView implements Choreographer.FrameCallbac
     private final MovingAverageMillisecondsTracker frameRenderTracker =
             new MovingAverageMillisecondsTracker();
 
-    private final Long maxFramesPerSecond = 60L;
-    private Long lastTick = 0L;
 
     /**
      * Constructs a SceneView object and binds it to an Android Context.
@@ -314,14 +312,6 @@ public class SceneView extends SurfaceView implements Choreographer.FrameCallbac
     public void doFrame(long frameTimeNanos) {
         // Always post the callback for the next frame.
         Choreographer.getInstance().postFrameCallback(this);
-
-        long nanoTime = System.nanoTime();
-        Long tick = nanoTime / (TimeUnit.SECONDS.toNanos(1) / maxFramesPerSecond);
-        if(lastTick.equals(tick))
-            return;
-
-        lastTick = tick;
-
         doFrameNoRepost(frameTimeNanos);
     }
 
