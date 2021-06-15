@@ -1,14 +1,9 @@
 package com.google.ar.sceneform.rendering;
 
-import android.content.Context;
-import android.graphics.Bitmap;
 import android.media.Image;
 import android.os.Handler;
 import android.os.Looper;
-import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.Display;
-import android.view.WindowManager;
 
 import androidx.annotation.Nullable;
 
@@ -18,18 +13,13 @@ import com.google.android.filament.IndexBuffer.Builder.IndexType;
 import com.google.android.filament.MaterialInstance;
 import com.google.android.filament.RenderableManager;
 import com.google.android.filament.Scene;
-import com.google.android.filament.Texture;
-import com.google.android.filament.TextureSampler;
 import com.google.android.filament.VertexBuffer;
 import com.google.android.filament.VertexBuffer.Builder;
 import com.google.android.filament.VertexBuffer.VertexAttribute;
-import com.google.android.filament.utils.Float3;
 import com.google.android.filament.utils.Mat4;
-import com.google.android.filament.utils.MatrixKt;
 import com.google.ar.core.Camera;
 import com.google.ar.core.CameraIntrinsics;
 import com.google.ar.core.Frame;
-import com.google.ar.sceneform.Sceneform;
 import com.google.ar.sceneform.utilities.AndroidPreconditions;
 import com.google.ar.sceneform.utilities.Preconditions;
 
@@ -48,6 +38,7 @@ import java.util.concurrent.CompletableFuture;
 @SuppressWarnings("AndroidApiChecker") // CompletableFuture
 public class CameraStream {
     public static final String MATERIAL_CAMERA_TEXTURE = "cameraTexture";
+    public static final String DEPTH_TEXTURE = "depthTexture";
 
     private static final String TAG = CameraStream.class.getSimpleName();
 
@@ -72,19 +63,18 @@ public class CameraStream {
     private static final int VERTEX_COUNT = 3;
     private static final int POSITION_BUFFER_INDEX = 0;
     private static final float[] CAMERA_VERTICES =
-            new float[] {
+            new float[]{
                     -1.0f, 1.0f,
                     1.0f, -1.0f,
                     -3.0f, 1.0f,
                     3.0f, 1.0f,
                     1.0f};
     private static final int UV_BUFFER_INDEX = 1;
-    private static final float[] CAMERA_UVS = new float[] {
+    private static final float[] CAMERA_UVS = new float[]{
             0.0f, 0.0f,
             0.0f, 2.0f,
             2.0f, 0.0f};
-    private static final short[] INDICES = new short[] {0, 1, 2};
-
+    private static final short[] INDICES = new short[]{0, 1, 2};
 
 
     private static final int FLOAT_SIZE_IN_BYTES = Float.SIZE / 8;
@@ -104,7 +94,7 @@ public class CameraStream {
 
 
     @Nullable private ExternalTexture cameraTexture;
-    @Nullable private Texture depthTexture;
+    @Nullable private DepthTexture depthTexture;
 
     @Nullable private Material defaultCameraMaterial = null;
     @Nullable private Material occlusionCameraMaterial = null;
@@ -225,7 +215,11 @@ public class CameraStream {
         width = dimensions[0];
         height = dimensions[1];
 
+        // External Camera Texture
         cameraTexture = new ExternalTexture(cameraTextureId, width, height);
+
+        // The Depht Texture to realize the occlusion of virtual objects.
+        depthTexture = new DepthTexture(160, 90);
 
         isTextureInitialized = true;
 
@@ -313,27 +307,9 @@ public class CameraStream {
 
 
     public void recalculateOcclusion(Image depthImage) {
-        if (depthTexture == null)
+        if (depthImage == null)
             return;
-
-        IEngine engine = EngineInstance.getEngine();
-
-        depthTexture.setImage(
-                engine.getFilamentEngine(),
-                0,
-                new Texture.PixelBufferDescriptor(
-                        depthImage.getPlanes()[0].getBuffer(),
-                        Texture.Format.RG,
-                        Texture.Type.UBYTE,
-                        1,
-                        0,
-                        0,
-                        0,
-                        handler,
-                        null
-                )
-        );
-        depthImage.close();
+        depthTexture.updateDepthTexture(depthImage);
     }
 
     public void recalculateCameraUvs(Frame frame) {
@@ -386,19 +362,12 @@ public class CameraStream {
             return;
         }
 
-        depthTexture = new Texture.Builder()
-                .width(160)
-                .height(90)
-                .sampler(Texture.Sampler.SAMPLER_2D)
-                .format(Texture.InternalFormat.RG8)
-                //.format(Texture.InternalFormat.RGBA32F)
-                .levels(1)//(int) Math.floor(Math.log(Math.max(90,160))/Math.log(2))
-                .build(EngineInstance.getEngine().getFilamentEngine());
-
         material.setExternalTexture(
                 MATERIAL_CAMERA_TEXTURE,
                 Preconditions.checkNotNull(cameraTexture));
-        material.setDepthTexture("depthTexture", depthTexture);
+        material.setDepthTexture(
+                DEPTH_TEXTURE,
+                depthTexture);
 
         if (cameraStreamRenderable == UNINITIALIZED_FILAMENT_RENDERABLE) {
             initializeFilamentRenderable();

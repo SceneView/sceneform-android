@@ -477,11 +477,13 @@ public class ArSceneView extends SceneView {
         if(planeRenderer.isEnabled())
           planeRenderer.update(frame, getWidth(), getHeight());
 
-        try (Image depthImage = currentFrame.acquireDepthImage()) {
-          Log.d("ArSceneView", "recalculateOcclusion");
-          cameraStream.recalculateOcclusion(depthImage);
-        } catch (NotYetAvailableException e) {
+        if (frame.getCamera().getTrackingState() == TrackingState.TRACKING) {
+          try (Image depthImage = currentFrame.acquireDepthImage()) {
+            Log.d("ArSceneView", "recalculateOcclusion");
+            cameraStream.recalculateOcclusion(depthImage);
+          } catch (NotYetAvailableException e) {
 
+          }
         }
       }
     }

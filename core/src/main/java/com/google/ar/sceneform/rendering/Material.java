@@ -226,23 +226,15 @@ public class Material {
       materialParameters.applyTo(internalMaterialInstance.getInstance());
     }
   }
+  
 
-
-  public void setDepthTexture(String name, com.google.android.filament.Texture texture) {
-    TextureSampler TextureSampler2D = new TextureSampler(
-            //TextureSampler.MinFilter.LINEAR_MIPMAP_LINEAR,
-            TextureSampler.MinFilter.LINEAR_MIPMAP_LINEAR,
-            TextureSampler.MagFilter.LINEAR,
-            TextureSampler.WrapMode.REPEAT
-    );
-
-    internalMaterialInstance.getInstance().setParameter(name, texture, TextureSampler2D);
+  public void setDepthTexture(String name, DepthTexture depthTexture) {
+    materialParameters.setDepthTexture(name, depthTexture);
+    if(internalMaterialInstance.isValidInstance()) {
+      materialParameters.applyParameterTo(internalMaterialInstance.getInstance(), name);
+      //materialParameters.applyTo(internalMaterialInstance.getInstance());
+    }
   }
-
-
-
-
-
 
 
   /**

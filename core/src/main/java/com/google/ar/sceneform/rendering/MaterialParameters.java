@@ -1,5 +1,7 @@
 package com.google.ar.sceneform.rendering;
 
+import android.util.Log;
+
 import androidx.annotation.Nullable;
 import com.google.android.filament.MaterialInstance;
 import com.google.android.filament.TextureSampler;
@@ -7,6 +9,7 @@ import com.google.android.filament.TextureSampler;
 import com.google.ar.core.annotations.UsedByNative;
 import com.google.ar.sceneform.math.Vector3;
 import java.util.HashMap;
+import java.util.Optional;
 
 /** Material property store. */
 @UsedByNative("material_java_wrappers.h")
@@ -227,6 +230,19 @@ final class MaterialParameters {
     return null;
   }
 
+  void setDepthTexture(String name, DepthTexture depthTexture) {
+    namedParameters.put(name, new MaterialParameters.DepthTextureParameter(name, depthTexture));
+  }
+
+  @Nullable
+  DepthTexture getDepthTexture(String name) {
+    Parameter param = namedParameters.get(name);
+    if(param instanceof DepthTextureParameter) {
+      return ((DepthTextureParameter) param).depthTexture;
+    }
+    return null;
+  }
+
   void setExternalTexture(String name, ExternalTexture externalTexture) {
     namedParameters.put(
         name, new MaterialParameters.ExternalTextureParameter(name, externalTexture));
@@ -247,8 +263,19 @@ final class MaterialParameters {
 
     for (MaterialParameters.Parameter value : namedParameters.values()) {
       if (material.hasParameter(value.name)) {
+        Log.d("MaterialParameters", "apply parameter to material: " + value.name);
         value.applyTo(materialInstance);
       }
+    }
+  }
+
+  void applyParameterTo(MaterialInstance materialInstance, String name) {
+    com.google.android.filament.Material material = materialInstance.getMaterial();
+
+    if(material.hasParameter(name)) {
+      Optional
+              .ofNullable(namedParameters.get(name))
+              .ifPresent(parameter -> parameter.applyTo(materialInstance));
     }
   }
 
@@ -509,6 +536,25 @@ final class MaterialParameters {
     @Override
     public MaterialParameters.Parameter clone() {
       return new MaterialParameters.TextureParameter(name, texture);
+    }
+  }
+
+  static class DepthTextureParameter extends MaterialParameters.Parameter {
+    private final DepthTexture depthTexture;
+
+    DepthTextureParameter(String name, DepthTexture depthTexture) {
+      this.name = name;
+      this.depthTexture = depthTexture;
+    }
+
+    @Override
+    void applyTo(MaterialInstance materialInstance) {
+      TextureSampler depthTextureSampler = new TextureSampler(
+              TextureSampler.MinFilter.LINEAR_MIPMAP_LINEAR,
+              TextureSampler.MagFilter.LINEAR,
+              TextureSampler.WrapMode.REPEAT);
+
+      materialInstance.setParameter(name, depthTexture.getFilamentTexture(), depthTextureSampler);
     }
   }
 
