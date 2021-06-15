@@ -378,6 +378,11 @@ public class ArSceneView extends SceneView {
     }
 
     /**
+     * Returns the CameraStream, used to control if the occlusion should be enabled or disabled.
+     */
+    public CameraStream getCameraStream() { return cameraStream; }
+
+    /**
      * Before the render call occurs, update the ARCore session to grab the latest frame and update
      * listeners.
      *
@@ -444,15 +449,17 @@ public class ArSceneView extends SceneView {
 
             Frame frame = currentFrame;
             if (frame != null) {
-                if (cameraStream.getDepthMode() == CameraStream.DepthMode.DEPTH) {
-                    try (Image depthImage = currentFrame.acquireDepthImage()) {
-                        cameraStream.recalculateOcclusion(depthImage);
-                    } catch (NotYetAvailableException e) {
-                    }
-                } else if (cameraStream.getDepthMode() == CameraStream.DepthMode.RAW_DEPTH) {
-                    try (Image depthImage = currentFrame.acquireRawDepthImage()) {
-                        cameraStream.recalculateOcclusion(depthImage);
-                    } catch (NotYetAvailableException e) {
+                if(cameraStream.getDepthModeUsage() == CameraStream.DepthModeUsage.DEPTH_MODE_ENABLED) {
+                    if (cameraStream.getDepthMode() == CameraStream.DepthMode.DEPTH) {
+                        try (Image depthImage = currentFrame.acquireDepthImage()) {
+                            cameraStream.recalculateOcclusion(depthImage);
+                        } catch (NotYetAvailableException e) {
+                        }
+                    } else if (cameraStream.getDepthMode() == CameraStream.DepthMode.RAW_DEPTH) {
+                        try (Image depthImage = currentFrame.acquireRawDepthImage()) {
+                            cameraStream.recalculateOcclusion(depthImage);
+                        } catch (NotYetAvailableException e) {
+                        }
                     }
                 }
 

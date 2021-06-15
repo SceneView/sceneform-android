@@ -42,9 +42,6 @@ public class CameraStream {
 
     private static final String TAG = CameraStream.class.getSimpleName();
 
-    private static final int DEPTH_IMAGE_WIDTH = 160;
-    private static final int DEPTH_IMAGE_HEIGHT = 90;
-
     private static final int VERTEX_COUNT = 3;
     private static final int POSITION_BUFFER_INDEX = 0;
     private static final float[] CAMERA_VERTICES =
@@ -74,6 +71,7 @@ public class CameraStream {
     private final IEngine engine;
     private int cameraStreamRenderable = UNINITIALIZED_FILAMENT_RENDERABLE;
     private DepthMode depthMode = DepthMode.NO_DEPTH;
+    private DepthModeUsage depthModeUsage = DepthModeUsage.DEPTH_MODE_DISABLED;
 
     @Nullable private ExternalTexture cameraTexture;
     @Nullable private DepthTexture depthTexture;
@@ -143,12 +141,14 @@ public class CameraStream {
         depthMode = DepthMode.NO_DEPTH;
 
         if (session.isDepthModeSupported(Config.DepthMode.AUTOMATIC))
-            if (session.getConfig().getDepthMode() == Config.DepthMode.AUTOMATIC)
+            if (session.getConfig().getDepthMode() == Config.DepthMode.AUTOMATIC) {
                 depthMode = DepthMode.DEPTH;
+            }
 
         if (session.isDepthModeSupported(Config.DepthMode.RAW_DEPTH_ONLY))
-            if (session.getConfig().getDepthMode() == Config.DepthMode.RAW_DEPTH_ONLY)
+            if (session.getConfig().getDepthMode() == Config.DepthMode.RAW_DEPTH_ONLY) {
                 depthMode = DepthMode.RAW_DEPTH;
+            }
     }
 
     private FloatBuffer createCameraUVBuffer() {
@@ -209,7 +209,9 @@ public class CameraStream {
 
         isTextureInitialized = true;
 
-        if (depthMode == DepthMode.DEPTH || depthMode == DepthMode.RAW_DEPTH) {
+        if (depthModeUsage == DepthModeUsage.DEPTH_MODE_ENABLED && (
+                depthMode == DepthMode.DEPTH ||
+                depthMode == DepthMode.RAW_DEPTH)) {
             if (occlusionCameraMaterial != null) {
                 setOcclusionMaterial(occlusionCameraMaterial);
             }
@@ -221,7 +223,7 @@ public class CameraStream {
     }
 
 
-    public void setStandardCameraMaterial(Renderer renderer) {
+    void setStandardCameraMaterial(Renderer renderer) {
         CompletableFuture<Material> materialFuture =
                 Material.builder()
                         .setSource(
@@ -256,7 +258,7 @@ public class CameraStream {
                         });
     }
 
-    public void setOcclusionCameraMaterial(Renderer renderer) {
+    void setOcclusionCameraMaterial(Renderer renderer) {
         CompletableFuture<Material> materialFuture =
                 Material.builder()
                         .setSource(
@@ -310,6 +312,20 @@ public class CameraStream {
                     depthTexture);
         }
 
+       /* if (depthModeUsageChanged) {
+            depthModeUsageChanged = false;
+            if (depthModeUsage == DepthModeUsage.DEPTH_MODE_DISABLED) {
+                occlusionCameraMaterial.setDepthTexture(
+                        DEPTH_TEXTURE,
+                        null);
+                return;
+            } else if (depthModeUsage == DepthModeUsage.DEPTH_MODE_ENABLED) {
+                occlusionCameraMaterial.setDepthTexture(
+                        DEPTH_TEXTURE,
+                        depthTexture);
+            }
+        }*/
+
         if (!isTextureInitialized || depthImage == null)
             return;
         depthTexture.updateDepthTexture(depthImage);
@@ -327,7 +343,8 @@ public class CameraStream {
     }
 
 
-    public void setCameraMaterial(Material material) {
+    void setCameraMaterial(Material material) {
+        Log.d("CameraStream", "setCameraMaterial");
         cameraMaterial = material;
         if (cameraMaterial == null)
             return;
@@ -355,7 +372,8 @@ public class CameraStream {
         }
     }
 
-    public void setOcclusionMaterial(Material material) {
+    void setOcclusionMaterial(Material material) {
+        Log.d("CameraStream", "setOcclusionMaterial");
         occlusionCameraMaterial = material;
         if (occlusionCameraMaterial == null)
             return;
@@ -440,10 +458,38 @@ public class CameraStream {
         return depthMode;
     }
 
+    public DepthModeUsage getDepthModeUsage() {
+        return depthModeUsage;
+    }
+
+    public void setDepthModeUsage(DepthModeUsage depthModeUsage) {
+        Log.d("CameraStream", "setDepthModeUsage " + depthModeUsage.name());
+
+        if (depthModeUsage == DepthModeUsage.DEPTH_MODE_DISABLED) {
+            Log.d("CameraStream", "Set Standard Material");
+            if (cameraMaterial != null) {
+                setCameraMaterial(cameraMaterial);
+            }
+        } else if (depthModeUsage == DepthModeUsage.DEPTH_MODE_ENABLED) {
+            Log.d("CameraStream", "Set Occlusion Material");
+            if (occlusionCameraMaterial != null) {
+                setOcclusionMaterial(occlusionCameraMaterial);
+            }
+        }
+
+        this.depthModeUsage = depthModeUsage;
+
+    }
+
     public enum DepthMode {
         NO_DEPTH,
         DEPTH,
         RAW_DEPTH
+    }
+
+    public enum DepthModeUsage {
+        DEPTH_MODE_ENABLED,
+        DEPTH_MODE_DISABLED
     }
 
     /**

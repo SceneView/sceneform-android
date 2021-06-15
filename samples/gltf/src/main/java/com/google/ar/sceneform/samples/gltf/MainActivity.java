@@ -22,6 +22,7 @@ import com.google.ar.sceneform.ArSceneView;
 import com.google.ar.sceneform.Node;
 import com.google.ar.sceneform.Sceneform;
 import com.google.ar.sceneform.math.Vector3;
+import com.google.ar.sceneform.rendering.CameraStream;
 import com.google.ar.sceneform.rendering.EngineInstance;
 import com.google.ar.sceneform.rendering.ModelRenderable;
 import com.google.ar.sceneform.rendering.Renderable;
@@ -85,6 +86,8 @@ public class MainActivity extends AppCompatActivity implements
                             .build(EngineInstance.getEngine().getFilamentEngine())
             );
         }
+
+        arSceneView.getCameraStream().setDepthModeUsage(CameraStream.DepthModeUsage.DEPTH_MODE_ENABLED);
     }
 
     public void loadModels() {
