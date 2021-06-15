@@ -14,7 +14,17 @@ import com.google.ar.sceneform.rendering.PlaneFactory;
 import androidx.annotation.Nullable;
 
 /**
- * Node that can show a video.
+ * Node that can show a video by passing a {@link MediaPlayer} instance. Note that
+ * VideoNode does not manage video playback by itself (e.g. starting the video).
+ * <p>
+ * Filtering out a specific color in the video is also supported by
+ * defining a chroma key color.
+ * </p>
+ * <p>
+ * Optionally an {@link ExternalTexture} can be passed if multiple VideoNode instances
+ * need to render the exact same instance of a video. This will also improve performance
+ * dramatically instead of rendering each instance separately.
+ * </p>
  */
 public class VideoNode extends Node {
     private static final String KEY_VIDEO_TEXTURE = "videoTexture";
@@ -31,11 +41,11 @@ public class VideoNode extends Node {
 
     public VideoNode(Context context, MediaPlayer player, @Nullable Color chromaKeyColor,
                      @Nullable ErrorListener errorListener) {
-        this(context, player, null, chromaKeyColor, errorListener);
+        this(context, player, chromaKeyColor, null, errorListener);
     }
 
-    public VideoNode(Context context, MediaPlayer player, @Nullable ExternalTexture texture,
-                     @Nullable Color chromaKeyColor, @Nullable ErrorListener errorListener) {
+    public VideoNode(Context context, MediaPlayer player, @Nullable Color chromaKeyColor,
+                     @Nullable ExternalTexture texture, @Nullable ErrorListener errorListener) {
         this.player = player;
         this.texture = texture != null ? texture : new ExternalTexture();
         this.chromaKeyColor = chromaKeyColor;
