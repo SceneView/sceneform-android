@@ -263,7 +263,6 @@ final class MaterialParameters {
 
     for (MaterialParameters.Parameter value : namedParameters.values()) {
       if (material.hasParameter(value.name)) {
-        Log.d("MaterialParameters", "apply parameter to material: " + value.name);
         value.applyTo(materialInstance);
       }
     }

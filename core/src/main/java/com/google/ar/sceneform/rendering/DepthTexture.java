@@ -3,11 +3,15 @@ package com.google.ar.sceneform.rendering;
 import android.media.Image;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 
 import androidx.annotation.Nullable;
 
 import com.google.android.filament.Texture;
 import com.google.ar.sceneform.utilities.AndroidPreconditions;
+
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 
 public class DepthTexture {
     @Nullable private com.google.android.filament.Texture filamentTexture;
@@ -36,13 +40,21 @@ public class DepthTexture {
         if (filamentTexture == null)
             return;
 
+        /*Log.d("DepthTexture", "Format: " + depthImage.getFormat());
+        Log.d("DepthTexture", "Planes: " + depthImage.getPlanes().length);
+        Log.d("DepthTexture", "Width: " + depthImage.getWidth());
+        Log.d("DepthTexture", "Height: " + depthImage.getHeight());*/
+
         IEngine engine = EngineInstance.getEngine();
+
+        Image.Plane plane = depthImage.getPlanes()[0];
+        ByteBuffer buffer = plane.getBuffer();
 
         filamentTexture.setImage(
                 engine.getFilamentEngine(),
                 0,
                 new Texture.PixelBufferDescriptor(
-                        depthImage.getPlanes()[0].getBuffer(),
+                        buffer,
                         Texture.Format.RG,
                         Texture.Type.UBYTE,
                         1,
@@ -53,7 +65,6 @@ public class DepthTexture {
                         null
                 )
         );
-        depthImage.close();
     }
 
     /**

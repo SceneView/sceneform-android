@@ -66,6 +66,8 @@ public class ArSceneView extends SceneView {
   private CameraStream cameraStream;
   private PlaneRenderer planeRenderer;
 
+  private Image depthImage;
+
   private boolean lightEstimationEnabled = true;
   private boolean isLightDirectionUpdateEnabled = true;
   @Nullable private Consumer<EnvironmentalHdrLightEstimate> onNextHdrLightingEstimate = null;
@@ -154,7 +156,7 @@ public class ArSceneView extends SceneView {
     session.setCameraTextureName(cameraTextureId);
   }
 
-  
+
   private void initializeFacingDirection(Session session) {
     if (session.getCameraConfig().getFacingDirection() == FacingDirection.FRONT) {
       Renderer renderer = Preconditions.checkNotNull(getRenderer());
@@ -162,29 +164,6 @@ public class ArSceneView extends SceneView {
     }
   }
 
-  
-
-
-
-
-
-
-
-
-
-
-  
-
-
-
-
-
-
-
-
-
-
-  
 
 
 
@@ -200,7 +179,30 @@ public class ArSceneView extends SceneView {
 
 
 
-  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -445,7 +447,7 @@ public class ArSceneView extends SceneView {
       if (shouldRecalculateCameraUvs(frame)) {
         cameraStream.recalculateCameraUvs(frame);
       }
-      
+
       if (currentFrame != null && currentFrame.getTimestamp() == frame.getTimestamp()) {
         updated = false;
       }
@@ -471,20 +473,28 @@ public class ArSceneView extends SceneView {
 
       Frame frame = currentFrame;
       if (frame != null) {
+
+
+        try {
+          Image depthImage = currentFrame.acquireDepthImage();
+          if(this.depthImage == null)
+            this.depthImage = depthImage;
+          if(depthImage.getTimestamp() > this.depthImage.getTimestamp()) {
+
+            this.depthImage.close();
+            this.depthImage = depthImage;
+          }
+          Log.d("ArSceneView", "recalculateOcclusion");
+          cameraStream.recalculateOcclusion(depthImage);
+        } catch (NotYetAvailableException e) {
+
+        }
+
         // Update the light estimate.
         updateLightEstimate(frame);
         // Update the plane renderer.
         if(planeRenderer.isEnabled())
           planeRenderer.update(frame, getWidth(), getHeight());
-
-        if (frame.getCamera().getTrackingState() == TrackingState.TRACKING) {
-          try (Image depthImage = currentFrame.acquireDepthImage()) {
-            Log.d("ArSceneView", "recalculateOcclusion");
-            cameraStream.recalculateOcclusion(depthImage);
-          } catch (NotYetAvailableException e) {
-
-          }
-        }
       }
     }
 
@@ -530,7 +540,7 @@ public class ArSceneView extends SceneView {
    *
    * @return true if the sunlight direction is updated every frame, false otherwise.
    */
-  
+
   public boolean isLightDirectionUpdateEnabled() {
     return isLightDirectionUpdateEnabled;
   }
@@ -544,7 +554,7 @@ public class ArSceneView extends SceneView {
    *
    * <p>The default state is true, with sunlight direction updated every frame.
    */
-  
+
   public void setLightDirectionUpdateEnabled(boolean isLightDirectionUpdateEnabled) {
     this.isLightDirectionUpdateEnabled = isLightDirectionUpdateEnabled;
   }
@@ -557,7 +567,7 @@ public class ArSceneView extends SceneView {
    * @return true if HDR lighting is enabled in Sceneform because ARCore HDR lighting estimation is
    *     enabled.
    */
-  
+
   public boolean isEnvironmentalHdrLightingAvailable() {
     if (cachedConfig == null) {
       return false;
@@ -570,13 +580,13 @@ public class ArSceneView extends SceneView {
    *
    * @hide
    */
-  
+
   public void captureLightingValues(
       Consumer<EnvironmentalHdrLightEstimate> onNextHdrLightingEstimate) {
     this.onNextHdrLightingEstimate = onNextHdrLightingEstimate;
   }
 
-  
+
   void updateHdrLightEstimate(
       LightEstimate estimate, Session session, com.google.ar.core.Camera camera) {
     if (estimate.getState() != LightEstimate.State.VALID) {
@@ -761,14 +771,14 @@ public class ArSceneView extends SceneView {
     }
   }
 
-  
+
 
 
   private static boolean loadUnifiedJni() {return false;}
 
 
 
-  
+
   private void reportEngineType() {return ;}
 
 

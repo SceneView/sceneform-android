@@ -148,7 +148,8 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public void onSessionConfiguration(Session session, Config config) {
-        if(session.isDepthModeSupported(Config.DepthMode.AUTOMATIC))
+        if (session.isDepthModeSupported(Config.DepthMode.AUTOMATIC))
             config.setDepthMode(Config.DepthMode.AUTOMATIC);
+        config.setUpdateMode(Config.UpdateMode.LATEST_CAMERA_IMAGE);
     }
 }

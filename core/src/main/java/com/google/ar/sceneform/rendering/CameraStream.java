@@ -307,7 +307,7 @@ public class CameraStream {
 
 
     public void recalculateOcclusion(Image depthImage) {
-        if (depthImage == null)
+        if (depthImage == null || depthTexture == null)
             return;
         depthTexture.updateDepthTexture(depthImage);
     }
