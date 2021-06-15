@@ -21,17 +21,23 @@ public class VideoNode extends Node {
     private static final String KEY_CHROMA_KEY_COLOR = "keyColor";
 
     private final MediaPlayer player;
+    private final ExternalTexture texture;
     private final Color chromaKeyColor;
     private final ErrorListener errorListener;
-    private final ExternalTexture texture = new ExternalTexture();
 
     public VideoNode(Context context, MediaPlayer player, @Nullable ErrorListener errorListener) {
-        this(context, player, null, errorListener);
+        this(context, player, null, null, errorListener);
     }
 
     public VideoNode(Context context, MediaPlayer player, @Nullable Color chromaKeyColor,
                      @Nullable ErrorListener errorListener) {
+        this(context, player, null, chromaKeyColor, errorListener);
+    }
+
+    public VideoNode(Context context, MediaPlayer player, @Nullable ExternalTexture texture,
+                     @Nullable Color chromaKeyColor, @Nullable ErrorListener errorListener) {
         this.player = player;
+        this.texture = texture != null ? texture : new ExternalTexture();
         this.chromaKeyColor = chromaKeyColor;
         this.errorListener = errorListener;
         init(context);
