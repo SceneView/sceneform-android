@@ -155,7 +155,7 @@ public class MainActivity extends AppCompatActivity implements
         player.setLooping(true);
         player.start();
         mediaPlayers.add(player);
-        VideoNode videoNode = new VideoNode(this, player, null, chromaKeyColor, (throwable ->
+        VideoNode videoNode = new VideoNode(this, player, chromaKeyColor, (throwable ->
                 Toast.makeText(this, "Unable to load material", Toast.LENGTH_LONG).show())
         );
         videoNode.setParent(modelNode);
