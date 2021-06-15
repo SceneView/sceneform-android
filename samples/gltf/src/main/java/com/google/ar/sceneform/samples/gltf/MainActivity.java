@@ -87,7 +87,7 @@ public class MainActivity extends AppCompatActivity implements
             );
         }
 
-        arSceneView.getCameraStream().setDepthModeUsage(CameraStream.DepthModeUsage.DEPTH_MODE_ENABLED);
+        arSceneView.getCameraStream().setDepthModeUsage(CameraStream.DepthModeUsage.DEPTH_MODE_DISABLED);
     }
 
     public void loadModels() {
