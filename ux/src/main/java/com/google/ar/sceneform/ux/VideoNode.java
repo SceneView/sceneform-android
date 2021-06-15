@@ -60,7 +60,6 @@ public class VideoNode extends Node {
                         material.setFloat4(KEY_CHROMA_KEY_COLOR, chromaKeyColor);
                     }
                     final ModelRenderable renderable = makeModelRenderable(player, material);
-                    renderable.setShadowCaster(chromaKeyColor == null);
                     setRenderable(renderable);
                 })
                 .exceptionally(throwable -> {

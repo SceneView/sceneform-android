@@ -15,7 +15,7 @@ material {
     requires : [ uv0 ],
     shadingModel : unlit,
     doubleSided : true,
-    blending : transparent
+    blending : masked
 }
 
 fragment {
@@ -28,7 +28,11 @@ fragment {
     }
     void material(inout MaterialInputs material) {
         prepareMaterial(material);
-        vec4 color = texture(materialParams_videoTexture, getUV0()).rgba;
+        vec2 uv = getUV0();
+        if (!gl_FrontFacing) {
+          uv.x = 1.0 - uv.x;
+        }
+        vec4 color = texture(materialParams_videoTexture, uv).rgba;
         vec3 keyColor = materialParams.keyColor.rgb;
         float threshold = 0.675;
         float slope = 0.2;
