@@ -1,8 +1,6 @@
 package com.google.ar.sceneform.rendering;
 
 import android.media.Image;
-import android.os.Handler;
-import android.os.Looper;
 import android.util.Log;
 
 import androidx.annotation.Nullable;
@@ -19,7 +17,9 @@ import com.google.android.filament.VertexBuffer.VertexAttribute;
 import com.google.android.filament.utils.Mat4;
 import com.google.ar.core.Camera;
 import com.google.ar.core.CameraIntrinsics;
+import com.google.ar.core.Config;
 import com.google.ar.core.Frame;
+import com.google.ar.core.Session;
 import com.google.ar.sceneform.utilities.AndroidPreconditions;
 import com.google.ar.sceneform.utilities.Preconditions;
 
@@ -42,24 +42,9 @@ public class CameraStream {
 
     private static final String TAG = CameraStream.class.getSimpleName();
 
-    // RealityCore values
-    /*private static final int VERTEX_COUNT = 4;
-    private static final int POSITION_BUFFER_INDEX = 0;
-    private static final float[] CAMERA_VERTICES =
-            new float[]{
-                    -1.0f, -1.0f,
-                    1.0f, -1.0f,
-                    -1.0f, 1.0f,
-                    1.0f, 1.0f};
-    private static final int UV_BUFFER_INDEX = 1;
-    private static final float[] CAMERA_UVS = new float[]{
-            0.0f, 0.0f,
-            1.0f, 0.0f,
-            0.0f, 1.0f,
-            1.0f, 1.0f};
-    private static final short[] INDICES = new short[]{0, 1, 2, 2, 1, 3};*/
+    private static final int DEPTH_IMAGE_WIDTH = 160;
+    private static final int DEPTH_IMAGE_HEIGHT = 90;
 
-    // Sceneform values
     private static final int VERTEX_COUNT = 3;
     private static final int POSITION_BUFFER_INDEX = 0;
     private static final float[] CAMERA_VERTICES =
@@ -86,19 +71,16 @@ public class CameraStream {
     private final VertexBuffer cameraVertexBuffer;
     private final FloatBuffer cameraUvCoords;
     private final FloatBuffer transformedCameraUvCoords;
+    private final IEngine engine;
     private int cameraStreamRenderable = UNINITIALIZED_FILAMENT_RENDERABLE;
-    private int width = 0;
-    private int height = 0;
-    private Renderer renderer;
-    private Handler handler = new Handler(Looper.myLooper());
-
+    private boolean isDepthEnabled = false;
 
     @Nullable private ExternalTexture cameraTexture;
     @Nullable private DepthTexture depthTexture;
 
     @Nullable private Material defaultCameraMaterial = null;
-    @Nullable private Material occlusionCameraMaterial = null;
     @Nullable private Material cameraMaterial = null;
+    @Nullable private Material occlusionCameraMaterial = null;
 
     private int renderablePriority = Renderable.RENDER_PRIORITY_LAST;
 
@@ -106,23 +88,18 @@ public class CameraStream {
 
     @SuppressWarnings({"AndroidApiChecker", "FutureReturnValueIgnored", "initialization"})
     public CameraStream(int cameraTextureId, Renderer renderer) {
-        this.renderer = renderer;
         scene = renderer.getFilamentScene();
         this.cameraTextureId = cameraTextureId;
 
-        IEngine engine = EngineInstance.getEngine();
+        engine = EngineInstance.getEngine();
 
         // INDEXBUFFER
         // create screen quad geometry to camera stream to
         ShortBuffer indexBufferData = ShortBuffer.allocate(INDICES.length);
         indexBufferData.put(INDICES);
-        final int indexCount = indexBufferData.capacity();
 
-        cameraIndexBuffer =
-                new IndexBuffer.Builder()
-                        .indexCount(indexCount)
-                        .bufferType(IndexType.USHORT)
-                        .build(engine.getFilamentEngine());
+        final int indexCount = indexBufferData.capacity();
+        cameraIndexBuffer = createIndexBuffer(indexCount);
 
         indexBufferData.rewind();
         Preconditions.checkNotNull(cameraIndexBuffer)
@@ -138,43 +115,7 @@ public class CameraStream {
         FloatBuffer vertexBufferData = FloatBuffer.allocate(CAMERA_VERTICES.length);
         vertexBufferData.put(CAMERA_VERTICES);
 
-        // RealityCore
-        /*cameraVertexBuffer =
-                new Builder()
-                        .vertexCount(VERTEX_COUNT)
-                        .bufferCount(2)
-                        .attribute(
-                                VertexAttribute.POSITION,
-                                POSITION_BUFFER_INDEX,
-                                VertexBuffer.AttributeType.FLOAT2,
-                                0,
-                                0) //(CAMERA_VERTICES.length / VERTEX_COUNT) * FLOAT_SIZE_IN_BYTES)
-                        .attribute(
-                                VertexAttribute.UV0,
-                                UV_BUFFER_INDEX,
-                                VertexBuffer.AttributeType.FLOAT2,
-                                0,
-                                0) //(CAMERA_UVS.length / VERTEX_COUNT) * FLOAT_SIZE_IN_BYTES)
-                        .build(engine.getFilamentEngine());*/
-
-        // Sceneform
-        cameraVertexBuffer =
-                new Builder()
-                        .vertexCount(VERTEX_COUNT)
-                        .bufferCount(2)
-                        .attribute(
-                                VertexAttribute.POSITION,
-                                POSITION_BUFFER_INDEX,
-                                VertexBuffer.AttributeType.FLOAT3,
-                                0,
-                                (CAMERA_VERTICES.length / VERTEX_COUNT) * FLOAT_SIZE_IN_BYTES) //(CAMERA_VERTICES.length / VERTEX_COUNT) * FLOAT_SIZE_IN_BYTES)
-                        .attribute(
-                                VertexAttribute.UV0,
-                                UV_BUFFER_INDEX,
-                                VertexBuffer.AttributeType.FLOAT2,
-                                0,
-                                (CAMERA_UVS.length / VERTEX_COUNT) * FLOAT_SIZE_IN_BYTES) //(CAMERA_UVS.length / VERTEX_COUNT) * FLOAT_SIZE_IN_BYTES)
-                        .build(engine.getFilamentEngine());
+        cameraVertexBuffer = createVertexBuffer();
 
         vertexBufferData.rewind();
         Preconditions.checkNotNull(cameraVertexBuffer)
@@ -184,12 +125,32 @@ public class CameraStream {
         cameraVertexBuffer.setBufferAt(
                 engine.getFilamentEngine(), UV_BUFFER_INDEX, transformedCameraUvCoords);
 
-        //setStandardCameraMaterial(renderer);
-        setOccludedCameraMaterial(renderer);
+        setStandardCameraMaterial(renderer);
+        setOcclusionCameraMaterial(renderer);
     }
 
+    /**
+     * <pre>
+     *     The Session holds the information if the
+     *     DepthMode is configured or not. Based on
+     *     that the result different materials and textures are
+     *     used for the camera.
+     * </pre>
+     *
+     * @param session {@link Session}
+     */
+    public void checkIfDepthEnabled(Session session) {
+        if (session.isDepthModeSupported(Config.DepthMode.AUTOMATIC)) {
+            if (session.getConfig().getDepthMode() == Config.DepthMode.AUTOMATIC) {
+                isDepthEnabled = true;
+                return;
+            }
+        }
 
-    private static FloatBuffer createCameraUVBuffer() {
+        isDepthEnabled = false;
+    }
+
+    private FloatBuffer createCameraUVBuffer() {
         FloatBuffer buffer =
                 ByteBuffer.allocateDirect(CAMERA_UVS.length * FLOAT_SIZE_IN_BYTES)
                         .order(ByteOrder.nativeOrder())
@@ -198,6 +159,32 @@ public class CameraStream {
         buffer.rewind();
 
         return buffer;
+    }
+
+    private IndexBuffer createIndexBuffer(int indexCount) {
+        return new IndexBuffer.Builder()
+                .indexCount(indexCount)
+                .bufferType(IndexType.USHORT)
+                .build(engine.getFilamentEngine());
+    }
+
+    private VertexBuffer createVertexBuffer() {
+        return new Builder()
+                .vertexCount(VERTEX_COUNT)
+                .bufferCount(2)
+                .attribute(
+                        VertexAttribute.POSITION,
+                        POSITION_BUFFER_INDEX,
+                        VertexBuffer.AttributeType.FLOAT3,
+                        0,
+                        (CAMERA_VERTICES.length / VERTEX_COUNT) * FLOAT_SIZE_IN_BYTES)
+                .attribute(
+                        VertexAttribute.UV0,
+                        UV_BUFFER_INDEX,
+                        VertexBuffer.AttributeType.FLOAT2,
+                        0,
+                        (CAMERA_UVS.length / VERTEX_COUNT) * FLOAT_SIZE_IN_BYTES)
+                .build(engine.getFilamentEngine());
     }
 
     public boolean isTextureInitialized() {
@@ -212,24 +199,26 @@ public class CameraStream {
         Camera arCamera = frame.getCamera();
         CameraIntrinsics intrinsics = arCamera.getTextureIntrinsics();
         int[] dimensions = intrinsics.getImageDimensions();
-        width = dimensions[0];
-        height = dimensions[1];
 
         // External Camera Texture
-        cameraTexture = new ExternalTexture(cameraTextureId, width, height);
-
-        // The Depht Texture to realize the occlusion of virtual objects.
-        depthTexture = new DepthTexture(160, 90);
+        cameraTexture = new ExternalTexture(
+                cameraTextureId,
+                dimensions[0],
+                dimensions[1]);
 
         isTextureInitialized = true;
 
-        // If the camera material has already been set, call setCameraMaterial again to finish setup
-        // now that the CameraTexture has been created.
-        if (cameraMaterial != null) {
-            //setCameraMaterial(cameraMaterial);
-            setOcclusionMaterial(cameraMaterial);
+        if(isDepthEnabled) {
+            if(occlusionCameraMaterial != null) {
+                setOcclusionMaterial(occlusionCameraMaterial);
+            }
+        } else {
+            if(cameraMaterial != null) {
+                setCameraMaterial(cameraMaterial);
+            }
         }
     }
+
 
     public void setStandardCameraMaterial(Renderer renderer) {
         CompletableFuture<Material> materialFuture =
@@ -254,11 +243,9 @@ public class CameraStream {
                                             0,
                                             4);
 
-                            defaultCameraMaterial = material;
-
                             // Only set the camera material if it hasn't already been set to a custom material.
                             if (cameraMaterial == null) {
-                                setCameraMaterial(defaultCameraMaterial);
+                                setCameraMaterial(material);
                             }
                         })
                 .exceptionally(
@@ -268,7 +255,7 @@ public class CameraStream {
                         });
     }
 
-    public void setOccludedCameraMaterial(Renderer renderer) {
+    public void setOcclusionCameraMaterial(Renderer renderer) {
         CompletableFuture<Material> materialFuture =
                 Material.builder()
                         .setSource(
@@ -290,11 +277,9 @@ public class CameraStream {
                                             0,
                                             4);
 
-                            defaultCameraMaterial = material;
-
                             // Only set the camera material if it hasn't already been set to a custom material.
-                            if (cameraMaterial == null) {
-                                setOcclusionMaterial(defaultCameraMaterial);
+                            if (occlusionCameraMaterial == null) {
+                                setOcclusionMaterial(material);
                             }
                         })
                 .exceptionally(
@@ -302,19 +287,35 @@ public class CameraStream {
                             Log.e(TAG, "Unable to load camera stream materials.", throwable);
                             return null;
                         });
-
     }
 
 
+    /**
+     * <pre>
+     *      Update the DepthTexture.
+     * </pre>
+     *
+     * @param depthImage {@link Image}
+     */
     public void recalculateOcclusion(Image depthImage) {
-        if (depthImage == null || depthTexture == null)
+        if(depthTexture == null) {
+            // The Depth Texture to realize the occlusion of virtual objects.
+            depthTexture = new DepthTexture(
+                    depthImage.getWidth(),
+                    depthImage.getHeight()); // ToDo Don't use hardcoded values here
+
+            occlusionCameraMaterial.setDepthTexture(
+                    DEPTH_TEXTURE,
+                    depthTexture);
+        }
+        
+        if (!isTextureInitialized || depthImage == null)
             return;
         depthTexture.updateDepthTexture(depthImage);
     }
 
-    public void recalculateCameraUvs(Frame frame) {
-        IEngine engine = EngineInstance.getEngine();
 
+    public void recalculateCameraUvs(Frame frame) {
         FloatBuffer cameraUvCoords = this.cameraUvCoords;
         FloatBuffer transformedCameraUvCoords = this.transformedCameraUvCoords;
         VertexBuffer cameraVertexBuffer = this.cameraVertexBuffer;
@@ -327,6 +328,8 @@ public class CameraStream {
 
     public void setCameraMaterial(Material material) {
         cameraMaterial = material;
+        if(cameraMaterial == null)
+            return;
 
         // The ExternalTexture can't be created until we receive the first AR Core Frame so that we
         // can access the width and height of the camera texture. Return early if the ExternalTexture
@@ -336,13 +339,13 @@ public class CameraStream {
             return;
         }
 
-        material.setExternalTexture(
+        cameraMaterial.setExternalTexture(
                 MATERIAL_CAMERA_TEXTURE,
                 Preconditions.checkNotNull(cameraTexture));
 
 
         if (cameraStreamRenderable == UNINITIALIZED_FILAMENT_RENDERABLE) {
-            initializeFilamentRenderable();
+            initializeFilamentRenderable(cameraMaterial);
         } else {
             RenderableManager renderableManager = EngineInstance.getEngine().getRenderableManager();
             int renderableInstance = renderableManager.getInstance(cameraStreamRenderable);
@@ -352,7 +355,9 @@ public class CameraStream {
     }
 
     public void setOcclusionMaterial(Material material) {
-        cameraMaterial = material;
+        occlusionCameraMaterial = material;
+        if(occlusionCameraMaterial == null)
+            return;
 
         // The ExternalTexture can't be created until we receive the first AR Core Frame so that we
         // can access the width and height of the camera texture. Return early if the ExternalTexture
@@ -362,30 +367,18 @@ public class CameraStream {
             return;
         }
 
-        material.setExternalTexture(
+        occlusionCameraMaterial.setExternalTexture(
                 MATERIAL_CAMERA_TEXTURE,
                 Preconditions.checkNotNull(cameraTexture));
-        material.setDepthTexture(
-                DEPTH_TEXTURE,
-                depthTexture);
+
 
         if (cameraStreamRenderable == UNINITIALIZED_FILAMENT_RENDERABLE) {
-            initializeFilamentRenderable();
+            initializeFilamentRenderable(occlusionCameraMaterial);
         } else {
             RenderableManager renderableManager = EngineInstance.getEngine().getRenderableManager();
             int renderableInstance = renderableManager.getInstance(cameraStreamRenderable);
             renderableManager.setMaterialInstanceAt(
                     renderableInstance, 0, material.getFilamentMaterialInstance());
-        }
-    }
-
-    public void setCameraMaterialToDefault() {
-        if (defaultCameraMaterial != null) {
-            setCameraMaterial(defaultCameraMaterial);
-        } else {
-            // Default camera material hasn't been loaded yet, so just remove any custom material
-            // that has been set.
-            cameraMaterial = null;
         }
     }
 
@@ -414,7 +407,7 @@ public class CameraStream {
         }*/
     }
 
-    private void initializeFilamentRenderable() {
+    private void initializeFilamentRenderable(Material material) {
         // create entity id
         cameraStreamRenderable = EntityManager.get().create();
 
@@ -428,7 +421,7 @@ public class CameraStream {
                 .priority(renderablePriority)
                 .geometry(
                         0, RenderableManager.PrimitiveType.TRIANGLES, cameraVertexBuffer, cameraIndexBuffer)
-                .material(0, Preconditions.checkNotNull(cameraMaterial).getFilamentMaterialInstance())
+                .material(0, Preconditions.checkNotNull(material).getFilamentMaterialInstance())
                 .build(EngineInstance.getEngine().getFilamentEngine(), cameraStreamRenderable);
 
         // add to the scene
@@ -442,6 +435,9 @@ public class CameraStream {
                                 scene, cameraStreamRenderable, cameraIndexBuffer, cameraVertexBuffer));
     }
 
+    public boolean isDepthEnabled() {
+        return isDepthEnabled;
+    }
 
     /**
      * Cleanup filament objects after garbage collection

@@ -3,20 +3,35 @@ package com.google.ar.sceneform.rendering;
 import android.media.Image;
 import android.os.Handler;
 import android.os.Looper;
-import android.util.Log;
 
 import androidx.annotation.Nullable;
 
 import com.google.android.filament.Texture;
 import com.google.ar.sceneform.utilities.AndroidPreconditions;
+import com.google.ar.sceneform.utilities.BufferHelper;
 
 import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 
+/**
+ * <pre>
+ *     The DepthTexture class holds a special Texture to store
+ *     information from a DepthImage to realize the occlusion of
+ *     virtual objects behind real objects.
+ * </pre>
+ */
 public class DepthTexture {
-    @Nullable private com.google.android.filament.Texture filamentTexture;
-    private Handler handler = new Handler(Looper.myLooper());
+    @Nullable private final com.google.android.filament.Texture filamentTexture;
+    private final Handler handler = new Handler(Looper.myLooper());
 
+    /**
+     * <pre>
+     *      A call to this constructor creates a new Filament Texture which is
+     *      later used to feed in data from a DepthImage.
+     * </pre>
+     *
+     * @param width
+     * @param height
+     */
     public DepthTexture(int width, int height) {
         filamentTexture = new com.google.android.filament.Texture.Builder()
                 .width(width)
@@ -36,34 +51,47 @@ public class DepthTexture {
         return filamentTexture;
     }
 
+
+    /**
+     * <pre>
+     *     This is the most important function of this class.
+     *     The Filament Texture is updated based on the newest
+     *     DepthImage. To solve a problem with a to early
+     *     released DepthImage the ByteBuffer which holds all
+     *     necessary data is cloned. The cloned ByteBuffer is unaffected
+     *     of a released DepthImage and therefore produces not
+     *     a flickering result.
+     * </pre>
+     *
+     * @param depthImage {@link Image}
+     */
     public void updateDepthTexture(Image depthImage) {
         if (filamentTexture == null)
             return;
 
-        /*Log.d("DepthTexture", "Format: " + depthImage.getFormat());
-        Log.d("DepthTexture", "Planes: " + depthImage.getPlanes().length);
-        Log.d("DepthTexture", "Width: " + depthImage.getWidth());
-        Log.d("DepthTexture", "Height: " + depthImage.getHeight());*/
-
         IEngine engine = EngineInstance.getEngine();
 
         Image.Plane plane = depthImage.getPlanes()[0];
+
         ByteBuffer buffer = plane.getBuffer();
+        ByteBuffer clonedBuffer = BufferHelper.cloneByteBuffer(buffer);
+
+        Texture.PixelBufferDescriptor pixelBufferDescriptor = new Texture.PixelBufferDescriptor(
+                clonedBuffer,
+                Texture.Format.RG,
+                Texture.Type.UBYTE,
+                1,
+                0,
+                0,
+                0,
+                handler,
+                null
+        );
 
         filamentTexture.setImage(
                 engine.getFilamentEngine(),
                 0,
-                new Texture.PixelBufferDescriptor(
-                        buffer,
-                        Texture.Format.RG,
-                        Texture.Type.UBYTE,
-                        1,
-                        0,
-                        0,
-                        0,
-                        handler,
-                        null
-                )
+                pixelBufferDescriptor
         );
     }
 
@@ -73,7 +101,7 @@ public class DepthTexture {
     private static final class CleanupCallback implements Runnable {
         @Nullable private final com.google.android.filament.Texture filamentTexture;
 
-        CleanupCallback(com.google.android.filament.Texture filamentTexture) {
+        CleanupCallback(@Nullable com.google.android.filament.Texture filamentTexture) {
             this.filamentTexture = filamentTexture;
         }
 

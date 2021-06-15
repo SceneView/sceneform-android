@@ -226,13 +226,12 @@ public class Material {
       materialParameters.applyTo(internalMaterialInstance.getInstance());
     }
   }
-  
+
 
   public void setDepthTexture(String name, DepthTexture depthTexture) {
     materialParameters.setDepthTexture(name, depthTexture);
     if(internalMaterialInstance.isValidInstance()) {
       materialParameters.applyParameterTo(internalMaterialInstance.getInstance(), name);
-      //materialParameters.applyTo(internalMaterialInstance.getInstance());
     }
   }
 
