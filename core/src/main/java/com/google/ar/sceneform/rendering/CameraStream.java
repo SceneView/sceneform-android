@@ -73,7 +73,7 @@ public class CameraStream {
     private final FloatBuffer transformedCameraUvCoords;
     private final IEngine engine;
     private int cameraStreamRenderable = UNINITIALIZED_FILAMENT_RENDERABLE;
-    private boolean isDepthEnabled = false;
+    private DepthMode depthMode = DepthMode.NO_DEPTH;
 
     @Nullable private ExternalTexture cameraTexture;
     @Nullable private DepthTexture depthTexture;
@@ -140,14 +140,15 @@ public class CameraStream {
      * @param session {@link Session}
      */
     public void checkIfDepthEnabled(Session session) {
-        if (session.isDepthModeSupported(Config.DepthMode.AUTOMATIC)) {
-            if (session.getConfig().getDepthMode() == Config.DepthMode.AUTOMATIC) {
-                isDepthEnabled = true;
-                return;
-            }
-        }
+        depthMode = DepthMode.NO_DEPTH;
 
-        isDepthEnabled = false;
+        if (session.isDepthModeSupported(Config.DepthMode.AUTOMATIC))
+            if (session.getConfig().getDepthMode() == Config.DepthMode.AUTOMATIC)
+                depthMode = DepthMode.DEPTH;
+
+        if (session.isDepthModeSupported(Config.DepthMode.RAW_DEPTH_ONLY))
+            if (session.getConfig().getDepthMode() == Config.DepthMode.RAW_DEPTH_ONLY)
+                depthMode = DepthMode.RAW_DEPTH;
     }
 
     private FloatBuffer createCameraUVBuffer() {
@@ -208,12 +209,12 @@ public class CameraStream {
 
         isTextureInitialized = true;
 
-        if(isDepthEnabled) {
-            if(occlusionCameraMaterial != null) {
+        if (depthMode == DepthMode.DEPTH || depthMode == DepthMode.RAW_DEPTH) {
+            if (occlusionCameraMaterial != null) {
                 setOcclusionMaterial(occlusionCameraMaterial);
             }
         } else {
-            if(cameraMaterial != null) {
+            if (cameraMaterial != null) {
                 setCameraMaterial(cameraMaterial);
             }
         }
@@ -298,7 +299,7 @@ public class CameraStream {
      * @param depthImage {@link Image}
      */
     public void recalculateOcclusion(Image depthImage) {
-        if(depthTexture == null) {
+        if (depthTexture == null) {
             // The Depth Texture to realize the occlusion of virtual objects.
             depthTexture = new DepthTexture(
                     depthImage.getWidth(),
@@ -308,7 +309,7 @@ public class CameraStream {
                     DEPTH_TEXTURE,
                     depthTexture);
         }
-        
+
         if (!isTextureInitialized || depthImage == null)
             return;
         depthTexture.updateDepthTexture(depthImage);
@@ -328,7 +329,7 @@ public class CameraStream {
 
     public void setCameraMaterial(Material material) {
         cameraMaterial = material;
-        if(cameraMaterial == null)
+        if (cameraMaterial == null)
             return;
 
         // The ExternalTexture can't be created until we receive the first AR Core Frame so that we
@@ -356,7 +357,7 @@ public class CameraStream {
 
     public void setOcclusionMaterial(Material material) {
         occlusionCameraMaterial = material;
-        if(occlusionCameraMaterial == null)
+        if (occlusionCameraMaterial == null)
             return;
 
         // The ExternalTexture can't be created until we receive the first AR Core Frame so that we
@@ -435,8 +436,14 @@ public class CameraStream {
                                 scene, cameraStreamRenderable, cameraIndexBuffer, cameraVertexBuffer));
     }
 
-    public boolean isDepthEnabled() {
-        return isDepthEnabled;
+    public DepthMode getDepthMode() {
+        return depthMode;
+    }
+
+    public enum DepthMode {
+        NO_DEPTH,
+        DEPTH,
+        RAW_DEPTH
     }
 
     /**
