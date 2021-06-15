@@ -207,19 +207,19 @@ public class CameraStream {
                 dimensions[0],
                 dimensions[1]);
 
-        isTextureInitialized = true;
-
         if (depthModeUsage == DepthModeUsage.DEPTH_MODE_ENABLED && (
                 depthMode == DepthMode.DEPTH ||
                 depthMode == DepthMode.RAW_DEPTH)) {
             if (occlusionCameraMaterial != null) {
                 Log.d("CameraStream", "setOcclusionMaterial from initializeTexture");
+                isTextureInitialized = true;
                 setOcclusionMaterial(occlusionCameraMaterial);
                 initOrUpdateRenderableMaterial(occlusionCameraMaterial);
             }
         } else {
             if (cameraMaterial != null) {
                 Log.d("CameraStream", "setCameraMaterial from initializeTexture");
+                isTextureInitialized = true;
                 setCameraMaterial(cameraMaterial);
                 initOrUpdateRenderableMaterial(cameraMaterial);
             }
@@ -416,6 +416,10 @@ public class CameraStream {
     }
 
     private void initOrUpdateRenderableMaterial(Material material) {
+        if (!isTextureInitialized()) {
+            return;
+        }
+
         if (cameraStreamRenderable == UNINITIALIZED_FILAMENT_RENDERABLE) {
             Log.d("CameraStream", "call to initializeFilamentRenderable");
             initializeFilamentRenderable(material);
@@ -495,13 +499,13 @@ public class CameraStream {
         if (depthModeUsage == DepthModeUsage.DEPTH_MODE_DISABLED) {
             if (cameraMaterial != null) {
                 Log.d("CameraStream", "Set Standard Material");
-                //setCameraMaterial(cameraMaterial);
+                setCameraMaterial(cameraMaterial);
                 initOrUpdateRenderableMaterial(cameraMaterial);
             }
         } else if (depthModeUsage == DepthModeUsage.DEPTH_MODE_ENABLED) {
             if (occlusionCameraMaterial != null) {
                 Log.d("CameraStream", "Set Occlusion Material");
-                //setOcclusionMaterial(occlusionCameraMaterial);
+                setOcclusionMaterial(occlusionCameraMaterial);
                 initOrUpdateRenderableMaterial(occlusionCameraMaterial);
             }
         }
