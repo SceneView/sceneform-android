@@ -1,4 +1,4 @@
-package com.google.ar.sceneform.samples.gltf;
+package com.google.ar.sceneform.samples.depth;
 
 import android.net.Uri;
 import android.os.Bundle;
@@ -86,8 +86,6 @@ public class MainActivity extends AppCompatActivity implements
                             .build(EngineInstance.getEngine().getFilamentEngine())
             );
         }
-
-        arSceneView.getCameraStream().setDepthModeUsage(CameraStream.DepthModeUsage.DEPTH_MODE_DISABLED);
     }
 
     public void loadModels() {
