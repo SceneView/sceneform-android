@@ -16,7 +16,7 @@ import java.nio.ByteBuffer;
 /**
  * <pre>
  *     The DepthTexture class holds a special Texture to store
- *     information from a DepthImage or RawDepthImage to realize the occlusion of
+ *     information from a DepthImage or RawDepthImage to implement the occlusion of
  *     virtual objects behind real world objects.
  * </pre>
  */
