@@ -5,7 +5,7 @@ Maintained Sceneform SDK for Android
 
 #### This repository is a fork of [Sceneform](https://github.com/google-ar/sceneform-android-sdk) Copyright (c) 2021 Google Inc.  All rights reserved.
 
-#### Maintained and continued by [Nikita Zaytsev](https://github.com/grassydragon), [Vojta Maiwald](https://github.com/VojtaMaiwald), [Brigido Rodriguez](https://github.com/imbrig), [Fvito](https://github.com/fvito), [Robert Gregat](https://github.com/RGregat) and [Thomas Gorisse](https://github.com/ThomasGorisse)
+#### Maintained and continued by [Nikita Zaytsev](https://github.com/grassydragon), [Vojta Maiwald](https://github.com/VojtaMaiwald), [Brigido Rodriguez](https://github.com/imbrig), [Fvito](https://github.com/fvito), [Marius Kajczuga](https://github.com/Venthorus), [Robert Gregat](https://github.com/RGregat) and [Thomas Gorisse](https://github.com/ThomasGorisse)
 
 Sceneform is a 3D framework with a physically based renderer that's optimized
 for mobile devices and that makes it easy for you to build Augmented Reality (AR)
@@ -131,6 +131,17 @@ public void onAttachFragment(Fragment childFragment) {
 
 ![screenrecord_gltf.gif](docs/images/samples/screenrecord_gltf.gif)
 
+```java
+@Override
+public void onTapPlane(HitResult hitResult, Plane plane, MotionEvent motionEvent) {
+   …
+   // Create the transformable model and add it to the anchor.
+   TransformableNode model = new TransformableNode(arFragment.getTransformationSystem());
+   model.setParent(anchorNode);
+   model.setRenderable(this.model);
+   model.getRenderableInstance().animate(true).start();
+}
+```
 **[sample project...](samples/gltf/)**
 
 
@@ -157,19 +168,32 @@ public void onViewCreated(ArFragment arFragment, ArSceneView arSceneView) {
 **[sample project...](samples/depth/)**
 
 
-### Image texture
-
-<img src="docs/images/samples/screenshot_image_texture.png" alt="drawing" width="400"/>
-
-**[sample project...](samples/image-texture/)**
-
-
 ### Video texture
 
 ![screenrecord_video_texture_plain.gif](docs/images/samples/screenrecord_video_texture_plain.gif)
 ![screenrecord_video_texture_chromakey.gif](docs/images/samples/screenrecord_video_texture_chromakey.gif)
 
+```java
+@Override
+public void onTapPlane(HitResult hitResult, Plane plane, MotionEvent motionEvent) {
+    …
+    MediaPlayer player = MediaPlayer.create(this, R.raw.my_video);
+    VideoNode videoNode = new VideoNode(this, player, chromaKeyColor, (throwable ->
+        Toast.makeText(this, "Unable to load material", Toast.LENGTH_LONG).show())
+    );
+    videoNode.setParent(anchorNode);
+    player.start();
+}
+```
+
 **[sample project...](samples/video-texture/)**
+
+
+### Image texture
+
+<img src="docs/images/samples/screenshot_image_texture.png" alt="drawing" width="400"/>
+
+**[sample project...](samples/image-texture/)**
 
 
 ### Non AR usage
