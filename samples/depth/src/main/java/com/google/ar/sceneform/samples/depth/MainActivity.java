@@ -111,7 +111,7 @@ public class MainActivity extends AppCompatActivity implements
                     return null;
                 });
         ViewRenderable.builder()
-                .setView(this, R.layout.view_tiger_card)
+                .setView(this, R.layout.view_model_title)
                 .build()
                 .thenAccept(viewRenderable -> {
                     MainActivity activity = weakActivity.get();

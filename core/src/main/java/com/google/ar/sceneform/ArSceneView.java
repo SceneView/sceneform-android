@@ -447,7 +447,7 @@ public class ArSceneView extends SceneView {
 
             Frame frame = currentFrame;
             if (frame != null) {
-                if(cameraStream.getDepthModeUsage() == CameraStream.DepthOcclusionMode.DEPTH_OCCLUSION_ENABLED) {
+                if(cameraStream.getDepthOcclusionMode() == CameraStream.DepthOcclusionMode.DEPTH_OCCLUSION_ENABLED) {
                     if (cameraStream.getDepthMode() == CameraStream.DepthMode.DEPTH) {
                         try (Image depthImage = currentFrame.acquireDepthImage()) {
                             cameraStream.recalculateOcclusion(depthImage);

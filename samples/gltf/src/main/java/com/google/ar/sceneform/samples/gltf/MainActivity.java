@@ -65,9 +65,16 @@ public class MainActivity extends AppCompatActivity implements
     public void onAttachFragment(@NonNull FragmentManager fragmentManager, @NonNull Fragment fragment) {
         if (fragment.getId() == R.id.arFragment) {
             arFragment = (ArFragment) fragment;
-            arFragment.setOnTapArPlaneListener(this);
-            arFragment.setOnViewCreatedListener(this);
             arFragment.setOnSessionConfigurationListener(this);
+            arFragment.setOnViewCreatedListener(this);
+            arFragment.setOnTapArPlaneListener(this);
+        }
+    }
+
+    @Override
+    public void onSessionConfiguration(Session session, Config config) {
+        if (session.isDepthModeSupported(Config.DepthMode.AUTOMATIC)) {
+            config.setDepthMode(Config.DepthMode.AUTOMATIC);
         }
     }
 
@@ -102,11 +109,12 @@ public class MainActivity extends AppCompatActivity implements
                     }
                 })
                 .exceptionally(throwable -> {
-                    Toast.makeText(this, "Unable to load model", Toast.LENGTH_LONG).show();
+                    Toast.makeText(
+                            this, "Unable to load model", Toast.LENGTH_LONG).show();
                     return null;
                 });
         ViewRenderable.builder()
-                .setView(this, R.layout.view_tiger_card)
+                .setView(this, R.layout.view_model_title)
                 .build()
                 .thenAccept(viewRenderable -> {
                     MainActivity activity = weakActivity.get();
@@ -139,19 +147,11 @@ public class MainActivity extends AppCompatActivity implements
         model.getRenderableInstance().animate(true).start();
         model.select();
 
-        Node tigerTitleNode = new Node();
-        tigerTitleNode.setParent(model);
-        tigerTitleNode.setEnabled(false);
-        tigerTitleNode.setLocalPosition(new Vector3(0.0f, 1.0f, 0.0f));
-        tigerTitleNode.setRenderable(viewRenderable);
-        tigerTitleNode.setEnabled(true);
-    }
-
-    @Override
-    public void onSessionConfiguration(Session session, Config config) {
-        if (session.isDepthModeSupported(Config.DepthMode.AUTOMATIC)) {
-            config.setDepthMode(Config.DepthMode.AUTOMATIC);
-        }
-        config.setUpdateMode(Config.UpdateMode.LATEST_CAMERA_IMAGE);
+        Node titleNode = new Node();
+        titleNode.setParent(model);
+        titleNode.setEnabled(false);
+        titleNode.setLocalPosition(new Vector3(0.0f, 1.0f, 0.0f));
+        titleNode.setRenderable(viewRenderable);
+        titleNode.setEnabled(true);
     }
 }
