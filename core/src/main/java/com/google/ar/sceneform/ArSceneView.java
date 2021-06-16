@@ -3,6 +3,7 @@ package com.google.ar.sceneform;
 import android.content.Context;
 import android.media.Image;
 
+import androidx.annotation.IntRange;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 import android.util.AttributeSet;
@@ -714,6 +715,10 @@ public class ArSceneView extends SceneView {
     cameraTextureId = GLHelper.createCameraTexture();
     Renderer renderer = Preconditions.checkNotNull(getRenderer());
     cameraStream = new CameraStream(cameraTextureId, renderer);
+  }
+
+  public void setCameraStreamRenderPriority(@IntRange(from = 0L,to = 7L) int priority) {
+    this.cameraStream.setRenderPriority(priority);
   }
 
   private void ensureUpdateMode() {
