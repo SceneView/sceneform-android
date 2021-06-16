@@ -19,6 +19,7 @@ apps without requiring OpenGL or Unity.
 * Available as gradle `mavenCentral()` dependency
 * Supports <a href="https://www.khronos.org/gltf/">glTF</a> format
 * Animations made easy
+* Depth supported
 * Simple model loading for basic usage
 
 
