@@ -15,7 +15,6 @@
    limitations under the License.
 -->
 <shape xmlns:android="http://schemas.android.com/apk/res/android">
-    <solid android:color="#E61976d2"/>
+    <solid android:color="#E6FFFFFF"/>
     <corners android:radius="5dp"/>
 </shape>
-

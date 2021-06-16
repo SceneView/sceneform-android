@@ -6,5 +6,5 @@
     android:gravity="center"
     android:orientation="vertical"
     android:padding="6dp"
-    android:text="Tiger"
+    android:text="Giant Panda"
     android:textAlignment="center" />

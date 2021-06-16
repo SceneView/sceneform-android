@@ -88,16 +88,15 @@ public class MainActivity extends AppCompatActivity implements
             );
         }
 
-        arSceneView
-                .getCameraStream()
-                .setDepthOcclusionMode(CameraStream.DepthOcclusionMode
-                        .DEPTH_OCCLUSION_ENABLED); // Available modes: DEPTH_OCCLUSION_DISABLED, DEPTH_OCCLUSION_ENABLED
+        // Available modes: DEPTH_OCCLUSION_DISABLED, DEPTH_OCCLUSION_ENABLED
+        arSceneView.getCameraStream()
+            .setDepthOcclusionMode(CameraStream.DepthOcclusionMode.DEPTH_OCCLUSION_ENABLED);
     }
 
     public void loadModels() {
         WeakReference<MainActivity> weakActivity = new WeakReference<>(this);
         ModelRenderable.builder()
-                .setSource(this, Uri.parse("https://storage.googleapis.com/ar-answers-in-search-models/static/Tiger/model.glb"))
+                .setSource(this, Uri.parse("https://storage.googleapis.com/ar-answers-in-search-models/static/GiantPanda/model.glb"))
                 .setIsFilamentGltf(true)
                 .setAsyncLoadEnabled(true)
                 .build()
@@ -145,12 +144,12 @@ public class MainActivity extends AppCompatActivity implements
         model.getRenderableInstance().animate(true).start();
         model.select();
 
-        Node tigerTitleNode = new Node();
-        tigerTitleNode.setParent(model);
-        tigerTitleNode.setEnabled(false);
-        tigerTitleNode.setLocalPosition(new Vector3(0.0f, 1.0f, 0.0f));
-        tigerTitleNode.setRenderable(viewRenderable);
-        tigerTitleNode.setEnabled(true);
+        Node titleNode = new Node();
+        titleNode.setParent(model);
+        titleNode.setEnabled(false);
+        titleNode.setLocalPosition(new Vector3(0.0f, 1.0f, 0.0f));
+        titleNode.setRenderable(viewRenderable);
+        titleNode.setEnabled(true);
     }
 
     @Override
@@ -159,8 +158,9 @@ public class MainActivity extends AppCompatActivity implements
         /*if (session.isDepthModeSupported(Config.DepthMode.RAW_DEPTH_ONLY))
             config.setDepthMode(Config.DepthMode.RAW_DEPTH_ONLY);*/
 
-        if (session.isDepthModeSupported(Config.DepthMode.AUTOMATIC))
+        if (session.isDepthModeSupported(Config.DepthMode.AUTOMATIC)) {
             config.setDepthMode(Config.DepthMode.AUTOMATIC);
+        }
 
         config.setUpdateMode(Config.UpdateMode.LATEST_CAMERA_IMAGE);
     }

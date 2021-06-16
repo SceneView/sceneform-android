@@ -27,8 +27,6 @@ final class RenderingResources {
         return LoadHelper.rawResourceNameToIdentifier(context, "ar_environment_material_flat");
       case OCCLUSION_CAMERA_MATERIAL:
         return LoadHelper.rawResourceNameToIdentifier(context, "ar_environment_material_depth");
-      case OCCLUSION_CAMERA_TEST_MATERIAL:
-        return LoadHelper.rawResourceNameToIdentifier(context, "ar_environment_material_depth_test");
       case OPAQUE_COLORED_MATERIAL:
         return LoadHelper.rawResourceNameToIdentifier(context, "sceneform_opaque_colored_material");
       case TRANSPARENT_COLORED_MATERIAL:

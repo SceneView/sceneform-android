@@ -38,7 +38,7 @@ import java.util.concurrent.CompletableFuture;
 @SuppressWarnings("AndroidApiChecker") // CompletableFuture
 public class CameraStream {
     public static final String MATERIAL_CAMERA_TEXTURE = "cameraTexture";
-    public static final String DEPTH_TEXTURE = "depthTexture";
+    public static final String MATERIAL_DEPTH_TEXTURE = "depthTexture";
 
     private static final String TAG = CameraStream.class.getSimpleName();
 
@@ -180,8 +180,7 @@ public class CameraStream {
                 .thenAccept(
                         material -> {
                             float[] uvTransform = Mat4.Companion.identity().toFloatArray();
-                            material
-                                    .getFilamentMaterialInstance()
+                            material.getFilamentMaterialInstance()
                                     .setParameter(
                                             "uvTransform",
                                             MaterialInstance.FloatElement.FLOAT4,
@@ -190,8 +189,9 @@ public class CameraStream {
                                             4);
 
                             // Only set the camera material if it hasn't already been set to a custom material.
-                            if(cameraMaterial == null)
+                            if(cameraMaterial == null) {
                                 cameraMaterial = material;
+                            }
                         })
                 .exceptionally(
                         throwable -> {
@@ -213,8 +213,7 @@ public class CameraStream {
                 .thenAccept(
                         material -> {
                             float[] uvTransform = Mat4.Companion.identity().toFloatArray();
-                            material
-                                    .getFilamentMaterialInstance()
+                            material.getFilamentMaterialInstance()
                                     .setParameter(
                                             "uvTransform",
                                             MaterialInstance.FloatElement.FLOAT4,
@@ -223,8 +222,9 @@ public class CameraStream {
                                             4);
 
                             // Only set the occlusion material if it hasn't already been set to a custom material.
-                            if (occlusionCameraMaterial == null)
+                            if (occlusionCameraMaterial == null) {
                                 occlusionCameraMaterial = material;
+                            }
                         })
                 .exceptionally(
                         throwable -> {
@@ -391,14 +391,15 @@ public class CameraStream {
                     depthImage.getHeight());
 
             occlusionCameraMaterial.setDepthTexture(
-                    DEPTH_TEXTURE,
+                    MATERIAL_DEPTH_TEXTURE,
                     depthTexture);
         }
 
         if (occlusionCameraMaterial == null ||
                 !isTextureInitialized ||
-                depthImage == null)
+                depthImage == null) {
             return;
+        }
 
         depthTexture.updateDepthTexture(depthImage);
     }
@@ -436,11 +437,38 @@ public class CameraStream {
         }
     }
 
+    /**
+     * Gets the currently applied depth mode depending on the device supported modes.
+     */
     public DepthMode getDepthMode() {
         return depthMode;
     }
 
-    public DepthOcclusionMode getDepthModeUsage() {
+    /**
+     * Checks whether the provided DepthOcclusionMode is supported on this device with the selected camera configuration and AR config.
+     * The current list of supported devices is documented on the ARCore supported devices page.
+     *
+     * @param depthOcclusionMode The desired depth mode to check.
+     * @return True if the depth mode has been activated on the AR session config
+     * and the provided depth occlusion mode is supported on this device.
+     */
+    public boolean isDepthOcclusionModeSupported(DepthOcclusionMode depthOcclusionMode) {
+        switch (depthOcclusionMode) {
+            case DEPTH_OCCLUSION_ENABLED:
+                return depthMode == DepthMode.DEPTH || depthMode == DepthMode.RAW_DEPTH;
+            default:
+                return true;
+        }
+    }
+
+    /**
+     * Gets the current Depth Occlusion Mode
+     * 
+     * @see #setDepthOcclusionMode
+     * @see DepthOcclusionMode
+     * @return the occlusion mode currently defined for the CarmeraStream
+     */
+    public DepthOcclusionMode getDepthOcclusionMode() {
         return depthOcclusionMode;
     }
 
@@ -489,16 +517,10 @@ public class CameraStream {
      * @param depthOcclusionMode {@link DepthOcclusionMode}
      */
     public void setDepthOcclusionMode(DepthOcclusionMode depthOcclusionMode) {
-        boolean enableOcclusionMaterial = false;
-
         // Only set the occlusion material if the session config
         // has set the DepthMode to AUTOMATIC or RAW_DEPTH_ONLY,
         // otherwise set the standard camera material.
-        if (depthOcclusionMode == DepthOcclusionMode.DEPTH_OCCLUSION_ENABLED && (
-                depthMode == DepthMode.DEPTH || depthMode == DepthMode.RAW_DEPTH))
-            enableOcclusionMaterial = true;
-
-        if(enableOcclusionMaterial) {
+        if (isDepthOcclusionModeSupported(depthOcclusionMode)) {
             if (occlusionCameraMaterial != null) {
                 setOcclusionMaterial(occlusionCameraMaterial);
                 initOrUpdateRenderableMaterial(occlusionCameraMaterial);

@@ -46,13 +46,9 @@ public class DepthTexture {
                 .getDepthTextureCleanupRegistry()
                 .register(this, new CleanupCallback(filamentTexture));
     }
-
-    
     public Texture getFilamentTexture() {
         return Preconditions.checkNotNull(filamentTexture);
     }
-
-
     /**
      * <pre>
      *     This is the most important function of this class.
@@ -67,8 +63,9 @@ public class DepthTexture {
      * @param depthImage {@link Image}
      */
     public void updateDepthTexture(Image depthImage) {
-        if (filamentTexture == null)
+        if (filamentTexture == null) {
             return;
+        }
 
         IEngine engine = EngineInstance.getEngine();
 

@@ -46,7 +46,6 @@ import java.util.function.Consumer;
 public class ArSceneView extends SceneView {
     private static final String TAG = ArSceneView.class.getSimpleName();
     private static final String REPORTED_ENGINE_TYPE = "Sceneform";
-    private static final String REPORTED_ENGINE_VERSION = "1.7";
     private static final float DEFAULT_PIXEL_INTENSITY = 1.0f;
     private static final Color DEFAULT_COLOR_CORRECTION = new Color(1, 1, 1);
 
@@ -68,7 +67,6 @@ public class ArSceneView extends SceneView {
     private Display display;
     private CameraStream cameraStream;
     private PlaneRenderer planeRenderer;
-    private long oldDepthImageTimestamp = 0L;
     private Image depthImage;
     private boolean lightEstimationEnabled = true;
     private boolean isLightDirectionUpdateEnabled = true;
@@ -466,8 +464,9 @@ public class ArSceneView extends SceneView {
                 // Update the light estimate.
                 updateLightEstimate(frame);
                 // Update the plane renderer.
-                if (planeRenderer.isEnabled())
+                if (planeRenderer.isEnabled()) {
                     planeRenderer.update(frame, getWidth(), getHeight());
+                }
             }
         }
 
