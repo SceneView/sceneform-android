@@ -104,6 +104,9 @@ public class MainActivity extends AppCompatActivity implements
         // Disable plane detection
         config.setPlaneFindingMode(Config.PlaneFindingMode.DISABLED);
 
+        if(session.isDepthModeSupported(Config.DepthMode.AUTOMATIC))
+            config.setDepthMode(Config.DepthMode.AUTOMATIC);
+
         // Images to be detected by our AR need to be added in AugmentedImageDatabase
         // This is how database is created at runtime
         // You can also prebuild database in you computer and load it directly (see: https://developers.google.com/ar/develop/java/augmented-images/guide#database)

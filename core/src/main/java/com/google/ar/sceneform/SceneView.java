@@ -22,6 +22,8 @@ import com.google.ar.sceneform.utilities.AndroidPreconditions;
 import com.google.ar.sceneform.utilities.MovingAverageMillisecondsTracker;
 import com.google.ar.sceneform.utilities.Preconditions;
 
+import java.util.concurrent.TimeUnit;
+
 
 /**
  * A Sceneform SurfaceView that manages rendering and interaction with the scene.
@@ -48,6 +50,7 @@ public class SceneView extends SurfaceView implements Choreographer.FrameCallbac
             new MovingAverageMillisecondsTracker();
     private final MovingAverageMillisecondsTracker frameRenderTracker =
             new MovingAverageMillisecondsTracker();
+
 
     /**
      * Constructs a SceneView object and binds it to an Android Context.

@@ -1,4 +1,4 @@
-package com.google.ar.sceneform.samples.gltf;
+package com.google.ar.sceneform.samples.depth;
 
 import android.net.Uri;
 import android.os.Bundle;
@@ -22,6 +22,7 @@ import com.google.ar.sceneform.ArSceneView;
 import com.google.ar.sceneform.Node;
 import com.google.ar.sceneform.Sceneform;
 import com.google.ar.sceneform.math.Vector3;
+import com.google.ar.sceneform.rendering.CameraStream;
 import com.google.ar.sceneform.rendering.EngineInstance;
 import com.google.ar.sceneform.rendering.ModelRenderable;
 import com.google.ar.sceneform.rendering.Renderable;
@@ -65,16 +66,9 @@ public class MainActivity extends AppCompatActivity implements
     public void onAttachFragment(@NonNull FragmentManager fragmentManager, @NonNull Fragment fragment) {
         if (fragment.getId() == R.id.arFragment) {
             arFragment = (ArFragment) fragment;
-            arFragment.setOnSessionConfigurationListener(this);
-            arFragment.setOnViewCreatedListener(this);
             arFragment.setOnTapArPlaneListener(this);
-        }
-    }
-
-    @Override
-    public void onSessionConfiguration(Session session, Config config) {
-        if (session.isDepthModeSupported(Config.DepthMode.AUTOMATIC)) {
-            config.setDepthMode(Config.DepthMode.AUTOMATIC);
+            arFragment.setOnViewCreatedListener(this);
+            arFragment.setOnSessionConfigurationListener(this);
         }
     }
 
@@ -93,12 +87,16 @@ public class MainActivity extends AppCompatActivity implements
                             .build(EngineInstance.getEngine().getFilamentEngine())
             );
         }
+
+        // Available modes: DEPTH_OCCLUSION_DISABLED, DEPTH_OCCLUSION_ENABLED
+        arSceneView.getCameraStream()
+            .setDepthOcclusionMode(CameraStream.DepthOcclusionMode.DEPTH_OCCLUSION_ENABLED);
     }
 
     public void loadModels() {
         WeakReference<MainActivity> weakActivity = new WeakReference<>(this);
         ModelRenderable.builder()
-                .setSource(this, Uri.parse("https://storage.googleapis.com/ar-answers-in-search-models/static/Tiger/model.glb"))
+                .setSource(this, Uri.parse("https://storage.googleapis.com/ar-answers-in-search-models/static/GiantPanda/model.glb"))
                 .setIsFilamentGltf(true)
                 .setAsyncLoadEnabled(true)
                 .build()
@@ -109,8 +107,7 @@ public class MainActivity extends AppCompatActivity implements
                     }
                 })
                 .exceptionally(throwable -> {
-                    Toast.makeText(
-                            this, "Unable to load model", Toast.LENGTH_LONG).show();
+                    Toast.makeText(this, "Unable to load model", Toast.LENGTH_LONG).show();
                     return null;
                 });
         ViewRenderable.builder()
@@ -153,5 +150,18 @@ public class MainActivity extends AppCompatActivity implements
         titleNode.setLocalPosition(new Vector3(0.0f, 1.0f, 0.0f));
         titleNode.setRenderable(viewRenderable);
         titleNode.setEnabled(true);
+    }
+
+    @Override
+    public void onSessionConfiguration(Session session, Config config) {
+        // Comment this in to feed the DepthTexture with Raw Depth Data.
+        /*if (session.isDepthModeSupported(Config.DepthMode.RAW_DEPTH_ONLY))
+            config.setDepthMode(Config.DepthMode.RAW_DEPTH_ONLY);*/
+
+        if (session.isDepthModeSupported(Config.DepthMode.AUTOMATIC)) {
+            config.setDepthMode(Config.DepthMode.AUTOMATIC);
+        }
+
+        config.setUpdateMode(Config.UpdateMode.LATEST_CAMERA_IMAGE);
     }
 }
