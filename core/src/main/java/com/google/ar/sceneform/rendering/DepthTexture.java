@@ -9,6 +9,7 @@ import androidx.annotation.Nullable;
 import com.google.android.filament.Texture;
 import com.google.ar.sceneform.utilities.AndroidPreconditions;
 import com.google.ar.sceneform.utilities.BufferHelper;
+import com.google.ar.sceneform.utilities.Preconditions;
 
 import java.nio.ByteBuffer;
 
@@ -29,8 +30,8 @@ public class DepthTexture {
      *      later used to feed in data from a DepthImage.
      * </pre>
      *
-     * @param width
-     * @param height
+     * @param width int
+     * @param height int
      */
     public DepthTexture(int width, int height) {
         filamentTexture = new com.google.android.filament.Texture.Builder()
@@ -46,9 +47,9 @@ public class DepthTexture {
                 .register(this, new CleanupCallback(filamentTexture));
     }
 
-    @Nullable
+    
     public Texture getFilamentTexture() {
-        return filamentTexture;
+        return Preconditions.checkNotNull(filamentTexture);
     }
 
 

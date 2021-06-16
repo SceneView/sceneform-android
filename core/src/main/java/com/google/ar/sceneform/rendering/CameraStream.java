@@ -70,13 +70,15 @@ public class CameraStream {
     private final FloatBuffer transformedCameraUvCoords;
     private final IEngine engine;
     private int cameraStreamRenderable = UNINITIALIZED_FILAMENT_RENDERABLE;
+
+    /** By default the DepthMode is set to {@link DepthMode#NO_DEPTH} */
     private DepthMode depthMode = DepthMode.NO_DEPTH;
+    /** By default the DepModeUsage ist set to {@link DepthModeUsage#DEPTH_MODE_DISABLED} */
     private DepthModeUsage depthModeUsage = DepthModeUsage.DEPTH_MODE_DISABLED;
 
     @Nullable private ExternalTexture cameraTexture;
     @Nullable private DepthTexture depthTexture;
 
-    @Nullable private Material defaultCameraMaterial = null;
     @Nullable private Material cameraMaterial = null;
     @Nullable private Material occlusionCameraMaterial = null;
 
@@ -127,30 +129,6 @@ public class CameraStream {
         setupOcclusionCameraMaterial(renderer);
     }
 
-    /**
-     * <pre>
-     *     The Session holds the information if the
-     *     DepthMode is configured or not. Based on
-     *     that the result different materials and textures are
-     *     used for the camera.
-     * </pre>
-     *
-     * @param session {@link Session}
-     */
-    public void checkIfDepthEnabled(Session session) {
-        depthMode = DepthMode.NO_DEPTH;
-
-        if (session.isDepthModeSupported(Config.DepthMode.AUTOMATIC))
-            if (session.getConfig().getDepthMode() == Config.DepthMode.AUTOMATIC) {
-                depthMode = DepthMode.DEPTH;
-            }
-
-        if (session.isDepthModeSupported(Config.DepthMode.RAW_DEPTH_ONLY))
-            if (session.getConfig().getDepthMode() == Config.DepthMode.RAW_DEPTH_ONLY) {
-                depthMode = DepthMode.RAW_DEPTH;
-            }
-    }
-
     private FloatBuffer createCameraUVBuffer() {
         FloatBuffer buffer =
                 ByteBuffer.allocateDirect(CAMERA_UVS.length * FLOAT_SIZE_IN_BYTES)
@@ -188,45 +166,6 @@ public class CameraStream {
                 .build(engine.getFilamentEngine());
     }
 
-    public boolean isTextureInitialized() {
-        return isTextureInitialized;
-    }
-
-    public void initializeTexture(Frame frame) {
-        if (isTextureInitialized()) {
-            return;
-        }
-
-        Camera arCamera = frame.getCamera();
-        CameraIntrinsics intrinsics = arCamera.getTextureIntrinsics();
-        int[] dimensions = intrinsics.getImageDimensions();
-
-        // External Camera Texture
-        cameraTexture = new ExternalTexture(
-                cameraTextureId,
-                dimensions[0],
-                dimensions[1]);
-
-        if (depthModeUsage == DepthModeUsage.DEPTH_MODE_ENABLED && (
-                depthMode == DepthMode.DEPTH ||
-                depthMode == DepthMode.RAW_DEPTH)) {
-            if (occlusionCameraMaterial != null) {
-                Log.d("CameraStream", "setOcclusionMaterial from initializeTexture");
-                isTextureInitialized = true;
-                setOcclusionMaterial(occlusionCameraMaterial);
-                initOrUpdateRenderableMaterial(occlusionCameraMaterial);
-            }
-        } else {
-            if (cameraMaterial != null) {
-                Log.d("CameraStream", "setCameraMaterial from initializeTexture");
-                isTextureInitialized = true;
-                setCameraMaterial(cameraMaterial);
-                initOrUpdateRenderableMaterial(cameraMaterial);
-            }
-        }
-    }
-
-
     void setupStandardCameraMaterial(Renderer renderer) {
         CompletableFuture<Material> materialFuture =
                 Material.builder()
@@ -250,27 +189,7 @@ public class CameraStream {
                                             0,
                                             4);
 
-                            // Only set the camera material if it hasn't already been set to a custom material.
-                            /*if (cameraMaterial == null) {
-                                setCameraMaterial(material);
-                            }*/
                             cameraMaterial = material;
-/*
-                            // The ExternalTexture can't be created until we receive the first AR Core Frame so that we
-                            // can access the width and height of the camera texture. Return early if the ExternalTexture
-                            // hasn't been created yet so we don't start rendering until we have a valid texture. This will
-                            // be called again when the ExternalTexture is created.
-                            if (!isTextureInitialized()) {
-                                return;
-                            }
-
-                            Log.d("CameraStream", "setupStandardCameraMaterial passed !isTextureInitialized() call");
-
-                            cameraMaterial.setExternalTexture(
-                                    MATERIAL_CAMERA_TEXTURE,
-                                    Preconditions.checkNotNull(cameraTexture));
-
-                            initOrUpdateRenderableMaterial(cameraMaterial);*/
                         })
                 .exceptionally(
                         throwable -> {
@@ -313,44 +232,7 @@ public class CameraStream {
                         });
     }
 
-
-    /**
-     * <pre>
-     *      Update the DepthTexture.
-     * </pre>
-     *
-     * @param depthImage {@link Image}
-     */
-    public void recalculateOcclusion(Image depthImage) {
-        if (depthTexture == null) {
-            // The Depth Texture to realize the occlusion of virtual objects.
-            depthTexture = new DepthTexture(
-                    depthImage.getWidth(),
-                    depthImage.getHeight());
-
-            occlusionCameraMaterial.setDepthTexture(
-                    DEPTH_TEXTURE,
-                    depthTexture);
-        }
-
-        if (!isTextureInitialized || depthImage == null)
-            return;
-        depthTexture.updateDepthTexture(depthImage);
-    }
-
-
-    public void recalculateCameraUvs(Frame frame) {
-        FloatBuffer cameraUvCoords = this.cameraUvCoords;
-        FloatBuffer transformedCameraUvCoords = this.transformedCameraUvCoords;
-        VertexBuffer cameraVertexBuffer = this.cameraVertexBuffer;
-        frame.transformDisplayUvCoords(cameraUvCoords, transformedCameraUvCoords);
-        adjustCameraUvsForOpenGL();
-        cameraVertexBuffer.setBufferAt(
-                engine.getFilamentEngine(), UV_BUFFER_INDEX, transformedCameraUvCoords);
-    }
-
-
-    void setCameraMaterial(Material material) {
+    private void setCameraMaterial(Material material) {
         Log.d("CameraStream", "setCameraMaterial");
         cameraMaterial = material;
         if (cameraMaterial == null)
@@ -369,21 +251,9 @@ public class CameraStream {
         cameraMaterial.setExternalTexture(
                 MATERIAL_CAMERA_TEXTURE,
                 Preconditions.checkNotNull(cameraTexture));
-
-        //initOrUpdateRenderableMaterial(cameraMaterial);
-        /*if (cameraStreamRenderable == UNINITIALIZED_FILAMENT_RENDERABLE) {
-            Log.d("CameraStream", "call to initializeFilamentRenderable");
-            initializeFilamentRenderable(cameraMaterial);
-        } else {
-            Log.d("CameraStream", "Update with existing Material");
-            RenderableManager renderableManager = EngineInstance.getEngine().getRenderableManager();
-            int renderableInstance = renderableManager.getInstance(cameraStreamRenderable);
-            renderableManager.setMaterialInstanceAt(
-                    renderableInstance, 0, material.getFilamentMaterialInstance());
-        }*/
     }
 
-    void setOcclusionMaterial(Material material) {
+    private void setOcclusionMaterial(Material material) {
         Log.d("CameraStream", "setOcclusionMaterial");
         occlusionCameraMaterial = material;
         if (occlusionCameraMaterial == null)
@@ -402,18 +272,8 @@ public class CameraStream {
         occlusionCameraMaterial.setExternalTexture(
                 MATERIAL_CAMERA_TEXTURE,
                 Preconditions.checkNotNull(cameraTexture));
-
-        /*if (cameraStreamRenderable == UNINITIALIZED_FILAMENT_RENDERABLE) {
-            Log.d("CameraStream", "call to initializeFilamentRenderable");
-            initializeFilamentRenderable(occlusionCameraMaterial);
-        } else {
-            Log.d("CameraStream", "Update with existing Material");
-            RenderableManager renderableManager = EngineInstance.getEngine().getRenderableManager();
-            int renderableInstance = renderableManager.getInstance(cameraStreamRenderable);
-            renderableManager.setMaterialInstanceAt(
-                    renderableInstance, 0, material.getFilamentMaterialInstance());
-        }*/
     }
+
 
     private void initOrUpdateRenderableMaterial(Material material) {
         if (!isTextureInitialized()) {
@@ -432,30 +292,6 @@ public class CameraStream {
         }
     }
 
-    public int getRenderPriority() {
-        return renderablePriority;
-    }
-
-    public void setRenderPriority(int priority) {
-        renderablePriority = priority;
-        if (cameraStreamRenderable != UNINITIALIZED_FILAMENT_RENDERABLE) {
-            RenderableManager renderableManager = EngineInstance.getEngine().getRenderableManager();
-            int renderableInstance = renderableManager.getInstance(cameraStreamRenderable);
-            renderableManager.setPriority(renderableInstance, renderablePriority);
-        }
-    }
-
-    private void adjustCameraUvsForOpenGL() {
-        // Correct for vertical coordinates to match OpenGL
-        for (int i = 1; i < VERTEX_COUNT * 2; i += 2) {
-            transformedCameraUvCoords.put(i, 1.0f - transformedCameraUvCoords.get(i));
-        }
-        // Correct for horizontal coordinates to match OpenGL
-        // Only needed for the RealityCore Vertices, UVs and Indices definition
-        /*for (int i = 0; i < VERTEX_COUNT * 2; i += 2) {
-            transformedCameraUvCoords.put(i, 1.0f - transformedCameraUvCoords.get(i));
-        }*/
-    }
 
     private void initializeFilamentRenderable(Material material) {
         // create entity id
@@ -485,6 +321,130 @@ public class CameraStream {
                                 scene, cameraStreamRenderable, cameraIndexBuffer, cameraVertexBuffer));
     }
 
+
+    /**
+     * <pre>
+     *     The {@link Session} holds the information if the
+     *     DepthMode is configured or not. Based on
+     *     that result different materials and textures are
+     *     used for the camera.
+     * </pre>
+     *
+     * @param session {@link Session}
+     */
+    public void checkIfDepthIsEnabled(Session session) {
+        depthMode = DepthMode.NO_DEPTH;
+
+        if (session.isDepthModeSupported(Config.DepthMode.AUTOMATIC))
+            if (session.getConfig().getDepthMode() == Config.DepthMode.AUTOMATIC) {
+                depthMode = DepthMode.DEPTH;
+            }
+
+        if (session.isDepthModeSupported(Config.DepthMode.RAW_DEPTH_ONLY))
+            if (session.getConfig().getDepthMode() == Config.DepthMode.RAW_DEPTH_ONLY) {
+                depthMode = DepthMode.RAW_DEPTH;
+            }
+    }
+
+    public boolean isTextureInitialized() {
+        return isTextureInitialized;
+    }
+
+    public void initializeTexture(Frame frame) {
+        if (isTextureInitialized()) {
+            return;
+        }
+
+        Camera arCamera = frame.getCamera();
+        CameraIntrinsics intrinsics = arCamera.getTextureIntrinsics();
+        int[] dimensions = intrinsics.getImageDimensions();
+
+        // External Camera Texture
+        cameraTexture = new ExternalTexture(
+                cameraTextureId,
+                dimensions[0],
+                dimensions[1]);
+
+        if (depthModeUsage == DepthModeUsage.DEPTH_MODE_ENABLED && (
+                depthMode == DepthMode.DEPTH ||
+                depthMode == DepthMode.RAW_DEPTH)) {
+            if (occlusionCameraMaterial != null) {
+                Log.d("CameraStream", "setOcclusionMaterial from initializeTexture");
+                isTextureInitialized = true;
+                setOcclusionMaterial(occlusionCameraMaterial);
+                initOrUpdateRenderableMaterial(occlusionCameraMaterial);
+            }
+        } else {
+            if (cameraMaterial != null) {
+                Log.d("CameraStream", "setCameraMaterial from initializeTexture");
+                isTextureInitialized = true;
+                setCameraMaterial(cameraMaterial);
+                initOrUpdateRenderableMaterial(cameraMaterial);
+            }
+        }
+    }
+
+
+    /**
+     * <pre>
+     *      Update the DepthTexture.
+     * </pre>
+     *
+     * @param depthImage {@link Image}
+     */
+    public void recalculateOcclusion(Image depthImage) {
+        if (occlusionCameraMaterial != null &&
+                depthTexture == null) {
+            depthTexture = new DepthTexture(
+                    depthImage.getWidth(),
+                    depthImage.getHeight());
+
+            occlusionCameraMaterial.setDepthTexture(
+                    DEPTH_TEXTURE,
+                    depthTexture);
+        }
+
+        if (occlusionCameraMaterial == null ||
+                !isTextureInitialized ||
+                depthImage == null)
+            return;
+
+        depthTexture.updateDepthTexture(depthImage);
+    }
+
+
+    public void recalculateCameraUvs(Frame frame) {
+        FloatBuffer cameraUvCoords = this.cameraUvCoords;
+        FloatBuffer transformedCameraUvCoords = this.transformedCameraUvCoords;
+        VertexBuffer cameraVertexBuffer = this.cameraVertexBuffer;
+        frame.transformDisplayUvCoords(cameraUvCoords, transformedCameraUvCoords);
+        adjustCameraUvsForOpenGL();
+        cameraVertexBuffer.setBufferAt(
+                engine.getFilamentEngine(), UV_BUFFER_INDEX, transformedCameraUvCoords);
+    }
+
+
+    private void adjustCameraUvsForOpenGL() {
+        // Correct for vertical coordinates to match OpenGL
+        for (int i = 1; i < VERTEX_COUNT * 2; i += 2) {
+            transformedCameraUvCoords.put(i, 1.0f - transformedCameraUvCoords.get(i));
+        }
+    }
+
+
+    public int getRenderPriority() {
+        return renderablePriority;
+    }
+
+    public void setRenderPriority(int priority) {
+        renderablePriority = priority;
+        if (cameraStreamRenderable != UNINITIALIZED_FILAMENT_RENDERABLE) {
+            RenderableManager renderableManager = EngineInstance.getEngine().getRenderableManager();
+            int renderableInstance = renderableManager.getInstance(cameraStreamRenderable);
+            renderableManager.setPriority(renderableInstance, renderablePriority);
+        }
+    }
+
     public DepthMode getDepthMode() {
         return depthMode;
     }
@@ -493,34 +453,131 @@ public class CameraStream {
         return depthModeUsage;
     }
 
+
+    /**
+     * <pre>
+     *     Set the DepthModeUsage to {@link DepthModeUsage#DEPTH_MODE_ENABLED} to set the
+     *     occlusion {@link com.google.android.filament.Material}. This will process the incoming DepthImage to
+     *     occlude virtual objects behind real world objects. If the {@link Session} configuration
+     *     for the {@link com.google.ar.core.Config.DepthMode} is set to {@link Config.DepthMode#DISABLED},
+     *     the standard camera {@link Material} is used.
+     *
+     *     Set the DepthModeUsage to {@link DepthModeUsage#DEPTH_MODE_DISABLED} to set the
+     *     standard camera {@link com.google.android.filament.Material}.
+     *
+     *     A good place to set the DepthModeUsage is inside of the onViewCreated() function call.
+     *     To make sure that this function is called in your code set the correct listener on
+     *     your Ar Fragment
+     *
+     *     <code>public void onAttachFragment(
+     *         FragmentManager fragmentManager,
+     *         Fragment fragment
+     *     ) {
+     *         if (fragment.getId() == R.id.arFragment) {
+     *             arFragment = (ArFragment) fragment;
+     *             arFragment.setOnViewCreatedListener(this);
+     *             arFragment.setOnSessionConfigurationListener(this);
+     *         }
+     *     }
+     *
+     *     public void onViewCreated(
+     *         ArFragment arFragment,
+     *         ArSceneView arSceneView
+     *     ) {
+     *         arSceneView
+     *            .getCameraStream()
+     *            .setDepthModeUsage(CameraStream
+     *               .DepthModeUsage
+     *               .DEPTH_MODE_DISABLED);
+     *     }
+     *     </code>
+     *
+     *     The default value for {@link DepthModeUsage} is {@link DepthModeUsage#DEPTH_MODE_DISABLED}.
+     * </pre>
+     *
+     * @param depthModeUsage {@link DepthModeUsage}
+     */
     public void setDepthModeUsage(DepthModeUsage depthModeUsage) {
         Log.d("CameraStream", "setDepthModeUsage " + depthModeUsage.name());
 
-        if (depthModeUsage == DepthModeUsage.DEPTH_MODE_DISABLED) {
-            if (cameraMaterial != null) {
-                Log.d("CameraStream", "Set Standard Material");
-                setCameraMaterial(cameraMaterial);
-                initOrUpdateRenderableMaterial(cameraMaterial);
-            }
-        } else if (depthModeUsage == DepthModeUsage.DEPTH_MODE_ENABLED) {
+        boolean enableOcclusionMaterial = false;
+
+        // Only set the occlusion material if the session config
+        // has set the DepthMode to AUTOMATIC or RAW_DEPTH_ONLY,
+        // otherwise set the standard camera material.
+        if (depthModeUsage == DepthModeUsage.DEPTH_MODE_ENABLED && (
+                depthMode == DepthMode.DEPTH || depthMode == DepthMode.RAW_DEPTH))
+            enableOcclusionMaterial = true;
+
+        if(enableOcclusionMaterial) {
             if (occlusionCameraMaterial != null) {
                 Log.d("CameraStream", "Set Occlusion Material");
                 setOcclusionMaterial(occlusionCameraMaterial);
                 initOrUpdateRenderableMaterial(occlusionCameraMaterial);
+            }
+        } else {
+            if (cameraMaterial != null) {
+                Log.d("CameraStream", "Set Standard Material");
+                setCameraMaterial(cameraMaterial);
+                initOrUpdateRenderableMaterial(cameraMaterial);
             }
         }
 
         this.depthModeUsage = depthModeUsage;
     }
 
+
+    /**
+     * The DepthMode Enum is used to reflect the {@link Session} configuration
+     * for the DepthMode to decide if the occlusion material should be set and if
+     * frame.acquireDepthImage() or frame.acquireRawDepthImage() should be called to get
+     * the input data for the depth texture.
+     */
     public enum DepthMode {
+        /**
+         * <pre>
+         * The {@link Session} is not configured to use the Depth-API
+         *
+         * This is the default value
+         * </pre>
+         */
         NO_DEPTH,
+        /**
+         * The {@link Session} is configured to use the DepthMode AUTOMATIC
+         */
         DEPTH,
+        /**
+         * The {@link Session} is configured to use the DepthMode RAW_DEPTH_ONLY
+         */
         RAW_DEPTH
     }
 
+
+    /**
+     * Independent from the {@link Session} configuration, the user can decide with the
+     * DeptModeUsage which {@link com.google.android.filament.Material} should be set to the
+     * CameraStream renderable.
+     */
     public enum DepthModeUsage {
+        /**
+         * Set the occlusion material. If the {@link Session} is not
+         * configured properly the standard camera material is used.
+         * Valid {@link Session} configuration for the DepthMode are
+         * {@link Config.DepthMode#AUTOMATIC} and {@link Config.DepthMode#RAW_DEPTH_ONLY}.
+         */
         DEPTH_MODE_ENABLED,
+        /**
+         * <pre>
+         * Use this value if the standard camera material should be applied to
+         * the CameraStream Renderable even if the {@link Session} configuration has set
+         * the DepthMode to {@link Config.DepthMode#AUTOMATIC} or
+         * {@link Config.DepthMode#RAW_DEPTH_ONLY}. This Option is useful, if you
+         * want to use the DepthImage or RawDepthImage or just the DepthPoints without the
+         * occlusion effect.
+         *
+         * This is the default value
+         * </pre>
+         */
         DEPTH_MODE_DISABLED
     }
 

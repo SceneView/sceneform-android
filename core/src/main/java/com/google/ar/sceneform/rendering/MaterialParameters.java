@@ -16,10 +16,6 @@ import java.util.Optional;
 final class MaterialParameters {
   private final HashMap<String, MaterialParameters.Parameter> namedParameters = new HashMap<>();
 
-  
-
-
-
 
   @UsedByNative("material_java_wrappers.h")
   void setBoolean(String name, boolean x) {
@@ -299,6 +295,7 @@ final class MaterialParameters {
     }
   }
 
+
   abstract static class Parameter implements Cloneable {
     String name;
 
@@ -314,6 +311,7 @@ final class MaterialParameters {
     }
   }
 
+
   static class BooleanParameter extends MaterialParameters.Parameter {
     boolean x;
 
@@ -327,6 +325,7 @@ final class MaterialParameters {
       materialInstance.setParameter(name, x);
     }
   }
+
 
   static class Boolean2Parameter extends MaterialParameters.Parameter {
     boolean x;
@@ -343,6 +342,7 @@ final class MaterialParameters {
       materialInstance.setParameter(name, x, y);
     }
   }
+
 
   static class Boolean3Parameter extends MaterialParameters.Parameter {
     boolean x;
@@ -361,6 +361,7 @@ final class MaterialParameters {
       materialInstance.setParameter(name, x, y, z);
     }
   }
+
 
   static class Boolean4Parameter extends MaterialParameters.Parameter {
     boolean x;
@@ -382,6 +383,7 @@ final class MaterialParameters {
     }
   }
 
+
   static class FloatParameter extends MaterialParameters.Parameter {
     float x;
 
@@ -395,6 +397,7 @@ final class MaterialParameters {
       materialInstance.setParameter(name, x);
     }
   }
+
 
   static class Float2Parameter extends MaterialParameters.Parameter {
     float x;
@@ -411,6 +414,7 @@ final class MaterialParameters {
       materialInstance.setParameter(name, x, y);
     }
   }
+
 
   static class Float3Parameter extends MaterialParameters.Parameter {
     float x;
@@ -429,6 +433,7 @@ final class MaterialParameters {
       materialInstance.setParameter(name, x, y, z);
     }
   }
+
 
   static class Float4Parameter extends MaterialParameters.Parameter {
     float x;
@@ -450,6 +455,7 @@ final class MaterialParameters {
     }
   }
 
+
   static class IntParameter extends MaterialParameters.Parameter {
     int x;
 
@@ -463,6 +469,7 @@ final class MaterialParameters {
       materialInstance.setParameter(name, x);
     }
   }
+
 
   static class Int2Parameter extends MaterialParameters.Parameter {
     int x;
@@ -479,6 +486,7 @@ final class MaterialParameters {
       materialInstance.setParameter(name, x, y);
     }
   }
+
 
   static class Int3Parameter extends MaterialParameters.Parameter {
     int x;
@@ -497,6 +505,7 @@ final class MaterialParameters {
       materialInstance.setParameter(name, x, y, z);
     }
   }
+
 
   static class Int4Parameter extends MaterialParameters.Parameter {
     int x;
@@ -518,6 +527,7 @@ final class MaterialParameters {
     }
   }
 
+
   static class TextureParameter extends MaterialParameters.Parameter {
     final Texture texture;
 
@@ -538,6 +548,7 @@ final class MaterialParameters {
     }
   }
 
+
   static class DepthTextureParameter extends MaterialParameters.Parameter {
     private final DepthTexture depthTexture;
 
@@ -556,6 +567,7 @@ final class MaterialParameters {
       materialInstance.setParameter(name, depthTexture.getFilamentTexture(), depthTextureSampler);
     }
   }
+
 
   static class ExternalTextureParameter extends MaterialParameters.Parameter {
     private final ExternalTexture externalTexture;
@@ -588,6 +600,7 @@ final class MaterialParameters {
       return new ExternalTextureParameter(name, externalTexture);
     }
   }
+
 
   private static com.google.android.filament.TextureSampler convertTextureSampler(
       Texture.Sampler sampler) {

@@ -8,7 +8,6 @@ import androidx.annotation.RequiresApi;
 import com.google.android.filament.MaterialInstance;
 
 
-import com.google.android.filament.TextureSampler;
 import com.google.ar.sceneform.math.Vector3;
 import com.google.ar.sceneform.resources.ResourceRegistry;
 import com.google.ar.sceneform.utilities.AndroidPreconditions;
@@ -42,20 +41,12 @@ public class Material {
   }
 
 
-
-
-
-
   public void setBoolean(String name, boolean x) {
     materialParameters.setBoolean(name, x);
     if (internalMaterialInstance.isValidInstance()) {
       materialParameters.applyTo(internalMaterialInstance.getInstance());
     }
   }
-
-
-
-
 
 
   public void setBoolean2(String name, boolean x, boolean y) {
@@ -66,22 +57,12 @@ public class Material {
   }
 
 
-
-
-
-
-
   public void setBoolean3(String name, boolean x, boolean y, boolean z) {
     materialParameters.setBoolean3(name, x, y, z);
     if (internalMaterialInstance.isValidInstance()) {
       materialParameters.applyTo(internalMaterialInstance.getInstance());
     }
   }
-
-
-
-
-
 
 
   public void setBoolean4(String name, boolean x, boolean y, boolean z, boolean w) {
@@ -92,21 +73,12 @@ public class Material {
   }
 
 
-
-
-
-
-
   public void setFloat(String name, float x) {
     materialParameters.setFloat(name, x);
     if (internalMaterialInstance.isValidInstance()) {
       materialParameters.applyTo(internalMaterialInstance.getInstance());
     }
   }
-
-
-
-
 
 
   public void setFloat2(String name, float x, float y) {
@@ -117,11 +89,6 @@ public class Material {
   }
 
 
-
-
-
-
-
   public void setFloat3(String name, float x, float y, float z) {
     materialParameters.setFloat3(name, x, y, z);
     if (internalMaterialInstance.isValidInstance()) {
@@ -129,12 +96,14 @@ public class Material {
     }
   }
 
+
   public void setFloat3(String name, Vector3 value) {
     materialParameters.setFloat3(name, value);
     if (internalMaterialInstance.isValidInstance()) {
       materialParameters.applyTo(internalMaterialInstance.getInstance());
     }
   }
+
 
   public void setFloat3(String name, Color color) {
     materialParameters.setFloat3(name, color.r, color.g, color.b);
@@ -144,11 +113,6 @@ public class Material {
   }
 
 
-
-
-
-
-
   public void setFloat4(String name, float x, float y, float z, float w) {
     materialParameters.setFloat4(name, x, y, z, w);
     if (internalMaterialInstance.isValidInstance()) {
@@ -156,17 +120,13 @@ public class Material {
     }
   }
 
+
   public void setFloat4(String name, Color color) {
     materialParameters.setFloat4(name, color.r, color.g, color.b, color.a);
     if (internalMaterialInstance.isValidInstance()) {
       materialParameters.applyTo(internalMaterialInstance.getInstance());
     }
   }
-
-
-
-
-
 
 
   public void setInt(String name, int x) {
@@ -177,21 +137,12 @@ public class Material {
   }
 
 
-
-
-
-
   public void setInt2(String name, int x, int y) {
     materialParameters.setInt2(name, x, y);
     if (internalMaterialInstance.isValidInstance()) {
       materialParameters.applyTo(internalMaterialInstance.getInstance());
     }
   }
-
-
-
-
-
 
 
   public void setInt3(String name, int x, int y, int z) {
@@ -202,22 +153,12 @@ public class Material {
   }
 
 
-
-
-
-
-
   public void setInt4(String name, int x, int y, int z, int w) {
     materialParameters.setInt4(name, x, y, z, w);
     if (internalMaterialInstance.isValidInstance()) {
       materialParameters.applyTo(internalMaterialInstance.getInstance());
     }
   }
-
-
-
-
-
 
 
   public void setTexture(String name, Texture texture) {
@@ -228,6 +169,14 @@ public class Material {
   }
 
 
+  /**
+   * <pre>
+   *     Sets a {@link DepthTexture} to a parameter of the type 'sampler2d' on this material.
+   * </pre>
+   *
+   * @param name the name of the parameter in the material
+   * @param depthTexture the texture to set
+   */
   public void setDepthTexture(String name, DepthTexture depthTexture) {
     materialParameters.setDepthTexture(name, depthTexture);
     if(internalMaterialInstance.isValidInstance()) {
@@ -249,10 +198,12 @@ public class Material {
     }
   }
 
+
   @Nullable
   public ExternalTexture getExternalTexture(String name) {
     return materialParameters.getExternalTexture(name);
   }
+
 
   /**
    * Constructs a {@link Material}
@@ -266,19 +217,13 @@ public class Material {
     return new Builder();
   }
 
+
   void copyMaterialParameters(MaterialParameters materialParameters) {
     this.materialParameters.copyFrom(materialParameters);
     if (internalMaterialInstance.isValidInstance()) {
       this.materialParameters.applyTo(internalMaterialInstance.getInstance());
     }
   }
-
-
-
-
-
-
-
 
 
   // LINT.IfChange(api)
