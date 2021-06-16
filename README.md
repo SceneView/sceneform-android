@@ -151,6 +151,7 @@ public void onViewCreated(ArFragment arFragment, ArSceneView arSceneView) {
     arSceneView.getCameraStream().setDepthOcclusionMode(CameraStream.DepthOcclusionMode.DEPTH_OCCLUSION_ENABLED);
 }
 ```
+**[documentation...](https://thomasgorisse.github.io/sceneform-android-sdk/depth)**
 **[sample project...](samples/depth/)**
 
 
