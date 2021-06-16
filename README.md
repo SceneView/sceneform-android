@@ -178,11 +178,11 @@ public void onViewCreated(ArFragment arFragment, ArSceneView arSceneView) {
 public void onTapPlane(HitResult hitResult, Plane plane, MotionEvent motionEvent) {
     …
     MediaPlayer player = MediaPlayer.create(this, R.raw.my_video);
+    player.start();
     VideoNode videoNode = new VideoNode(this, player, chromaKeyColor, (throwable ->
         Toast.makeText(this, "Unable to load material", Toast.LENGTH_LONG).show())
     );
     videoNode.setParent(anchorNode);
-    player.start();
 }
 ```
 
