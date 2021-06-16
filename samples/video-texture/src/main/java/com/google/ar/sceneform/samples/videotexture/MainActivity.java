@@ -26,13 +26,18 @@ import com.google.ar.sceneform.ux.VideoNode;
 import java.util.ArrayList;
 import java.util.List;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.ViewCompat;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentOnAttachListener;
 
 public class MainActivity extends AppCompatActivity implements
-        BaseArFragment.OnTapArPlaneListener,
-        ArFragment.OnViewCreatedListener {
+        FragmentOnAttachListener,
+        ArFragment.OnViewCreatedListener,
+        BaseArFragment.OnTapArPlaneListener {
 
     private ArFragment arFragment;
     private List<MediaPlayer> mediaPlayers = new ArrayList<>();
@@ -51,13 +56,7 @@ public class MainActivity extends AppCompatActivity implements
             return insets.consumeSystemWindowInsets();
         });
 
-        getSupportFragmentManager().addFragmentOnAttachListener((fragmentManager, fragment) -> {
-            if (fragment.getId() == R.id.arFragment) {
-                arFragment = (ArFragment) fragment;
-                arFragment.setOnTapArPlaneListener(MainActivity.this);
-                arFragment.setOnViewCreatedListener(MainActivity.this);
-            }
-        });
+        getSupportFragmentManager().addFragmentOnAttachListener(this);
 
         if (savedInstanceState == null) {
             if (Sceneform.isSupported(this)) {
@@ -65,6 +64,15 @@ public class MainActivity extends AppCompatActivity implements
                         .add(R.id.arFragment, ArFragment.class, null)
                         .commit();
             }
+        }
+    }
+
+    @Override
+    public void onAttachFragment(@NonNull FragmentManager fragmentManager, @NonNull Fragment fragment) {
+        if (fragment.getId() == R.id.arFragment) {
+            arFragment = (ArFragment) fragment;
+            arFragment.setOnTapArPlaneListener(this);
+            arFragment.setOnViewCreatedListener(this);
         }
     }
 
