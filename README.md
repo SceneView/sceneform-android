@@ -152,6 +152,7 @@ public void onViewCreated(ArFragment arFragment, ArSceneView arSceneView) {
 }
 ```
 **[documentation...](https://thomasgorisse.github.io/sceneform-android-sdk/depth)**
+
 **[sample project...](samples/depth/)**
 
 
