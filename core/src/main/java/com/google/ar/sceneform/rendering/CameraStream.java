@@ -189,7 +189,9 @@ public class CameraStream {
                                             0,
                                             4);
 
-                            cameraMaterial = material;
+                            // Only set the camera material if it hasn't already been set to a custom material.
+                            if(cameraMaterial == null)
+                                cameraMaterial = material;
                         })
                 .exceptionally(
                         throwable -> {
@@ -220,10 +222,9 @@ public class CameraStream {
                                             0,
                                             4);
 
-                            // Only set the camera material if it hasn't already been set to a custom material.
-                            if (occlusionCameraMaterial == null) {
-                                setOcclusionMaterial(material);
-                            }
+                            // Only set the occlusion material if it hasn't already been set to a custom material.
+                            if (occlusionCameraMaterial == null)
+                                occlusionCameraMaterial = material;
                         })
                 .exceptionally(
                         throwable -> {
@@ -233,7 +234,6 @@ public class CameraStream {
     }
 
     private void setCameraMaterial(Material material) {
-        Log.d("CameraStream", "setCameraMaterial");
         cameraMaterial = material;
         if (cameraMaterial == null)
             return;
@@ -246,15 +246,12 @@ public class CameraStream {
             return;
         }
 
-        Log.d("CameraStream", "setCameraMaterial passed !isTextureInitialized() call");
-
         cameraMaterial.setExternalTexture(
                 MATERIAL_CAMERA_TEXTURE,
                 Preconditions.checkNotNull(cameraTexture));
     }
 
     private void setOcclusionMaterial(Material material) {
-        Log.d("CameraStream", "setOcclusionMaterial");
         occlusionCameraMaterial = material;
         if (occlusionCameraMaterial == null)
             return;
@@ -266,8 +263,6 @@ public class CameraStream {
         if (!isTextureInitialized()) {
             return;
         }
-
-        Log.d("CameraStream", "setOcclusionMaterial passed !isTextureInitialized() call");
 
         occlusionCameraMaterial.setExternalTexture(
                 MATERIAL_CAMERA_TEXTURE,
@@ -281,10 +276,8 @@ public class CameraStream {
         }
 
         if (cameraStreamRenderable == UNINITIALIZED_FILAMENT_RENDERABLE) {
-            Log.d("CameraStream", "call to initializeFilamentRenderable");
             initializeFilamentRenderable(material);
         } else {
-            Log.d("CameraStream", "Update with existing Material");
             RenderableManager renderableManager = EngineInstance.getEngine().getRenderableManager();
             int renderableInstance = renderableManager.getInstance(cameraStreamRenderable);
             renderableManager.setMaterialInstanceAt(
@@ -369,14 +362,12 @@ public class CameraStream {
                 depthMode == DepthMode.DEPTH ||
                 depthMode == DepthMode.RAW_DEPTH)) {
             if (occlusionCameraMaterial != null) {
-                Log.d("CameraStream", "setOcclusionMaterial from initializeTexture");
                 isTextureInitialized = true;
                 setOcclusionMaterial(occlusionCameraMaterial);
                 initOrUpdateRenderableMaterial(occlusionCameraMaterial);
             }
         } else {
             if (cameraMaterial != null) {
-                Log.d("CameraStream", "setCameraMaterial from initializeTexture");
                 isTextureInitialized = true;
                 setCameraMaterial(cameraMaterial);
                 initOrUpdateRenderableMaterial(cameraMaterial);
@@ -498,8 +489,6 @@ public class CameraStream {
      * @param depthModeUsage {@link DepthModeUsage}
      */
     public void setDepthModeUsage(DepthModeUsage depthModeUsage) {
-        Log.d("CameraStream", "setDepthModeUsage " + depthModeUsage.name());
-
         boolean enableOcclusionMaterial = false;
 
         // Only set the occlusion material if the session config
@@ -511,13 +500,11 @@ public class CameraStream {
 
         if(enableOcclusionMaterial) {
             if (occlusionCameraMaterial != null) {
-                Log.d("CameraStream", "Set Occlusion Material");
                 setOcclusionMaterial(occlusionCameraMaterial);
                 initOrUpdateRenderableMaterial(occlusionCameraMaterial);
             }
         } else {
             if (cameraMaterial != null) {
-                Log.d("CameraStream", "Set Standard Material");
                 setCameraMaterial(cameraMaterial);
                 initOrUpdateRenderableMaterial(cameraMaterial);
             }

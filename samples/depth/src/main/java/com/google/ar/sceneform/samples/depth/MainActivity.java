@@ -37,7 +37,8 @@ import java.lang.ref.WeakReference;
 public class MainActivity extends AppCompatActivity implements
         FragmentOnAttachListener,
         BaseArFragment.OnTapArPlaneListener,
-        ArFragment.OnViewCreatedListener, BaseArFragment.OnSessionConfigurationListener {
+        BaseArFragment.OnSessionConfigurationListener,
+        ArFragment.OnViewCreatedListener {
 
     private ArFragment arFragment;
     private Renderable model;
@@ -86,6 +87,12 @@ public class MainActivity extends AppCompatActivity implements
                             .build(EngineInstance.getEngine().getFilamentEngine())
             );
         }
+
+        arSceneView
+                .getCameraStream()
+                .setDepthModeUsage(CameraStream
+                        .DepthModeUsage
+                        .DEPTH_MODE_ENABLED); // Available modes: DEPTH_MODE_DISABLED, DEPTH_MODE_ENABLED
     }
 
     public void loadModels() {
@@ -149,8 +156,13 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public void onSessionConfiguration(Session session, Config config) {
+        // Comment this in to feed the DepthTexture with Raw Depth Data.
+        /*if (session.isDepthModeSupported(Config.DepthMode.RAW_DEPTH_ONLY))
+            config.setDepthMode(Config.DepthMode.RAW_DEPTH_ONLY);*/
+
         if (session.isDepthModeSupported(Config.DepthMode.AUTOMATIC))
             config.setDepthMode(Config.DepthMode.AUTOMATIC);
+
         config.setUpdateMode(Config.UpdateMode.LATEST_CAMERA_IMAGE);
     }
 }

@@ -1,6 +1,5 @@
 package com.google.ar.sceneform.rendering;
 
-import android.util.Log;
 
 import androidx.annotation.Nullable;
 import com.google.android.filament.MaterialInstance;

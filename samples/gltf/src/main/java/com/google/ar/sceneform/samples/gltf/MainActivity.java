@@ -22,7 +22,6 @@ import com.google.ar.sceneform.ArSceneView;
 import com.google.ar.sceneform.Node;
 import com.google.ar.sceneform.Sceneform;
 import com.google.ar.sceneform.math.Vector3;
-import com.google.ar.sceneform.rendering.CameraStream;
 import com.google.ar.sceneform.rendering.EngineInstance;
 import com.google.ar.sceneform.rendering.ModelRenderable;
 import com.google.ar.sceneform.rendering.Renderable;
@@ -37,7 +36,8 @@ import java.lang.ref.WeakReference;
 public class MainActivity extends AppCompatActivity implements
         FragmentOnAttachListener,
         BaseArFragment.OnTapArPlaneListener,
-        ArFragment.OnViewCreatedListener, BaseArFragment.OnSessionConfigurationListener {
+        BaseArFragment.OnSessionConfigurationListener,
+        ArFragment.OnViewCreatedListener {
 
     private ArFragment arFragment;
     private Renderable model;

@@ -16,12 +16,12 @@ import java.nio.ByteBuffer;
 /**
  * <pre>
  *     The DepthTexture class holds a special Texture to store
- *     information from a DepthImage to realize the occlusion of
- *     virtual objects behind real objects.
+ *     information from a DepthImage or RawDepthImage to realize the occlusion of
+ *     virtual objects behind real world objects.
  * </pre>
  */
 public class DepthTexture {
-    @Nullable private final com.google.android.filament.Texture filamentTexture;
+    @Nullable private final Texture filamentTexture;
     private final Handler handler = new Handler(Looper.myLooper());
 
     /**
@@ -34,10 +34,10 @@ public class DepthTexture {
      * @param height int
      */
     public DepthTexture(int width, int height) {
-        filamentTexture = new com.google.android.filament.Texture.Builder()
+        filamentTexture = new Texture.Builder()
                 .width(width)
                 .height(height)
-                .sampler(com.google.android.filament.Texture.Sampler.SAMPLER_2D)
+                .sampler(Texture.Sampler.SAMPLER_2D)
                 .format(Texture.InternalFormat.RG8)
                 .levels(1)
                 .build(EngineInstance.getEngine().getFilamentEngine());
@@ -100,9 +100,9 @@ public class DepthTexture {
      * Cleanup filament objects after garbage collection
      */
     private static final class CleanupCallback implements Runnable {
-        @Nullable private final com.google.android.filament.Texture filamentTexture;
+        @Nullable private final Texture filamentTexture;
 
-        CleanupCallback(@Nullable com.google.android.filament.Texture filamentTexture) {
+        CleanupCallback(@Nullable Texture filamentTexture) {
             this.filamentTexture = filamentTexture;
         }
 
