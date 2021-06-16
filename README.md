@@ -133,6 +133,27 @@ public void onAttachFragment(Fragment childFragment) {
 **[sample project...](samples/gltf/)**
 
 
+### Depth Occlusion
+
+<img src="docs/images/samples/screenshot_depth_01.png" alt="drawing" width="250"/><img src="docs/images/samples/screenshot_depth_02.png" alt="drawing" width="250"/><img src="docs/images/samples/screenshot_depth_03.png" alt="drawing" width="250"/>
+
+```java
+@Override
+public void onSessionConfiguration(Session session, Config config) {
+   if (session.isDepthModeSupported(Config.DepthMode.AUTOMATIC)) {
+       config.setDepthMode(Config.DepthMode.AUTOMATIC);
+   }
+}
+
+@Override
+public void onViewCreated(ArFragment arFragment, ArSceneView arSceneView) {
+    // Available modes: DEPTH_OCCLUSION_DISABLED, DEPTH_OCCLUSION_ENABLED
+    arSceneView.getCameraStream().setDepthOcclusionMode(CameraStream.DepthOcclusionMode.DEPTH_OCCLUSION_ENABLED);
+}
+```
+**[sample project...](samples/depth/)**
+
+
 ### Image texture
 
 <img src="docs/images/samples/screenshot_image_texture.png" alt="drawing" width="400"/>
