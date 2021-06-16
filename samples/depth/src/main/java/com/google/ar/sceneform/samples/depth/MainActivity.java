@@ -90,9 +90,8 @@ public class MainActivity extends AppCompatActivity implements
 
         arSceneView
                 .getCameraStream()
-                .setDepthModeUsage(CameraStream
-                        .DepthModeUsage
-                        .DEPTH_MODE_ENABLED); // Available modes: DEPTH_MODE_DISABLED, DEPTH_MODE_ENABLED
+                .setDepthOcclusionMode(CameraStream.DepthOcclusionMode
+                        .DEPTH_OCCLUSION_ENABLED); // Available modes: DEPTH_MODE_DISABLED, DEPTH_MODE_ENABLED
     }
 
     public void loadModels() {

@@ -71,10 +71,10 @@ public class CameraStream {
     private final IEngine engine;
     private int cameraStreamRenderable = UNINITIALIZED_FILAMENT_RENDERABLE;
 
-    /** By default the DepthMode is set to {@link DepthMode#NO_DEPTH} */
+    /** By default the depthMode is set to {@link DepthMode#NO_DEPTH} */
     private DepthMode depthMode = DepthMode.NO_DEPTH;
-    /** By default the DepModeUsage ist set to {@link DepthModeUsage#DEPTH_MODE_DISABLED} */
-    private DepthModeUsage depthModeUsage = DepthModeUsage.DEPTH_MODE_DISABLED;
+    /** By default the depthOcclusionMode ist set to {@link DepthOcclusionMode#DEPTH_OCCLUSION_DISABLED} */
+    private DepthOcclusionMode depthOcclusionMode = DepthOcclusionMode.DEPTH_OCCLUSION_DISABLED;
 
     @Nullable private ExternalTexture cameraTexture;
     @Nullable private DepthTexture depthTexture;
@@ -358,7 +358,7 @@ public class CameraStream {
                 dimensions[0],
                 dimensions[1]);
 
-        if (depthModeUsage == DepthModeUsage.DEPTH_MODE_ENABLED && (
+        if (depthOcclusionMode == DepthOcclusionMode.DEPTH_OCCLUSION_ENABLED && (
                 depthMode == DepthMode.DEPTH ||
                 depthMode == DepthMode.RAW_DEPTH)) {
             if (occlusionCameraMaterial != null) {
@@ -440,20 +440,20 @@ public class CameraStream {
         return depthMode;
     }
 
-    public DepthModeUsage getDepthModeUsage() {
-        return depthModeUsage;
+    public DepthOcclusionMode getDepthModeUsage() {
+        return depthOcclusionMode;
     }
 
 
     /**
      * <pre>
-     *     Set the DepthModeUsage to {@link DepthModeUsage#DEPTH_MODE_ENABLED} to set the
+     *     Set the DepthModeUsage to {@link DepthOcclusionMode#DEPTH_OCCLUSION_ENABLED} to set the
      *     occlusion {@link com.google.android.filament.Material}. This will process the incoming DepthImage to
      *     occlude virtual objects behind real world objects. If the {@link Session} configuration
      *     for the {@link com.google.ar.core.Config.DepthMode} is set to {@link Config.DepthMode#DISABLED},
      *     the standard camera {@link Material} is used.
      *
-     *     Set the DepthModeUsage to {@link DepthModeUsage#DEPTH_MODE_DISABLED} to set the
+     *     Set the DepthModeUsage to {@link DepthOcclusionMode#DEPTH_OCCLUSION_DISABLED} to set the
      *     standard camera {@link com.google.android.filament.Material}.
      *
      *     A good place to set the DepthModeUsage is inside of the onViewCreated() function call.
@@ -478,23 +478,23 @@ public class CameraStream {
      *         arSceneView
      *            .getCameraStream()
      *            .setDepthModeUsage(CameraStream
-     *               .DepthModeUsage
-     *               .DEPTH_MODE_DISABLED);
+     *               .setDepthOcclusionMode
+     *               .DEPTH_OCCLUSION_DISABLED);
      *     }
      *     </code>
      *
-     *     The default value for {@link DepthModeUsage} is {@link DepthModeUsage#DEPTH_MODE_DISABLED}.
+     *     The default value for {@link DepthOcclusionMode} is {@link DepthOcclusionMode#DEPTH_OCCLUSION_DISABLED}.
      * </pre>
      *
-     * @param depthModeUsage {@link DepthModeUsage}
+     * @param depthOcclusionMode {@link DepthOcclusionMode}
      */
-    public void setDepthModeUsage(DepthModeUsage depthModeUsage) {
+    public void setDepthOcclusionMode(DepthOcclusionMode depthOcclusionMode) {
         boolean enableOcclusionMaterial = false;
 
         // Only set the occlusion material if the session config
         // has set the DepthMode to AUTOMATIC or RAW_DEPTH_ONLY,
         // otherwise set the standard camera material.
-        if (depthModeUsage == DepthModeUsage.DEPTH_MODE_ENABLED && (
+        if (depthOcclusionMode == DepthOcclusionMode.DEPTH_OCCLUSION_ENABLED && (
                 depthMode == DepthMode.DEPTH || depthMode == DepthMode.RAW_DEPTH))
             enableOcclusionMaterial = true;
 
@@ -510,7 +510,7 @@ public class CameraStream {
             }
         }
 
-        this.depthModeUsage = depthModeUsage;
+        this.depthOcclusionMode = depthOcclusionMode;
     }
 
 
@@ -545,14 +545,14 @@ public class CameraStream {
      * DeptModeUsage which {@link com.google.android.filament.Material} should be set to the
      * CameraStream renderable.
      */
-    public enum DepthModeUsage {
+    public enum DepthOcclusionMode {
         /**
          * Set the occlusion material. If the {@link Session} is not
          * configured properly the standard camera material is used.
          * Valid {@link Session} configuration for the DepthMode are
          * {@link Config.DepthMode#AUTOMATIC} and {@link Config.DepthMode#RAW_DEPTH_ONLY}.
          */
-        DEPTH_MODE_ENABLED,
+        DEPTH_OCCLUSION_ENABLED,
         /**
          * <pre>
          * Use this value if the standard camera material should be applied to
@@ -565,7 +565,7 @@ public class CameraStream {
          * This is the default value
          * </pre>
          */
-        DEPTH_MODE_DISABLED
+        DEPTH_OCCLUSION_DISABLED
     }
 
     /**
