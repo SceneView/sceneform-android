@@ -64,7 +64,7 @@ dependencies {
 **[sample...](samples/gltf/src/main/res/layout/activity_main.xml)**
 
 
-### Edit your `Activity`
+### Edit your `Activity` or `Fragment`
 *src/main/java/…/MainActivity.java*
 ```java
 @Override
@@ -94,10 +94,9 @@ protected void onCreate(Bundle savedInstanceState) {
     }
 }
 ```
-**[sample...](samples/gltf/src/main/java/com/google/ar/sceneform/samples/gltf/MainActivity.java)**
 
+**Or**
 
-### Or `Fragment`
 *src/main/java/…/MainFragment.java*
 ```java
 @Override
@@ -236,7 +235,7 @@ the app only being visible in the Google Play Store on devices that support ARCo
 
 ### Nodes
 
-To add a node or multiply nodes to the Scene when the user press on a surface, you can override the `onTapPlane` function from a `BaseArFragment.OnTapArPlaneListener`:
+To add a node or multiple nodes to the Scene when the user press on a surface, you can override the `onTapPlane` function from a `BaseArFragment.OnTapArPlaneListener`:
 ```java
 arFragment.setOnTapArPlaneListener(MainActivity.this);
 ```
