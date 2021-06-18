@@ -598,6 +598,7 @@ public class RenderableInstance implements AnimatableModel {
                 if (getFilamentAnimator() != null) {
                     getFilamentAnimator().applyAnimation(i, animation.getTimePosition());
                 }
+                animation.setDirty(false);
                 hasUpdate = true;
             }
         }

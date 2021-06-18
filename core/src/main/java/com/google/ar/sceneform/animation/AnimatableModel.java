@@ -212,6 +212,7 @@ public interface AnimatableModel {
     /**
      * Constructs and returns an {@link ObjectAnimator} for a targeted {@link ModelAnimation} of
      * this object.
+     * <b>The setAutoCancel(true) won't work for new call with different animations.</b>
      * <br>This method applies by default this to the returned ObjectAnimator :
      * <ul>
      * <li>The duration value to the max {@link ModelAnimation#getDuration()} in order to

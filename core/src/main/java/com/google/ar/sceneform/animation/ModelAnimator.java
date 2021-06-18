@@ -1,5 +1,7 @@
 package com.google.ar.sceneform.animation;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.text.TextUtils;
@@ -174,6 +176,7 @@ public class ModelAnimator {
     /**
      * Constructs and returns an {@link ObjectAnimator} for all {@link ModelAnimation}
      * inside an {@link AnimatableModel}.
+     * <b>The setAutoCancel(true) won't work</b>
      * <p>Don't forget to call {@link ObjectAnimator#start()}</p>
      *
      * @param model The targeted model to animate
@@ -210,6 +213,7 @@ public class ModelAnimator {
     /**
      * Constructs and returns an {@link ObjectAnimator} for targeted {@link ModelAnimation} with
      * a given name inside an {@link AnimatableModel}.
+     * <b>The setAutoCancel(true) won't work for new call with different animations.</b>
      * <p>Don't forget to call {@link ObjectAnimator#start()}</p>
      *
      * @param model          The targeted model to animate
@@ -232,6 +236,7 @@ public class ModelAnimator {
     /**
      * Constructs and returns an {@link ObjectAnimator} for targeted {@link ModelAnimation} with
      * a given index inside an {@link AnimatableModel}.
+     * <b>The setAutoCancel(true) won't work for new call with different animations.</b>
      * <p>Don't forget to call {@link ObjectAnimator#start()}</p>
      *
      * @param model            The targeted animatable to animate
@@ -250,6 +255,7 @@ public class ModelAnimator {
     /**
      * Constructs and returns an {@link ObjectAnimator} for a targeted {@link ModelAnimation} inside
      * an {@link AnimatableModel}.
+     * <b>The setAutoCancel(true) won't work for new call with different animations.</b>
      * This method applies by default this to the returned ObjectAnimator :
      * <ul>
      * <li>The duration value to the max {@link ModelAnimation#getDuration()} in order to
@@ -272,6 +278,16 @@ public class ModelAnimator {
         }
         ObjectAnimator objectAnimator = ofPropertyValuesHolder(model, propertyValuesHolders);
         objectAnimator.setDuration(duration);
+        objectAnimator.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationCancel(Animator animator) {
+                super.onAnimationCancel(animator);
+                for (ModelAnimation animation : animations) {
+                    animation.setTimePosition(0);
+                }
+            }
+        });
+        objectAnimator.setAutoCancel(true);
         return objectAnimator;
     }
 
@@ -510,6 +526,13 @@ public class ModelAnimator {
 
     private static ObjectAnimator ofPropertyValuesHolder(AnimatableModel model, ModelAnimation animation, android.animation.PropertyValuesHolder value) {
         ObjectAnimator objectAnimator = ofPropertyValuesHolder(model, value);
+        objectAnimator.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationCancel(Animator animator) {
+                super.onAnimationCancel(animator);
+                animation.setTimePosition(0);
+            }
+        });
         objectAnimator.setDuration(animation.getDurationMillis());
         objectAnimator.setAutoCancel(true);
         return objectAnimator;
