@@ -8,6 +8,14 @@ import android.view.MotionEvent;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.view.ViewCompat;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentOnAttachListener;
+
 import com.google.android.filament.ColorGrading;
 import com.google.ar.core.Anchor;
 import com.google.ar.core.HitResult;
@@ -17,6 +25,7 @@ import com.google.ar.sceneform.ArSceneView;
 import com.google.ar.sceneform.Sceneform;
 import com.google.ar.sceneform.rendering.Color;
 import com.google.ar.sceneform.rendering.EngineInstance;
+import com.google.ar.sceneform.rendering.RenderableInstance;
 import com.google.ar.sceneform.rendering.Renderer;
 import com.google.ar.sceneform.ux.ArFragment;
 import com.google.ar.sceneform.ux.BaseArFragment;
@@ -25,14 +34,6 @@ import com.google.ar.sceneform.ux.VideoNode;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
-import androidx.core.view.ViewCompat;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentOnAttachListener;
 
 public class MainActivity extends AppCompatActivity implements
         FragmentOnAttachListener,
@@ -163,9 +164,16 @@ public class MainActivity extends AppCompatActivity implements
         player.setLooping(true);
         player.start();
         mediaPlayers.add(player);
-        VideoNode videoNode = new VideoNode(this, player, chromaKeyColor, (throwable ->
-                Toast.makeText(this, "Unable to load material", Toast.LENGTH_LONG).show())
-        );
+        VideoNode videoNode = new VideoNode(this, player, chromaKeyColor, new VideoNode.Listener() {
+            @Override
+            public void onCreated(RenderableInstance renderableInstance) {
+            }
+
+            @Override
+            public void onError(Throwable throwable) {
+                Toast.makeText(MainActivity.this, "Unable to load material", Toast.LENGTH_LONG).show();
+            }
+        });
         videoNode.setParent(modelNode);
 
         modelNode.select();

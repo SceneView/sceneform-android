@@ -137,8 +137,8 @@ public void onTapPlane(HitResult hitResult, Plane plane, MotionEvent motionEvent
    // Create the transformable model and add it to the anchor.
    TransformableNode model = new TransformableNode(arFragment.getTransformationSystem());
    model.setParent(anchorNode);
-   model.setRenderable(this.model);
-   model.getRenderableInstance().animate(true).start();
+   model.setRenderable(this.model)
+        .animate(true).start();
 }
 ```
 **[sample project...](samples/gltf/)**

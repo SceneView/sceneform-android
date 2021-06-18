@@ -253,9 +253,7 @@ public class MainActivity extends AppCompatActivity implements
 
                         // Setting texture
                         ExternalTexture externalTexture = new ExternalTexture();
-                        RenderableInstance renderableInstance;
-                        videoNode.setRenderable(plainVideoModel);
-                        renderableInstance = videoNode.getRenderableInstance();
+                        RenderableInstance renderableInstance = videoNode.setRenderable(plainVideoModel);
                         renderableInstance.setMaterial(plainVideoMaterial);
 
                         // Setting MediaPLayer
@@ -287,11 +285,11 @@ public class MainActivity extends AppCompatActivity implements
 
                                         TransformableNode modelNode = new TransformableNode(arFragment.getTransformationSystem());
                                         modelNode.setParent(anchorNode);
-                                        modelNode.setRenderable(rabbitModel);
+                                        RenderableInstance renderableInstance = modelNode.setRenderable(rabbitModel);
 
                                         // Removing shadows
-                                        modelNode.getRenderableInstance().setShadowCaster(true);
-                                        modelNode.getRenderableInstance().setShadowReceiver(true);
+                                        renderableInstance.setShadowCaster(true);
+                                        renderableInstance.setShadowReceiver(true);
                                     }
                                 })
                                 .exceptionally(
