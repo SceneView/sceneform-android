@@ -12,6 +12,7 @@ import com.google.ar.sceneform.rendering.ExternalTexture;
 import com.google.ar.sceneform.rendering.Material;
 import com.google.ar.sceneform.rendering.PlaneFactory;
 import com.google.ar.sceneform.rendering.Renderable;
+import com.google.ar.sceneform.rendering.RenderableInstance;
 
 /**
  * Node that can show a video by passing a {@link MediaPlayer} instance. Note that
@@ -33,7 +34,7 @@ public class VideoNode extends Node {
     private final MediaPlayer player;
     private final ExternalTexture texture;
     private final Color chromaKeyColor;
-    private final ErrorListener errorListener;
+    private final Listener listener;
 
     /**
      * Create a new VideoNode for showing a video from a MediaPlayer instance inside a node on an
@@ -41,10 +42,10 @@ public class VideoNode extends Node {
      *
      * @param context       Resources context
      * @param player        The video media player to render on the plane node
-     * @param errorListener Loading error
+     * @param listener Loading listener
      */
-    public VideoNode(Context context, MediaPlayer player, @Nullable ErrorListener errorListener) {
-        this(context, player, null, null, errorListener);
+    public VideoNode(Context context, MediaPlayer player, @Nullable Listener listener) {
+        this(context, player, null, null, listener);
     }
 
     /**
@@ -54,11 +55,11 @@ public class VideoNode extends Node {
      * @param context        Resources context
      * @param player         The video media player to render on the plane node
      * @param chromaKeyColor Chroma Key color to made the video transparent from
-     * @param errorListener  Loading error
+     * @param listener  Loading listener
      */
     public VideoNode(Context context, MediaPlayer player, @Nullable Color chromaKeyColor,
-                     @Nullable ErrorListener errorListener) {
-        this(context, player, chromaKeyColor, null, errorListener);
+                     @Nullable Listener listener) {
+        this(context, player, chromaKeyColor, null, listener);
     }
 
     /**
@@ -70,14 +71,14 @@ public class VideoNode extends Node {
      * @param chromaKeyColor Chroma Key color to made the video transparent from
      * @param texture        Custom ExternalTexture for using your own renderable and material.
      *                       Null for default Plane shape renderable.
-     * @param errorListener  Loading error
+     * @param listener  Loading listener
      */
     public VideoNode(Context context, MediaPlayer player, @Nullable Color chromaKeyColor,
-                     @Nullable ExternalTexture texture, @Nullable ErrorListener errorListener) {
+                     @Nullable ExternalTexture texture, @Nullable Listener listener) {
         this.player = player;
         this.texture = texture != null ? texture : new ExternalTexture();
         this.chromaKeyColor = chromaKeyColor;
-        this.errorListener = errorListener;
+        this.listener = listener;
         init(context);
     }
 
@@ -98,7 +99,8 @@ public class VideoNode extends Node {
                         material.setFloat4(MATERIAL_PARAMETER_CHROMA_KEY_COLOR, chromaKeyColor);
                     }
                     final Renderable renderable = createModel(player, material);
-                    setRenderable(renderable);
+                    RenderableInstance renderableInstance = setRenderable(renderable);
+                    onCreated(renderableInstance);
                 })
                 .exceptionally(throwable -> {
                     onError(throwable);
@@ -135,16 +137,42 @@ public class VideoNode extends Node {
                 );
     }
 
+    private void onCreated(RenderableInstance model) {
+        if (listener != null) {
+            listener.onCreated(model);
+        }
+    }
+
     private void onError(Throwable throwable) {
-        if (errorListener != null) {
-            errorListener.onError(throwable);
+        if (listener != null) {
+            listener.onError(throwable);
         }
     }
 
     /**
      * Listener for VideoNode loading
      */
-    public interface ErrorListener {
+    public interface OnCreateListener {
+        /**
+         * Something wrong happened during the VideoNode instantiation
+         *
+         * @param throwable corresponding error
+         */
+        void onError(Throwable throwable);
+    }
+
+    /**
+     * Listener for VideoNode loading
+     */
+    public interface Listener {
+
+        /**
+         * Called when the renderable and material have been set on this node.
+         *
+         * @param renderableInstance the created instance of the model.
+         */
+        void onCreated(RenderableInstance renderableInstance);
+
         /**
          * Something wrong happened during the VideoNode instantiation
          *
