@@ -716,14 +716,14 @@ public class ArSceneView extends SceneView {
         cameraStream = new CameraStream(cameraTextureId, renderer);
     }
 
-    public void setCameraStreamRenderPriority(@IntRange(from = 0L,to = 7L) int priority) {
-    this.cameraStream.setRenderPriority(priority);
-  }
-
-  private void ensureUpdateMode() {
-    if (session == null) {
-      return;
+    public void setCameraStreamRenderPriority(@IntRange(from = 0L, to = 7L) int priority) {
+        this.cameraStream.setRenderPriority(priority);
     }
+
+    private void ensureUpdateMode() {
+        if (session == null) {
+            return;
+        }
 
         // Check the update mode.
         if (minArCoreVersionCode >= ArCoreVersion.VERSION_CODE_1_3) {

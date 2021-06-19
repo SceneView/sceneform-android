@@ -42,6 +42,11 @@ public class FaceArFragment extends ArFragment {
         getPlaneDiscoveryController().hide();
         getPlaneDiscoveryController().setInstructionView(null);
 
+        // Hide plane indicating dots
+        getArSceneView().getPlaneRenderer().setVisible(false);
+        // Disable the rendering of detected planes.
+        getArSceneView().getPlaneRenderer().setEnabled(false);
+
         return frameLayout;
     }
 }
