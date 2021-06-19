@@ -104,8 +104,8 @@ public class RenderableInstance implements AnimatableModel {
         Preconditions.checkNotNull(renderable, "Parameter \"renderable\" was null.");
         this.transformProvider = transformProvider;
         this.renderable = renderable;
-        this.materialBindings = renderable.getMaterialBindings();
-        this.materialNames = renderable.getMaterialNames();
+        this.materialBindings = new ArrayList<>(renderable.getMaterialBindings());
+        this.materialNames = new ArrayList<>(renderable.getMaterialNames());
         entity = createFilamentEntity(EngineInstance.getEngine());
 
         // SFB's can be imported with re-centering or scaling; rather than perform those operations to
@@ -403,7 +403,7 @@ public class RenderableInstance implements AnimatableModel {
     public void setMaterial(int entityIndex, @IntRange(from = 0) int primitiveIndex, Material material) {
         int[] entities = getFilamentAsset().getEntities();
         Preconditions.checkElementIndex(entityIndex, entities.length, "No entity found at the given index");
-//        materialBindings.set(entityIndex, material);
+        materialBindings.set(entityIndex, material);
         RenderableManager renderableManager = EngineInstance.getEngine().getRenderableManager();
         @EntityInstance int renderableInstance = renderableManager.getInstance(entities[entityIndex]);
         if (renderableInstance != 0) {
@@ -598,6 +598,7 @@ public class RenderableInstance implements AnimatableModel {
                 if (getFilamentAnimator() != null) {
                     getFilamentAnimator().applyAnimation(i, animation.getTimePosition());
                 }
+                animation.setDirty(false);
                 hasUpdate = true;
             }
         }

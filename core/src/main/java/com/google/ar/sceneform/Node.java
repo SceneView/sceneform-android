@@ -842,13 +842,14 @@ public class Node extends NodeParent implements TransformProvider {
    * @see ModelRenderable
    * @see com.google.ar.sceneform.rendering.ViewRenderable
    * @param renderable Usually a 3D model. If null, this node's current renderable will be removed.
+   * @return the created renderable instance
    */
-  public void setRenderable(@Nullable Renderable renderable) {
+  public RenderableInstance setRenderable(@Nullable Renderable renderable) {
     AndroidPreconditions.checkUiThread();
 
     // Renderable hasn't changed, return early.
     if (renderableInstance != null && renderableInstance.getRenderable() == renderable) {
-      return;
+      return renderableInstance;
     }
 
     if (renderableInstance != null) {
@@ -870,6 +871,8 @@ public class Node extends NodeParent implements TransformProvider {
     }
 
     refreshCollider();
+
+    return renderableInstance;
   }
 
   /**

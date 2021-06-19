@@ -101,11 +101,11 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public void onSessionConfiguration(Session session, Config config) {
-        // Hide plane indicating dots
-        arFragment.getArSceneView().getPlaneRenderer().setVisible(false);
-
         // Disable plane detection
         config.setPlaneFindingMode(Config.PlaneFindingMode.DISABLED);
+
+        if(session.isDepthModeSupported(Config.DepthMode.AUTOMATIC))
+            config.setDepthMode(Config.DepthMode.AUTOMATIC);
 
         // Images to be detected by our AR need to be added in AugmentedImageDatabase
         // This is how database is created at runtime
@@ -141,6 +141,9 @@ public class MainActivity extends AppCompatActivity implements
             );
         }
 
+        // Hide plane indicating dots
+        arSceneView.getPlaneRenderer().setVisible(false);
+        // Disable the rendering of detected planes.
         arSceneView.getPlaneRenderer().setEnabled(false);
     }
 
@@ -183,7 +186,7 @@ public class MainActivity extends AppCompatActivity implements
         MaterialBuilder.init();
         MaterialBuilder materialBuilder = new MaterialBuilder()
                 .platform(MaterialBuilder.Platform.MOBILE)
-                .name("Plain Video Material")
+                .name("External Video Material")
                 .require(MaterialBuilder.VertexAttribute.UV0)
                 .shading(MaterialBuilder.Shading.UNLIT)
                 .doubleSided(true)
@@ -250,9 +253,7 @@ public class MainActivity extends AppCompatActivity implements
 
                         // Setting texture
                         ExternalTexture externalTexture = new ExternalTexture();
-                        RenderableInstance renderableInstance;
-                        videoNode.setRenderable(plainVideoModel);
-                        renderableInstance = videoNode.getRenderableInstance();
+                        RenderableInstance renderableInstance = videoNode.setRenderable(plainVideoModel);
                         renderableInstance.setMaterial(plainVideoMaterial);
 
                         // Setting MediaPLayer
@@ -284,11 +285,11 @@ public class MainActivity extends AppCompatActivity implements
 
                                         TransformableNode modelNode = new TransformableNode(arFragment.getTransformationSystem());
                                         modelNode.setParent(anchorNode);
-                                        modelNode.setRenderable(rabbitModel);
+                                        RenderableInstance renderableInstance = modelNode.setRenderable(rabbitModel);
 
                                         // Removing shadows
-                                        modelNode.getRenderableInstance().setShadowCaster(true);
-                                        modelNode.getRenderableInstance().setShadowReceiver(true);
+                                        renderableInstance.setShadowCaster(true);
+                                        renderableInstance.setShadowReceiver(true);
                                     }
                                 })
                                 .exceptionally(

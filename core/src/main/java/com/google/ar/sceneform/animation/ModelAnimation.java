@@ -221,7 +221,7 @@ public class ModelAnimation {
      * Set the state of this object properties to changed.
      * And tell the {@link AnimatableModel} to take care of it.
      */
-    void setDirty(boolean isDirty) {
+    public void setDirty(boolean isDirty) {
         this.isDirty = isDirty;
         if (isDirty) {
             model.onModelAnimationChanged(this);

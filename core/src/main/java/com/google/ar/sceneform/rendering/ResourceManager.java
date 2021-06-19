@@ -28,6 +28,7 @@ public class ResourceManager {
   private final CleanupRegistry<CameraStream> cameraStreamCleanupRegistry = new CleanupRegistry<>();
   private final CleanupRegistry<ExternalTexture> externalTextureCleanupRegistry =
       new CleanupRegistry<>();
+  private final CleanupRegistry<DepthTexture> depthTextureCleanupRegistry = new CleanupRegistry<>();
   private final CleanupRegistry<Material> materialCleanupRegistry = new CleanupRegistry<>();
   private final CleanupRegistry<RenderableInstance> renderableInstanceCleanupRegistry =
       new CleanupRegistry<>();
@@ -56,6 +57,10 @@ public class ResourceManager {
 
   CleanupRegistry<ExternalTexture> getExternalTextureCleanupRegistry() {
     return externalTextureCleanupRegistry;
+  }
+
+  public CleanupRegistry<DepthTexture> getDepthTextureCleanupRegistry() {
+    return depthTextureCleanupRegistry;
   }
 
   CleanupRegistry<Material> getMaterialCleanupRegistry() {
@@ -104,6 +109,7 @@ public class ResourceManager {
     addViewRenderableRegistry();
     addResourceHolder(cameraStreamCleanupRegistry);
     addResourceHolder(externalTextureCleanupRegistry);
+    addResourceHolder(depthTextureCleanupRegistry);
     addResourceHolder(materialCleanupRegistry);
     addResourceHolder(renderableInstanceCleanupRegistry);
     addResourceHolder(textureCleanupRegistry);

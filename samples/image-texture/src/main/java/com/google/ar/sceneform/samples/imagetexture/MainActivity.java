@@ -135,11 +135,10 @@ public class MainActivity extends AppCompatActivity implements
         // Create the transformable model and add it to the anchor.
         TransformableNode modelNode = new TransformableNode(arFragment.getTransformationSystem());
         modelNode.setParent(anchorNode);
-        modelNode.setRenderable(this.model);
-        modelNode.select();
-
-        RenderableInstance modelInstance = modelNode.getRenderableInstance();
+        RenderableInstance modelInstance = modelNode.setRenderable(this.model);
         modelInstance.getMaterial().setInt("baseColorIndex", 0);
         modelInstance.getMaterial().setTexture("baseColorMap", texture);
+
+        modelNode.select();
     }
 }
