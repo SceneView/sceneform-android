@@ -35,7 +35,7 @@ public class MainActivity extends AppCompatActivity {
     private FaceArFragment arFragment;
 
     private Texture faceMeshTexture;
-
+    private ModelRenderable faceMeshRenderable;
     private final HashMap<AugmentedFace, AugmentedFaceNode> faceNodeMap = new HashMap<>();
 
     @Override
@@ -51,6 +51,12 @@ public class MainActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_main);
         arFragment = (FaceArFragment) getSupportFragmentManager().findFragmentById(R.id.face_fragment);
+
+        ModelRenderable.builder()
+                .setSource(this, Uri.parse("models/fox_face.glb"))
+                .setIsFilamentGltf(true)
+                .build()
+                .thenAccept(model -> faceMeshRenderable = model);
 
         // Load the face mesh texture.
         Texture.builder()
@@ -68,7 +74,7 @@ public class MainActivity extends AppCompatActivity {
 
         scene.addOnUpdateListener(
                 (FrameTime frameTime) -> {
-                    if (faceMeshTexture == null) {
+                    if (faceMeshRenderable == null || faceMeshTexture == null) {
                         return;
                     }
 
@@ -81,6 +87,7 @@ public class MainActivity extends AppCompatActivity {
                             AugmentedFaceNode faceNode = new AugmentedFaceNode(face);
                             faceNode.setParent(scene);
                             faceNode.setFaceMeshTexture(faceMeshTexture);
+                            faceNode.setFaceRegionsRenderable(faceMeshRenderable);
                             faceNodeMap.put(face, faceNode);
                         }
                     }

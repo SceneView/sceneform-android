@@ -72,6 +72,7 @@ public class AugmentedFaceNode extends Node {
 
     // Fields for nodes.
     private final Node faceMeshNode;
+    private final Node faceRegionNode;
 
     // Fields for face mesh renderable.
     private final ArrayList<Vertex> vertices = new ArrayList<>();
@@ -108,6 +109,9 @@ public class AugmentedFaceNode extends Node {
 
         faceMeshDefinition =
                 RenderableDefinition.builder().setVertices(vertices).setSubmeshes(submeshes).build();
+
+        faceRegionNode = new Node();
+        faceRegionNode.setParent(this);
     }
 
     /**
@@ -172,6 +176,21 @@ public class AugmentedFaceNode extends Node {
         updateSubmeshes();
     }
 
+
+    public void setFaceRegionsRenderable(ModelRenderable renderable) {
+        faceRegionNode.setRenderable(renderable);
+    }
+
+    @Nullable
+    public ModelRenderable getFaceRegionsRenderable() {
+        Renderable renderable = faceRegionNode.getRenderable();
+        if (renderable != null && !(renderable instanceof ModelRenderable)) {
+            throw new IllegalStateException("Face Regions Renderable must be a ModelRenderable.");
+        }
+
+        return (ModelRenderable) renderable;
+    }
+
     @Override
     @SuppressWarnings({"FutureReturnValueIgnored", "AndroidJdkLibsChecker"})
     public void onActivate() {
@@ -180,13 +199,13 @@ public class AugmentedFaceNode extends Node {
 
         // Face mesh material
         Material.builder()
-                .setSource(context,  R.raw.sceneform_face_mesh_material)
+                .setSource(context, R.raw.sceneform_face_mesh_material)
                 .build()
                 .handle((material, throwable) -> {
-                      if (throwable != null) {
-                          Log.e(TAG, "Unable to load face mesh material.", throwable);
-                           return false;
-                      }
+                    if (throwable != null) {
+                        Log.e(TAG, "Unable to load face mesh material.", throwable);
+                        return false;
+                    }
                     defaultFaceMeshMaterial = material;
                     updateSubmeshes();
                     return true;
@@ -215,11 +234,32 @@ public class AugmentedFaceNode extends Node {
 
         // Only render the visual effects when the augmented face is tracking.
         faceMeshNode.setEnabled(isTracking);
+        faceRegionNode.setEnabled(isTracking);
 
         if (isTracking) {
             updateTransform();
+            updateRegionNodes();
             updateFaceMesh();
         }
+    }
+
+    private void updateRegionNodes() {
+        if (augmentedFace == null) {
+            return;
+        }
+
+        Pose centerPose = augmentedFace.getCenterPose();
+
+        faceRegionNode.setWorldPosition(new Vector3(centerPose.tx(), centerPose.ty(), centerPose.tz()));
+
+        // Rotate the bones by 180 degrees because the .fbx template's coordinate system is
+        // inversed of Sceneform's coordinate system. This is so the .fbx works with other
+        // 3D rendering engines as well
+        Quaternion rotation = new Quaternion(centerPose.qx(), centerPose.qy(), centerPose.qz(), centerPose.qw());
+        Quaternion inverse = new Quaternion(Vector3.up(), 180f);
+
+        rotation = Quaternion.multiply(rotation, inverse);
+        faceRegionNode.setWorldRotation(rotation);
     }
 
     private boolean isTracking() {
