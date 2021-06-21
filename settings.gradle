@@ -1,8 +1,8 @@
-include ':core', ':ux', ':sceneform', ':sample-gltf', ':sample-sceneview-background', ':sample-image-texture', ':sample-video-texture', ':sample-augmented-images', ':sample-depth'
+include ':core', ':ux', ':sceneform', ':sample-gltf', ':sample-sceneview-background', ':sample-image-texture', ':sample-video-texture', ':sample-augmented-images', ':sample-depth', ':sample-pure-reflection'
 project(':sample-gltf').projectDir = new File('samples/gltf')
 project(':sample-sceneview-background').projectDir = new File('samples/sceneview-background')
 project(':sample-image-texture').projectDir = new File('samples/image-texture')
 project(':sample-video-texture').projectDir = new File('samples/video-texture')
 project(':sample-augmented-images').projectDir = new File('samples/augmented-images')
 project(':sample-depth').projectDir = new File(rootDir, 'samples/depth')
-
+project(':sample-pure-reflection').projectDir = new File('samples/sample-pure-reflection')
