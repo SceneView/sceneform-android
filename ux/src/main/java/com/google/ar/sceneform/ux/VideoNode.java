@@ -100,7 +100,7 @@ public class VideoNode extends Node {
                     }
                     final Renderable renderable = createModel(player, material);
                     RenderableInstance renderableInstance = setRenderable(renderable);
-                    onCreated(renderableInstance);
+                    onCreated(this);
                 })
                 .exceptionally(throwable -> {
                     onError(throwable);
@@ -129,17 +129,20 @@ public class VideoNode extends Node {
             x = (float) width / (float) height;
             y = 1.0f;
         }
-        return PlaneFactory
-                .makePlane(
-                        new Vector3(x, y, 0.0f),
-                        new Vector3(0.0f, y / 2.0f, 0.0f),
-                        material
-                );
+        return makePlane(x, y, material);
     }
 
-    private void onCreated(RenderableInstance model) {
+    public Renderable makePlane(float width, float height, Material material) {
+        return PlaneFactory.makePlane(
+                new Vector3(width, height, 0.0f),
+                new Vector3(width, height, 0.0f),
+                material
+        );
+    }
+
+    private void onCreated(VideoNode videoNode) {
         if (listener != null) {
-            listener.onCreated(model);
+            listener.onCreated(videoNode);
         }
     }
 
@@ -169,9 +172,9 @@ public class VideoNode extends Node {
         /**
          * Called when the renderable and material have been set on this node.
          *
-         * @param renderableInstance the created instance of the model.
+         * @param videoNode the created instance of the model.
          */
-        void onCreated(RenderableInstance renderableInstance);
+        void onCreated(VideoNode videoNode);
 
         /**
          * Something wrong happened during the VideoNode instantiation
@@ -179,5 +182,53 @@ public class VideoNode extends Node {
          * @param throwable corresponding error
          */
         void onError(Throwable throwable);
+    }
+
+    public static class Horizontal extends VideoNode {
+
+        public Horizontal(Context context, MediaPlayer player, @Nullable Listener listener) {
+            super(context, player, listener);
+        }
+
+        public Horizontal(Context context, MediaPlayer player, @Nullable Color chromaKeyColor, @Nullable Listener listener) {
+            super(context, player, chromaKeyColor, listener);
+        }
+
+        public Horizontal(Context context, MediaPlayer player, @Nullable Color chromaKeyColor, @Nullable ExternalTexture texture, @Nullable Listener listener) {
+            super(context, player, chromaKeyColor, texture, listener);
+        }
+
+        @Override
+        public Renderable makePlane(float width, float height, Material material) {
+            return PlaneFactory.makePlane(
+                    new Vector3(width, 0.0f, height),
+                    new Vector3(0.0f, 0.0f, 0.0f),
+                    material
+            );
+        }
+    }
+
+    public static class Vertical extends VideoNode {
+
+        public Vertical(Context context, MediaPlayer player, @Nullable Listener listener) {
+            super(context, player, listener);
+        }
+
+        public Vertical(Context context, MediaPlayer player, @Nullable Color chromaKeyColor, @Nullable Listener listener) {
+            super(context, player, chromaKeyColor, listener);
+        }
+
+        public Vertical(Context context, MediaPlayer player, @Nullable Color chromaKeyColor, @Nullable ExternalTexture texture, @Nullable Listener listener) {
+            super(context, player, chromaKeyColor, texture, listener);
+        }
+
+        @Override
+        public Renderable makePlane(float width, float height, Material material) {
+            return PlaneFactory.makePlane(
+                    new Vector3(width, height, 0.0f),
+                    new Vector3(0.0f, height / 2.0f, 0.0f),
+                    material
+            );
+        }
     }
 }

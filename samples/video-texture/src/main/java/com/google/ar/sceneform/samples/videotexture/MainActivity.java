@@ -166,7 +166,7 @@ public class MainActivity extends AppCompatActivity implements
         mediaPlayers.add(player);
         VideoNode videoNode = new VideoNode(this, player, chromaKeyColor, new VideoNode.Listener() {
             @Override
-            public void onCreated(RenderableInstance renderableInstance) {
+            public void onCreated(VideoNode videoNode) {
             }
 
             @Override
