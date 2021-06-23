@@ -6,8 +6,8 @@ android {
         // Sceneform requires minSdkVersion >= 24.
         minSdkVersion 24
         targetSdkVersion 30
-        versionCode 11
-        versionName "1.19.1"
+        versionCode 12
+        versionName "1.19.2"
     }
     compileOptions {
         // Sceneform libraries use language constructs from Java 8.
@@ -36,5 +36,5 @@ dependencies {
 }
 
 if (project.hasProperty('mavenCentralRepositoryUsername') && project.hasProperty('mavenCentralRepositoryPassword')) {
-    //apply plugin: "com.vanniktech.maven.publish"
+    apply plugin: "com.vanniktech.maven.publish"
 }
