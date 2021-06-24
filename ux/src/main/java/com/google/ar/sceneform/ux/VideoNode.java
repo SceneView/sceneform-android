@@ -99,7 +99,7 @@ public class VideoNode extends Node {
                         material.setFloat4(MATERIAL_PARAMETER_CHROMA_KEY_COLOR, chromaKeyColor);
                     }
                     final Renderable renderable = createModel(player, material);
-                    RenderableInstance renderableInstance = setRenderable(renderable);
+                    setRenderable(renderable);
                     onCreated(this);
                 })
                 .exceptionally(throwable -> {
@@ -138,6 +138,18 @@ public class VideoNode extends Node {
                 new Vector3(width, height, 0.0f),
                 material
         );
+    }
+
+    public MediaPlayer getPlayer() {
+        return player;
+    }
+
+    public ExternalTexture getTexture() {
+        return texture;
+    }
+
+    public Color getChromaKeyColor() {
+        return chromaKeyColor;
     }
 
     private void onCreated(VideoNode videoNode) {
