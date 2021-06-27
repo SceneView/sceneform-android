@@ -194,7 +194,7 @@ public class PlaneRenderer {
      * @hide PlaneRenderer is updated in a different package, but not part of external API.
      */
     public void update(Frame frame, int viewWidth, int viewHeight) {
-        // Get a list of Plane-Trackables which are updated  on this frame.
+        // Get a list of Plane-Trackables which are updated on this frame.
         Collection<Plane> updatedPlanes = frame.getUpdatedTrackables(Plane.class);
         // Do a hittest on the current frame. The result is used to calculate
         // a focusPoint and to render the top most plane Trackable if

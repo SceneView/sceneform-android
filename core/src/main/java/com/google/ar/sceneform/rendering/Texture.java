@@ -28,10 +28,10 @@ public class Texture {
   /** Type of Texture usage. */
   public enum Usage {
     /** Texture contains a color map */
-    COLOR,
+    COLOR_MAP,
     /** Assume color usage by default */
     /** Texture contains a normal map */
-    NORMAL,
+    NORMAL_MAP,
     /** Texture contains arbitrary data */
     DATA
   }
@@ -77,10 +77,10 @@ public class Texture {
     com.google.android.filament.Texture.InternalFormat format;
 
     switch (usage) {
-      case COLOR:
+      case COLOR_MAP:
         format = com.google.android.filament.Texture.InternalFormat.SRGB8_A8;
         break;
-      case NORMAL:
+      case NORMAL_MAP:
       case DATA:
       default:
         format = com.google.android.filament.Texture.InternalFormat.RGBA8;
@@ -97,7 +97,7 @@ public class Texture {
     @Nullable private Bitmap bitmap = null;
     @Nullable private TextureInternalData textureInternalData = null;
 
-    private Usage usage = Usage.COLOR;
+    private Usage usage = Usage.COLOR_MAP;
     /** Enables reuse through the registry */
     @Nullable private Object registryId = null;
 

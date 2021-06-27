@@ -35,6 +35,7 @@ import com.google.ar.sceneform.rendering.ModelRenderable;
 import com.google.ar.sceneform.rendering.Renderable;
 import com.google.ar.sceneform.rendering.RenderableDefinition;
 import com.google.ar.sceneform.rendering.RenderableDefinition.Submesh;
+import com.google.ar.sceneform.rendering.RenderableInstance;
 import com.google.ar.sceneform.rendering.Texture;
 import com.google.ar.sceneform.rendering.Vertex;
 import com.google.ar.sceneform.rendering.Vertex.UvCoordinate;
@@ -177,8 +178,10 @@ public class AugmentedFaceNode extends Node {
     }
 
 
-    public void setFaceRegionsRenderable(ModelRenderable renderable) {
-        faceRegionNode.setRenderable(renderable);
+    public RenderableInstance setFaceRegionsRenderable(ModelRenderable renderable) {
+        RenderableInstance renderableInstance = faceRegionNode.setRenderable(renderable);
+        updateSubmeshes();
+        return renderableInstance;
     }
 
     @Nullable

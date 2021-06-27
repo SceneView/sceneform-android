@@ -47,10 +47,7 @@ import java.lang.ref.WeakReference;
 import java.nio.ByteBuffer;
 import java.util.Collection;
 
-public class MainActivity extends AppCompatActivity implements
-        FragmentOnAttachListener,
-        BaseArFragment.OnSessionConfigurationListener,
-        ArFragment.OnViewCreatedListener {
+public class MainActivity extends AppCompatActivity {
 
     private ArFragment arFragment;
 
@@ -74,7 +71,7 @@ public class MainActivity extends AppCompatActivity implements
             ((ViewGroup.MarginLayoutParams) toolbar.getLayoutParams()).topMargin = insets.getSystemWindowInsetTop();
             return insets.consumeSystemWindowInsets();
         });
-        getSupportFragmentManager().addFragmentOnAttachListener(this);
+        getSupportFragmentManager().addFragmentOnAttachListener(this::onAttachFragment);
 
         if (savedInstanceState == null) {
             if (Sceneform.isSupported(this)) {
@@ -86,20 +83,18 @@ public class MainActivity extends AppCompatActivity implements
 
         // .glb models can be loaded at runtime when needed or when app starts
         // This method loads ModelRenderable when app starts
-        loadMatrixModel();
-        loadMatrixMaterial();
+        loadModels();
+        loadMaterials();
     }
 
-    @Override
     public void onAttachFragment(@NonNull FragmentManager fragmentManager, @NonNull Fragment fragment) {
         if (fragment.getId() == R.id.arFragment) {
             arFragment = (ArFragment) fragment;
-            arFragment.setOnSessionConfigurationListener(this);
-            arFragment.setOnViewCreatedListener(this);
+            arFragment.setOnSessionConfigurationListener(this::onSessionConfiguration);
+            arFragment.setOnViewCreatedListener(this::onViewCreated);
         }
     }
 
-    @Override
     public void onSessionConfiguration(Session session, Config config) {
         // Disable plane detection
         config.setPlaneFindingMode(Config.PlaneFindingMode.DISABLED);
@@ -120,19 +115,14 @@ public class MainActivity extends AppCompatActivity implements
         database.addImage("rabbit", rabbitImage);
 
         config.setAugmentedImageDatabase(database);
-
-        // Check for image detection
-        arFragment.getArSceneView().getScene().addOnUpdateListener(this::onUpdate);
     }
 
-    @Override
     public void onViewCreated(ArFragment arFragment, ArSceneView arSceneView) {
         // Currently, the tone-mapping should be changed to FILMIC
         // because with other tone-mapping operators except LINEAR
         // the inverseTonemapSRGB function in the materials can produce incorrect results.
         // The LINEAR tone-mapping cannot be used together with the inverseTonemapSRGB function.
         Renderer renderer = arSceneView.getRenderer();
-
         if (renderer != null) {
             renderer.getFilamentView().setColorGrading(
                     new ColorGrading.Builder()
@@ -145,6 +135,9 @@ public class MainActivity extends AppCompatActivity implements
         arSceneView.getPlaneRenderer().setVisible(false);
         // Disable the rendering of detected planes.
         arSceneView.getPlaneRenderer().setEnabled(false);
+
+        // Check for image detection
+        arSceneView.getScene().addOnUpdateListener(this::onUpdate);
     }
 
     @Override
@@ -157,7 +150,7 @@ public class MainActivity extends AppCompatActivity implements
         }
     }
 
-    private void loadMatrixModel() {
+    private void loadModels() {
         WeakReference<MainActivity> weakActivity = new WeakReference<>(this);
         ModelRenderable.builder()
                 .setSource(this, Uri.parse("models/Video.glb"))
@@ -179,7 +172,7 @@ public class MainActivity extends AppCompatActivity implements
                         });
     }
 
-    private void loadMatrixMaterial() {
+    private void loadMaterials() {
         WeakReference<MainActivity> weakActivity = new WeakReference<>(this);
         Engine filamentEngine = EngineInstance.getEngine().getFilamentEngine();
 
@@ -229,9 +222,9 @@ public class MainActivity extends AppCompatActivity implements
         Frame frame = arFragment.getArSceneView().getArFrame();
         try {
             // This is collection of all images from our AugmentedImageDatabase that are currently detected by ARCore in this session
-            Collection<AugmentedImage> augmentedImageCollection = frame.getUpdatedTrackables(AugmentedImage.class);
+            Collection<AugmentedImage> augmentedImages = frame.getUpdatedTrackables(AugmentedImage.class);
 
-            for (AugmentedImage image : augmentedImageCollection) {
+            for (AugmentedImage image : augmentedImages) {
                 if (image.getTrackingState() == TrackingState.TRACKING) {
                     arFragment.getPlaneDiscoveryController().hide();
 

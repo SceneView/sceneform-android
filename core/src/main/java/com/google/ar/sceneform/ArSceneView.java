@@ -160,8 +160,8 @@ public class ArSceneView extends SceneView {
 
     private void initializeFacingDirection(Session session) {
         if (session.getCameraConfig().getFacingDirection() == FacingDirection.FRONT) {
-            Renderer renderer = Preconditions.checkNotNull(getRenderer());
-            renderer.setFrontFaceWindingInverted(true);
+//            Renderer renderer = Preconditions.checkNotNull(getRenderer());
+//            renderer.setFrontFaceWindingInverted(true);
         }
     }
 

@@ -6,10 +6,17 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.google.ar.core.CameraConfig;
+import com.google.ar.core.CameraConfigFilter;
 import com.google.ar.core.Config;
 import com.google.ar.core.Session;
+import com.google.ar.core.exceptions.UnavailableApkTooOldException;
+import com.google.ar.core.exceptions.UnavailableArcoreNotInstalledException;
+import com.google.ar.core.exceptions.UnavailableDeviceNotCompatibleException;
+import com.google.ar.core.exceptions.UnavailableSdkTooOldException;
 
 import java.util.EnumSet;
 import java.util.Set;
@@ -17,11 +24,20 @@ import java.util.Set;
 /** Implements ArFragment and configures the session for using the augmented faces feature. */
 public class FaceArFragment extends ArFragment {
 
+
     @Override
-    protected Config getSessionConfiguration(Session session) {
-        Config config = new Config(session);
+    protected void onSessionInitialization(Session session) {
+        super.onSessionInitialization(session);
+        CameraConfigFilter filter = new CameraConfigFilter(session);
+        filter.setDepthSensorUsage(EnumSet.of(CameraConfig.DepthSensorUsage.DO_NOT_USE));
+        filter.setFacingDirection(CameraConfig.FacingDirection.FRONT);
+        session.setCameraConfig(session.getSupportedCameraConfigs(filter).get(0));
+    }
+
+    @Override
+    protected void onSessionConfiguration(Session session, Config config) {
+        super.onSessionConfiguration(session, config);
         config.setAugmentedFaceMode(Config.AugmentedFaceMode.MESH3D);
-        return config;
     }
 
     @Override
@@ -29,15 +45,9 @@ public class FaceArFragment extends ArFragment {
         return EnumSet.of(Session.Feature.FRONT_CAMERA);
     }
 
-    /**
-     * Override to turn off planeDiscoveryController. Plane trackables are not supported with the
-     * front camera.
-     */
     @Override
-    public View onCreateView(
-            LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        FrameLayout frameLayout =
-                (FrameLayout) super.onCreateView(inflater, container, savedInstanceState);
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
         getPlaneDiscoveryController().hide();
         getPlaneDiscoveryController().setInstructionView(null);
@@ -46,7 +56,5 @@ public class FaceArFragment extends ArFragment {
         getArSceneView().getPlaneRenderer().setVisible(false);
         // Disable the rendering of detected planes.
         getArSceneView().getPlaneRenderer().setEnabled(false);
-
-        return frameLayout;
     }
 }

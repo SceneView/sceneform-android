@@ -194,6 +194,7 @@ public abstract class BaseArFragment extends Fragment
         this.onSessionConfigurationListener = onSessionConfigurationListener;
     }
 
+
     /**
      * Registers a callback to be invoked when an ARCore Plane is tapped. The callback will only be
      * invoked if no {@link com.google.ar.sceneform.Node} was tapped.
@@ -439,9 +440,7 @@ public abstract class BaseArFragment extends Fragment
 
                 Session session = createSession();
 
-                if (this.onSessionInitializationListener != null) {
-                    this.onSessionInitializationListener.onSessionInitialization(session);
-                }
+                onSessionInitialization(session);
 
                 Config config = getSessionConfiguration(session);
                 config.setDepthMode(Config.DepthMode.DISABLED);
@@ -450,9 +449,7 @@ public abstract class BaseArFragment extends Fragment
                 // Force the non-blocking mode for the session.
                 config.setUpdateMode(Config.UpdateMode.LATEST_CAMERA_IMAGE);
 
-                if (this.onSessionConfigurationListener != null) {
-                    this.onSessionConfigurationListener.onSessionConfiguration(session, config);
-                }
+                onSessionConfiguration(session, config);
 
                 session.configure(config);
                 getArSceneView().setupSession(session);
@@ -479,6 +476,18 @@ public abstract class BaseArFragment extends Fragment
             session = new Session(requireActivity());
         }
         return session;
+    }
+
+    protected void onSessionInitialization(Session session) {
+        if (this.onSessionInitializationListener != null) {
+            this.onSessionInitializationListener.onSessionInitialization(session);
+        }
+    }
+
+    protected void onSessionConfiguration(Session session, Config config) {
+        if (this.onSessionConfigurationListener != null) {
+            this.onSessionConfigurationListener.onSessionConfiguration(session, config);
+        }
     }
 
     /**

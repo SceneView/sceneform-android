@@ -426,7 +426,7 @@ class LoadRenderableFromSfbTask<T extends Renderable> {
         ByteArrayInputStream wrappedInputStream =
             new ByteArrayInputStream(data.array(), data.arrayOffset(), data.capacity());
         // position the stream to the image buffer
-        boolean premultiplyAlpha = (usage == Texture.Usage.COLOR);
+        boolean premultiplyAlpha = (usage == Texture.Usage.COLOR_MAP);
         wrappedInputStream.skip(data.position());
         // TODO: The registryId should be populated with a sha1sum
 

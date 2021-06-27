@@ -5,7 +5,7 @@
         <item name="colorPrimaryDark">@android:color/transparent</item>
         <item name="colorAccent">#FF4b8eff</item>
         <item name="android:navigationBarColor">@android:color/transparent</item>
-        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+        <item name="android:windowDrawsSystemBarBackgrounds">false</item>
         <item name="android:statusBarColor">@android:color/transparent</item>
         <item name="android:windowTranslucentStatus">false</item>
     </style>

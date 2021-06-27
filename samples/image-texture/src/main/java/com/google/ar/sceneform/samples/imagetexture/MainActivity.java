@@ -21,14 +21,11 @@ import com.google.ar.sceneform.rendering.RenderableInstance;
 import com.google.ar.sceneform.rendering.Renderer;
 import com.google.ar.sceneform.rendering.Texture;
 import com.google.ar.sceneform.ux.ArFragment;
-import com.google.ar.sceneform.ux.BaseArFragment;
 import com.google.ar.sceneform.ux.TransformableNode;
 
 import java.lang.ref.WeakReference;
 
-public class MainActivity extends AppCompatActivity implements
-        BaseArFragment.OnTapArPlaneListener,
-        ArFragment.OnViewCreatedListener {
+public class MainActivity extends AppCompatActivity {
 
     private ArFragment arFragment;
     private Renderable model;
@@ -42,8 +39,8 @@ public class MainActivity extends AppCompatActivity implements
         getSupportFragmentManager().addFragmentOnAttachListener((fragmentManager, fragment) -> {
             if (fragment.getId() == R.id.arFragment) {
                 arFragment = (ArFragment) fragment;
-                arFragment.setOnTapArPlaneListener(MainActivity.this);
-                arFragment.setOnViewCreatedListener(MainActivity.this);
+                arFragment.setOnViewCreatedListener(this::onViewCreated);
+                arFragment.setOnTapArPlaneListener(this::onTapPlane);
             }
         });
 
@@ -55,11 +52,10 @@ public class MainActivity extends AppCompatActivity implements
             }
         }
 
-        loadModel();
-        loadTexture();
+        loadModels();
+        loadTextures();
     }
 
-    @Override
     public void onViewCreated(ArFragment arFragment, ArSceneView arSceneView) {
         // Currently, the tone-mapping should be changed to FILMIC
         // because with other tone-mapping operators except LINEAR
@@ -76,7 +72,7 @@ public class MainActivity extends AppCompatActivity implements
         }
     }
 
-    public void loadModel() {
+    public void loadModels() {
         WeakReference<MainActivity> weakActivity = new WeakReference<>(this);
         ModelRenderable.builder()
                 .setSource(this, Uri.parse("models/cube.glb"))
@@ -95,7 +91,7 @@ public class MainActivity extends AppCompatActivity implements
                         });
     }
 
-    public void loadTexture() {
+    public void loadTextures() {
         WeakReference<MainActivity> weakActivity = new WeakReference<>(this);
         Texture.builder()
                 .setSampler(Texture.Sampler.builder()
@@ -104,7 +100,7 @@ public class MainActivity extends AppCompatActivity implements
                         .setWrapMode(Texture.Sampler.WrapMode.REPEAT)
                         .build())
                 .setSource(this, Uri.parse("textures/parquet.jpg"))
-                .setUsage(Texture.Usage.COLOR)
+                .setUsage(Texture.Usage.COLOR_MAP)
                 .build()
                 .thenAccept(
                         texture -> {
@@ -120,7 +116,6 @@ public class MainActivity extends AppCompatActivity implements
                         });
     }
 
-    @Override
     public void onTapPlane(HitResult hitResult, Plane plane, MotionEvent motionEvent) {
         if (model == null || texture == null) {
             Toast.makeText(this, "Loading...", Toast.LENGTH_SHORT).show();
@@ -136,8 +131,7 @@ public class MainActivity extends AppCompatActivity implements
         TransformableNode modelNode = new TransformableNode(arFragment.getTransformationSystem());
         modelNode.setParent(anchorNode);
         RenderableInstance modelInstance = modelNode.setRenderable(this.model);
-        modelInstance.getMaterial().setInt("baseColorIndex", 0);
-        modelInstance.getMaterial().setTexture("baseColorMap", texture);
+        modelInstance.getMaterial().setBaseColorTexture(texture);
 
         modelNode.select();
     }
