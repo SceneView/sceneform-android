@@ -157,6 +157,12 @@ public class Material {
         }
     }
 
+    public void setBaseColorTexture(Texture texture) {
+        //Set the baseColorIndex to 0 if no existing texture was set
+        setInt("baseColorIndex", 0);
+        setTexture("baseColorMap", texture);
+    }
+
     /**
      * <pre>
      *     Sets a {@link DepthTexture} to a parameter of the type 'sampler2d' on this material.

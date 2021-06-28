@@ -246,6 +246,13 @@ public class AugmentedFaceNode extends Node {
         }
     }
 
+    private void updateTransform() {
+        // Update this node to be positioned at the center pose of the face.
+        Pose centerPose = checkNotNull(augmentedFace).getCenterPose();
+        setWorldPosition(new Vector3(centerPose.tx(), centerPose.ty(), centerPose.tz()));
+        setWorldRotation(new Quaternion(centerPose.qx(), centerPose.qy(), centerPose.qz(), centerPose.qw()));
+    }
+
     private void updateRegionNodes() {
         if (augmentedFace == null) {
             return;
@@ -258,22 +265,15 @@ public class AugmentedFaceNode extends Node {
         // Rotate the bones by 180 degrees because the .fbx template's coordinate system is
         // inversed of Sceneform's coordinate system. This is so the .fbx works with other
         // 3D rendering engines as well
+        //TODO: Remove the inversion here and on the .blend and .glb files
         Quaternion rotation = new Quaternion(centerPose.qx(), centerPose.qy(), centerPose.qz(), centerPose.qw());
         Quaternion inverse = new Quaternion(Vector3.up(), 180f);
-
         rotation = Quaternion.multiply(rotation, inverse);
         faceRegionNode.setWorldRotation(rotation);
     }
 
     private boolean isTracking() {
         return augmentedFace != null && augmentedFace.getTrackingState() == TrackingState.TRACKING;
-    }
-
-    private void updateTransform() {
-        // Update this node to be positioned at the center pose of the face.
-        Pose pose = checkNotNull(augmentedFace).getCenterPose();
-        setWorldPosition(new Vector3(pose.tx(), pose.ty(), pose.tz()));
-        setWorldRotation(new Quaternion(pose.qx(), pose.qy(), pose.qz(), pose.qw()));
     }
 
     @SuppressWarnings("AndroidJdkLibsChecker")
