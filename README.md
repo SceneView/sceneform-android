@@ -7,6 +7,8 @@ Maintained Sceneform SDK for Android
 
 #### Maintained and continued by [Nikita Zaytsev](https://github.com/grassydragon), [Vojta Maiwald](https://github.com/VojtaMaiwald), [Brigido Rodriguez](https://github.com/imbrig), [Fvito](https://github.com/fvito), [Marius Kajczuga](https://github.com/Venthorus), [Robert Gregat](https://github.com/RGregat) and [Thomas Gorisse](https://github.com/ThomasGorisse)
 
+#### If you are using this repo and like it, please consider sponsoring contributors by clicking on the top header sponsor button
+
 Sceneform is a 3D framework with a physically based renderer that's optimized
 for mobile devices and that makes it easy for you to build Augmented Reality (AR)
 apps without requiring OpenGL or Unity.
