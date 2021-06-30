@@ -173,6 +173,8 @@ public void onViewCreated(ArFragment arFragment, ArSceneView arSceneView) {
 
 https://user-images.githubusercontent.com/6597529/124034997-38088300-d9fc-11eb-824c-669513cec794.mp4
 
+https://user-images.githubusercontent.com/6597529/124038426-6472ce00-da01-11eb-8b25-0f8fc62f4790.mp4
+
 ![screenrecord_video_texture_chromakey.gif](docs/images/samples/screenrecord_video_texture_chromakey.gif)
 
 ```java
