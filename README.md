@@ -171,7 +171,8 @@ public void onViewCreated(ArFragment arFragment, ArSceneView arSceneView) {
 
 ### Video texture
 
-![screenrecord_video_texture_plain.gif](docs/images/samples/screenrecord_video_texture_plain.gif)
+https://user-images.githubusercontent.com/6597529/124034997-38088300-d9fc-11eb-824c-669513cec794.mp4
+
 ![screenrecord_video_texture_chromakey.gif](docs/images/samples/screenrecord_video_texture_chromakey.gif)
 
 ```java
