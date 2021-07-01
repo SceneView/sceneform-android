@@ -15,6 +15,10 @@
  */
 package com.google.ar.sceneform.ux;
 
+import android.view.MotionEvent;
+
+import com.google.ar.sceneform.HitTestResult;
+
 /**
  * Node that can be selected, translated, rotated, and scaled using gestures from {@link
  * TransformationSystem}.
@@ -52,5 +56,10 @@ public class TransformableNode extends BaseTransformableNode {
   /** Returns the controller that rotates this node using a twist gesture. */
   public RotationController getRotationController() {
     return rotationController;
+  }
+
+  @Override
+  public void onSingleTap(HitTestResult hitTestResult, MotionEvent motionEvent) {
+
   }
 }

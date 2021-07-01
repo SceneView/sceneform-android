@@ -152,4 +152,15 @@ public class ScaleController extends BaseTransformationController<PinchGesture> 
 
     return (1.0f - (1.0f / ((Math.abs(overRatio) * elasticity) + 1.0f))) * Math.signum(overRatio);
   }
+
+  //set the scale ratio and scale the node
+  public void setScaleRatioAndScale (float newRatio) {
+    currentScaleRatio = newRatio;
+
+    float finalScaleValue = getFinalScale();
+    Vector3 finalScale = new Vector3(finalScaleValue, finalScaleValue, finalScaleValue);
+    getTransformableNode().setLocalScale(finalScale);
+
+  }
+  public float getCurrentScaleRatio() {return currentScaleRatio;}
 }

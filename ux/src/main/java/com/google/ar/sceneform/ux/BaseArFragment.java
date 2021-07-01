@@ -62,6 +62,7 @@ import com.google.ar.core.exceptions.UnavailableSdkTooOldException;
 import com.google.ar.sceneform.ArSceneView;
 import com.google.ar.sceneform.FrameTime;
 import com.google.ar.sceneform.HitTestResult;
+import com.google.ar.sceneform.Node;
 import com.google.ar.sceneform.Scene;
 import com.google.ar.sceneform.rendering.ModelRenderable;
 
@@ -144,6 +145,9 @@ public abstract class BaseArFragment extends Fragment
     private OnSessionConfigurationListener onSessionConfigurationListener;
     @Nullable
     private OnTapArPlaneListener onTapArPlaneListener;
+
+    private Node selectedNode = null;
+    private HitTestResult currentHitResult = null;
 
     @SuppressWarnings({"initialization"})
     private final OnWindowFocusChangeListener onFocusListener =
@@ -233,7 +237,11 @@ public abstract class BaseArFragment extends Fragment
                         new GestureDetector.SimpleOnGestureListener() {
                             @Override
                             public boolean onSingleTapUp(MotionEvent e) {
-                                onSingleTap(e);
+                                if(selectedNode!=null) {
+                                    selectedNode.receiveSingleTap(currentHitResult,e);
+                                }else {
+                                    onSingleTap(e);
+                                }
                                 return true;
                             }
 
@@ -593,7 +601,12 @@ public abstract class BaseArFragment extends Fragment
     public void onPeekTouch(HitTestResult hitTestResult, MotionEvent motionEvent) {
         transformationSystem.onTouch(hitTestResult, motionEvent);
 
+        currentHitResult = hitTestResult;
         if (hitTestResult.getNode() == null) {
+            selectedNode = null;
+            gestureDetector.onTouchEvent(motionEvent);
+        }else {
+            selectedNode = hitTestResult.getNode();
             gestureDetector.onTouchEvent(motionEvent);
         }
     }

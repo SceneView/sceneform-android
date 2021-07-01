@@ -67,6 +67,17 @@ public class Node extends NodeParent implements TransformProvider {
      * @param motionEvent the {@link MotionEvent#ACTION_UP} MotionEvent that caused the tap
      */
     void onTap(HitTestResult hitTestResult, MotionEvent motionEvent);
+
+    /**
+     * Handles when a node has been tapped singly.
+     *
+     * <p>{@link HitTestResult#getNode()} will always be this node or one of its children.
+     *
+     * @param hitTestResult represents the node that was tapped and information about where it was
+     *     touched
+     * @param motionEvent the {@link MotionEvent#ACTION_UP} MotionEvent that caused the tap
+     */
+    void onSingleTap(HitTestResult hitTestResult, MotionEvent motionEvent);
   }
 
   /** Interface definition for callbacks to be invoked when node lifecycle events occur. */
@@ -1587,5 +1598,11 @@ public class Node extends NodeParent implements TransformProvider {
     }
 
     return Preconditions.checkNotNull(scene.getView().getRenderer());
+  }
+
+  public void receiveSingleTap(HitTestResult hitTestResult, MotionEvent motionEvent) {
+    if(onTapListener!=null) {
+      onTapListener.onSingleTap(hitTestResult,motionEvent);
+    }
   }
 }
