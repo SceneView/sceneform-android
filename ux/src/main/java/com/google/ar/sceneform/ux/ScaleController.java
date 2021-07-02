@@ -41,6 +41,9 @@ public class ScaleController extends BaseTransformationController<PinchGesture> 
   private static final float ELASTIC_RATIO_LIMIT = 0.8f;
   private static final float LERP_SPEED = 8.0f;
 
+  //the last scale  value
+  private float lastScaleValue = 0.0f;
+
   public ScaleController(
       BaseTransformableNode transformableNode, PinchGestureRecognizer gestureRecognizer) {
     super(transformableNode, gestureRecognizer);
@@ -93,9 +96,40 @@ public class ScaleController extends BaseTransformationController<PinchGesture> 
 
     float t = MathHelper.clamp(frameTime.getDeltaSeconds() * LERP_SPEED, 0, 1);
     currentScaleRatio = MathHelper.lerp(currentScaleRatio, getClampedScaleRatio(), t);
+
     float finalScaleValue = getFinalScale();
-    Vector3 finalScale = new Vector3(finalScaleValue, finalScaleValue, finalScaleValue);
-    getTransformableNode().setLocalScale(finalScale);
+
+    if(Math.abs(lastScaleValue-finalScaleValue) < 0.0001f) {
+
+      Vector3 originScale = getTransformableNode().getLocalScale();
+      if(Math.abs(finalScaleValue-originScale.x) > 0.0001f
+              || Math.abs(finalScaleValue-originScale.y) > 0.0001f
+              || Math.abs(finalScaleValue-originScale.z) > 0.0001f) {
+
+        // But if the scale value of the node had been changed by the setLocalScale() method, need to reload it.
+        // That maybe cause a question, if the originScale.y is not same with the originScale.x,
+        // or if the originScale.z is not same with the originScale.x,
+        // whose value to use ?
+        // Now, i select the xAxis value.
+        finalScaleValue = originScale.x;
+
+        currentScaleRatio = (originScale.x - minScale) / getScaleDelta();
+
+        //need to re-scale the node
+
+        Vector3 finalScale = new Vector3(finalScaleValue, finalScaleValue, finalScaleValue);
+        getTransformableNode().setLocalScale(finalScale);
+        lastScaleValue = finalScaleValue;
+      } else {
+        //The scale value was not changed, not need to re-scale the node.
+        return ;
+      }
+    }else {
+      //The scale value had been changed, scale the node.
+      Vector3 finalScale = new Vector3(finalScaleValue, finalScaleValue, finalScaleValue);
+      getTransformableNode().setLocalScale(finalScale);
+      lastScaleValue = finalScaleValue;
+    }
   }
 
   @Override
@@ -110,6 +144,8 @@ public class ScaleController extends BaseTransformationController<PinchGesture> 
     float finalScaleValue = getFinalScale();
     Vector3 finalScale = new Vector3(finalScaleValue, finalScaleValue, finalScaleValue);
     getTransformableNode().setLocalScale(finalScale);
+
+    lastScaleValue = finalScaleValue;
 
     if (currentScaleRatio < -ELASTIC_RATIO_LIMIT
         || currentScaleRatio > (1.0f + ELASTIC_RATIO_LIMIT)) {
@@ -153,14 +189,4 @@ public class ScaleController extends BaseTransformationController<PinchGesture> 
     return (1.0f - (1.0f / ((Math.abs(overRatio) * elasticity) + 1.0f))) * Math.signum(overRatio);
   }
 
-  //set the scale ratio and scale the node
-  public void setScaleRatioAndScale (float newRatio) {
-    currentScaleRatio = newRatio;
-
-    float finalScaleValue = getFinalScale();
-    Vector3 finalScale = new Vector3(finalScaleValue, finalScaleValue, finalScaleValue);
-    getTransformableNode().setLocalScale(finalScale);
-
-  }
-  public float getCurrentScaleRatio() {return currentScaleRatio;}
 }
