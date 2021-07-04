@@ -1,4 +1,4 @@
-remote_theme : hydecorp/hydejack
+remote_theme : chesterhow/tale
 plugins:
   - jekyll-sitemap
   - jekyll-assets
