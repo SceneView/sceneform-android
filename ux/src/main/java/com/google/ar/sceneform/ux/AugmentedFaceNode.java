@@ -30,6 +30,7 @@ import com.google.ar.sceneform.Node;
 import com.google.ar.sceneform.Scene;
 import com.google.ar.sceneform.math.Quaternion;
 import com.google.ar.sceneform.math.Vector3;
+import com.google.ar.sceneform.rendering.EngineInstance;
 import com.google.ar.sceneform.rendering.Material;
 import com.google.ar.sceneform.rendering.ModelRenderable;
 import com.google.ar.sceneform.rendering.Renderable;
@@ -43,6 +44,7 @@ import com.google.ar.sceneform.rendering.Vertex.UvCoordinate;
 import java.nio.FloatBuffer;
 import java.nio.ShortBuffer;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.concurrent.ExecutionException;
 
 /**
@@ -80,6 +82,8 @@ public class AugmentedFaceNode extends Node {
     private final ArrayList<Integer> triangleIndices = new ArrayList<>();
     private final ArrayList<Submesh> submeshes = new ArrayList<>();
     private final RenderableDefinition faceMeshDefinition;
+
+    private final HashMap<RegionType, Integer> faceMeshSkeleton = new HashMap<>();
 
     @Nullable
     private ModelRenderable faceMeshRenderable;
@@ -181,7 +185,24 @@ public class AugmentedFaceNode extends Node {
     public RenderableInstance setFaceRegionsRenderable(ModelRenderable renderable) {
         RenderableInstance renderableInstance = faceRegionNode.setRenderable(renderable);
         updateSubmeshes();
+        extractBonesFromRenderable();
         return renderableInstance;
+    }
+
+    private void extractBonesFromRenderable() {
+        if (!faceMeshSkeleton.isEmpty()) {
+            faceMeshSkeleton.clear();
+        }
+
+        for (RegionType type : RegionType.values()) {
+            String boneName = boneNameForRegion(type);
+            int entity = faceRegionNode.getRenderableInstance().getFilamentAsset().getFirstEntityByName(boneName);
+            if (entity == 0) {
+                Log.w(TAG, "Face mesh model is missing bone " + boneName + ". Tracking might not be accurate");
+                continue;
+            }
+            faceMeshSkeleton.put(type, entity);
+        }
     }
 
     @Nullable
@@ -257,6 +278,19 @@ public class AugmentedFaceNode extends Node {
         if (augmentedFace == null) {
             return;
         }
+
+        TransformManager tfm = EngineInstance.getEngine().getTransformManager();
+
+        for(RegionType type : RegionType.values()) {
+            Pose pose = augmentedFace.getRegionPose(type);
+            int instance = tfm.getInstance(faceMeshSkeleton.get(type));
+
+            // TODO Figure out how to apply pose translation and rotation to instance transform
+
+            // tfm.setTransform(instance, transform.data);
+
+        }
+        faceRegionNode.getRenderableInstance().getFilamentAsset().getAnimator().updateBoneMatrices();
 
         Pose centerPose = augmentedFace.getCenterPose();
 
