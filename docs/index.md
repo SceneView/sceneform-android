@@ -1,23 +1,29 @@
 Maintained Sceneform SDK for Android
 ====================================
 
-#### This repository is a fork of [Sceneform](https://github.com/google-ar/sceneform-android-sdk)
-Copyright (c) 2018 Google Inc.  All rights reserved.
+[![Maven Central](https://img.shields.io/maven-central/v/com.gorisse.thomas.sceneform/sceneform.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:%22com.gorisse.thomas.sceneform%22%20AND%20a:%22sceneform%22)
 
-[ ![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.gorisse.thomas.sceneform/sceneform/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.gorisse.thomas.sceneform/sceneform)
+#### This repository is a fork of [Sceneform](https://github.com/google-ar/sceneform-android-sdk) Copyright (c) 2021 Google Inc.  All rights reserved.
 
-Sceneform is a 3D framework with a physically based renderer that's optimized
-for mobile devices and that makes it easy for you to build Augmented Reality (AR)
-apps without requiring OpenGL or Unity.
+#### Maintained and continued by [Nikita Zaytsev](https://github.com/grassydragon), [Vojta Maiwald](https://github.com/VojtaMaiwald), [Brigido Rodriguez](https://github.com/imbrig), [Fvito](https://github.com/fvito), [Marius Kajczuga](https://github.com/Venthorus), [Robert Gregat](https://github.com/RGregat) and [Thomas Gorisse](https://github.com/ThomasGorisse)
+
+
+#### If you are using this repo and like it, please consider helping contributors by clicking on this button:
+[![Sponsor](https://user-images.githubusercontent.com/6597529/124039823-f4197c00-da03-11eb-9e65-175d506a00d2.png)](https://github.com/sponsors/ThomasGorisse)
+
+
+
+### Sceneform is a 3D framework with a physically based renderer that's optimized for mobile devices and that makes it easy for you to build Augmented Reality (AR) apps without requiring OpenGL or Unity.
 
 ![Sample Lion Model](https://thomasgorisse.github.io/sceneform-android-sdk/images/samples/model_lion.jpg)
 
 ## Usage benefits
-* Continuous compatibility with the latests versions of [ARCore SDK](https://github.com/google-ar/arcore-android-sdk) and [Filament](https://github.com/google/filament)
+* Continuous compatibility with the latests versions of [ARCore SDK](https://github.com/google-ar/arcore-android-sdk) and [Filament](https://github.com/google/filament) 
 * Based on AndroidX
-* Available has gradle `mavenCentral()` dependency
+* Available as gradle `mavenCentral()` dependency
 * Supports <a href="https://www.khronos.org/gltf/">glTF</a> format
 * Animations made easy
+* Depth supported
 * Simple model loading for basic usage
 
 
@@ -54,11 +60,12 @@ dependencies {
 ### Add the `View` to your `layout`
 *res/layout/main_activity.xml*
 ```xml
-<androidx.fragment.app.FragmentContainerView
+<FrameLayout
     android:id="@+id/arFragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"/>
 ```
+**[sample...](https://github.com/ThomasGorisse/sceneform-android-sdk/blob/master/samples/gltf/src/main/res/layout/activity_main.xml)**
 
 
 ### Edit your `Activity` or `Fragment`
@@ -67,40 +74,155 @@ dependencies {
 @Override
 protected void onCreate(Bundle savedInstanceState) {
     …
+    getSupportFragmentManager().addFragmentOnAttachListener((fragmentManager, fragment) -> {
+        if (fragment.getId() == R.id.arFragment) {
+            arFragment = (ArFragment) fragment;
+            // Load model.glb from assets folder or http url
+            arFragment.setOnTapPlaneGlbModel("model.glb", new ArFragment.OnTapModelListener() {
+                @Override
+                public void onModelAdded(RenderableInstance renderableInstance) {
+                }
+    
+                @Override
+                public void onModelError(Throwable exception) {
+                }
+            });
+        }
+    });
     if (savedInstanceState == null) {
         if (Sceneform.isSupported(this)) {
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.arFragment, ArFragment.class)
+                    .add(R.id.arFragment, ArFragment.class, null)
+                    .commit();
+        }
+    }
+}
+```
+
+**Or**
+
+*src/main/java/…/MainFragment.java*
+```java
+@Override
+public void onCreate(Bundle savedInstanceState) {
+    …
+    if (savedInstanceState == null) {
+        if (Sceneform.isSupported(this)) {
+            getChildFragmentManager().beginTransaction()
+                    .add(R.id.arFragment, ArFragment.class, null)
                     .commit();
         }
     }
 }
 
 @Override
-public void onAttachFragment(@NonNull Fragment fragment) {
-    super.onAttachFragment(fragment);
-
+public void onAttachFragment(Fragment childFragment) {
     if (fragment.getId() == R.id.arFragment) {
         // Load model.glb from assets folder or http url
-        ((ArFragment) fragment).setOnTapPlaneGlbModel("model.glb", new ArFragment.OnTapModelListener() {
-            @Override
-            public void onModelAdded(RenderableInstance renderableInstance) {
-            }
-
-            @Override
-            public void onModelError(Throwable exception) {
-            }
-        });
+        ((ArFragment) fragment).setOnTapPlaneGlbModel("model.glb", null);
     }
 }
 ```
+**[sample...](https://github.com/ThomasGorisse/sceneform-android-sdk/blob/master/samples/gltf/src/main/java/com/google/ar/sceneform/samples/gltf/MainActivity.java)**
 
+
+
+## Samples
+
+
+
+### glTF with animation
+
+https://user-images.githubusercontent.com/6597529/124378254-c4db6700-dcb0-11eb-80a2-2e7381d60906.mp4
+
+```java
+@Override
+public void onTapPlane(HitResult hitResult, Plane plane, MotionEvent motionEvent) {
+   …
+   // Create the transformable model and add it to the anchor.
+   TransformableNode model = new TransformableNode(arFragment.getTransformationSystem());
+   model.setParent(anchorNode);
+   model.setRenderable(this.model)
+        .animate(true).start();
+}
+```
+**[sample project...](https://github.com/ThomasGorisse/sceneform-android-sdk/tree/master/samples/gltf)**
+
+
+### Depth Occlusion
+
+<img src="https://thomasgorisse.github.io/sceneform-android-sdk/images/samples/screenshot_depth_01.png" alt="drawing" width="250"/><img src="https://thomasgorisse.github.io/sceneform-android-sdk/images/samples/screenshot_depth_02.png" alt="drawing" width="250"/><img src="https://thomasgorisse.github.io/sceneform-android-sdk/images/samples/screenshot_depth_03.png" alt="drawing" width="250"/>
+
+```java
+@Override
+public void onSessionConfiguration(Session session, Config config) {
+   if (session.isDepthModeSupported(Config.DepthMode.AUTOMATIC)) {
+       config.setDepthMode(Config.DepthMode.AUTOMATIC);
+   }
+}
+
+@Override
+public void onViewCreated(ArFragment arFragment, ArSceneView arSceneView) {
+    // Available modes: DEPTH_OCCLUSION_DISABLED, DEPTH_OCCLUSION_ENABLED
+    arSceneView.getCameraStream().setDepthOcclusionMode(CameraStream.DepthOcclusionMode.DEPTH_OCCLUSION_ENABLED);
+}
+```
+**[documentation...](https://thomasgorisse.github.io/sceneform-android-sdk/depth)**
+
+**[sample project...](https://github.com/ThomasGorisse/sceneform-android-sdk/tree/master/samples/depth)**
+
+
+### Video texture
+
+| Chroma Key | Shadows | Stress Test |
+| --- | --- | --- |
+| ![AR-Chickens-in-the-garden_Trim](https://user-images.githubusercontent.com/6597529/124380093-286a9200-dcbb-11eb-84f2-36f839cd24c9.gif) | ![Shadows](https://user-images.githubusercontent.com/6597529/124379676-b85b0c80-dcb8-11eb-8250-d7ec7a449fad.gif) | ![Stress Test](https://user-images.githubusercontent.com/6597529/124379556-13403400-dcb8-11eb-9b56-00e36979eb0f.gif) |
+
+```java
+@Override
+public void onTapPlane(HitResult hitResult, Plane plane, MotionEvent motionEvent) {
+    …
+    MediaPlayer player = MediaPlayer.create(this, R.raw.my_video);
+    player.start();
+    VideoNode videoNode = new VideoNode(this, player, chromaKeyColor, (throwable ->
+        Toast.makeText(this, "Unable to load material", Toast.LENGTH_LONG).show())
+    );
+    videoNode.setParent(anchorNode);
+}
+```
+
+**[sample project...](https://github.com/ThomasGorisse/sceneform-android-sdk/tree/master/samples/video-texture)**
+
+
+### Image texture
+
+<img src="https://thomasgorisse.github.io/sceneform-android-sdk/images/samples/screenshot_image_texture.png" alt="drawing" width="400"/>
+
+**[sample project...](https://github.com/ThomasGorisse/sceneform-android-sdk/tree/master/samples/image-texture)**
+
+
+### Non AR usage
+
+<img src="https://thomasgorisse.github.io/sceneform-android-sdk/images/samples/screenshot_sceneview_background.png" alt="drawing" width="400"/>
+
+**[sample project...](https://github.com/ThomasGorisse/sceneform-android-sdk/tree/master/samples/sceneview-background)**
+
+
+## Emulator
+
+
+### Known working configuration
+
+
+![image](https://user-images.githubusercontent.com/6597529/117983402-3513df00-b337-11eb-841d-49548429363e.png)
+
+**[more...](https://thomasgorisse.github.io/sceneform-android-sdk/emulator)**
 
 
 ## Go further
 
 
-#### AR Required vs AR Optional
+### AR Required vs AR Optional
 
 If your app requires ARCore (AR Required) and is not only (AR Optional), use this manifest to indicates that this app requires Google Play Services for AR (AR Required) and results in
 the app only being visible in the Google Play Store on devices that support ARCore:
@@ -114,6 +236,36 @@ the app only being visible in the Google Play Store on devices that support ARCo
 </application>
 ```
 **[more...](https://thomasgorisse.github.io/sceneform-android-sdk/manifest)**
+
+
+### Nodes
+
+To add a node or multiple nodes to the Scene when the user press on a surface, you can override the `onTapPlane` function from a `BaseArFragment.OnTapArPlaneListener`:
+```java
+arFragment.setOnTapArPlaneListener(MainActivity.this);
+```
+
+```java
+@Override
+public void onTapPlane(HitResult hitResult, Plane plane, MotionEvent motionEvent) {
+   if (renderable == null) {
+       Toast.makeText(this, "Loading...", Toast.LENGTH_SHORT).show();
+       return;
+   }
+
+   // Create the Anchor.
+   Anchor anchor = hitResult.createAnchor();
+   AnchorNode anchorNode = new AnchorNode(anchor);
+   anchorNode.setParent(arFragment.getArSceneView().getScene());
+
+   // Create the transformable model and add it to the anchor.
+   TransformableNode model = new TransformableNode(arFragment.getTransformationSystem());
+   model.setParent(anchorNode);
+   model.setRenderable(renderable);
+   model.select();
+}
+```
+**[sample...](https://github.com/ThomasGorisse/sceneform-android-sdk/tree/master/samples/gltf)**
 
 
 ## Animations
