@@ -65,7 +65,7 @@ dependencies {
     android:layout_width="match_parent"
     android:layout_height="match_parent"/>
 ```
-**[sample...](samples/gltf/src/main/res/layout/activity_main.xml)**
+**[sample...](https://github.com/ThomasGorisse/sceneform-android-sdk/blob/master/samples/gltf/src/main/res/layout/activity_main.xml)**
 
 
 ### Edit your `Activity` or `Fragment`
@@ -123,16 +123,17 @@ public void onAttachFragment(Fragment childFragment) {
     }
 }
 ```
-**[sample...](samples/gltf/src/main/java/com/google/ar/sceneform/samples/gltf/MainActivity.java)**
+**[sample...](https://github.com/ThomasGorisse/sceneform-android-sdk/blob/master/samples/gltf/src/main/java/com/google/ar/sceneform/samples/gltf/MainActivity.java)**
 
 
 
 ## Samples
 
 
+
 ### glTF with animation
 
-![screenrecord_gltf.gif](docs/images/samples/screenrecord_gltf.gif)
+https://user-images.githubusercontent.com/6597529/124378254-c4db6700-dcb0-11eb-80a2-2e7381d60906.mp4
 
 ```java
 @Override
@@ -145,12 +146,12 @@ public void onTapPlane(HitResult hitResult, Plane plane, MotionEvent motionEvent
         .animate(true).start();
 }
 ```
-**[sample project...](samples/gltf/)**
+**[sample project...](https://github.com/ThomasGorisse/sceneform-android-sdk/tree/master/samples/gltf)**
 
 
 ### Depth Occlusion
 
-<img src="docs/images/samples/screenshot_depth_01.png" alt="drawing" width="250"/><img src="docs/images/samples/screenshot_depth_02.png" alt="drawing" width="250"/><img src="docs/images/samples/screenshot_depth_03.png" alt="drawing" width="250"/>
+<img src="https://thomasgorisse.github.io/sceneform-android-sdk/images/samples/screenshot_depth_01.png" alt="drawing" width="250"/><img src="https://thomasgorisse.github.io/sceneform-android-sdk/images/samples/screenshot_depth_02.png" alt="drawing" width="250"/><img src="https://thomasgorisse.github.io/sceneform-android-sdk/images/samples/screenshot_depth_03.png" alt="drawing" width="250"/>
 
 ```java
 @Override
@@ -168,16 +169,14 @@ public void onViewCreated(ArFragment arFragment, ArSceneView arSceneView) {
 ```
 **[documentation...](https://thomasgorisse.github.io/sceneform-android-sdk/depth)**
 
-**[sample project...](samples/depth/)**
+**[sample project...](https://github.com/ThomasGorisse/sceneform-android-sdk/tree/master/samples/depth)**
 
 
 ### Video texture
 
-https://user-images.githubusercontent.com/6597529/124034997-38088300-d9fc-11eb-824c-669513cec794.mp4
-
-https://user-images.githubusercontent.com/6597529/124038426-6472ce00-da01-11eb-8b25-0f8fc62f4790.mp4
-
-![screenrecord_video_texture_chromakey.gif](docs/images/samples/screenrecord_video_texture_chromakey.gif)
+| Chroma Key | Shadows | Stress Test |
+| --- | --- | --- |
+| ![AR-Chickens-in-the-garden_Trim](https://user-images.githubusercontent.com/6597529/124380093-286a9200-dcbb-11eb-84f2-36f839cd24c9.gif) | ![Shadows](https://user-images.githubusercontent.com/6597529/124379676-b85b0c80-dcb8-11eb-8250-d7ec7a449fad.gif) | ![Stress Test](https://user-images.githubusercontent.com/6597529/124379556-13403400-dcb8-11eb-9b56-00e36979eb0f.gif) |
 
 ```java
 @Override
@@ -192,22 +191,21 @@ public void onTapPlane(HitResult hitResult, Plane plane, MotionEvent motionEvent
 }
 ```
 
-**[sample project...](samples/video-texture/)**
+**[sample project...](https://github.com/ThomasGorisse/sceneform-android-sdk/tree/master/samples/video-texture)**
 
 
 ### Image texture
 
-<img src="docs/images/samples/screenshot_image_texture.png" alt="drawing" width="400"/>
+<img src="https://thomasgorisse.github.io/sceneform-android-sdk/images/samples/screenshot_image_texture.png" alt="drawing" width="400"/>
 
-**[sample project...](samples/image-texture/)**
+**[sample project...](https://github.com/ThomasGorisse/sceneform-android-sdk/tree/master/samples/image-texture)**
 
 
 ### Non AR usage
 
-<img src="docs/images/samples/screenshot_sceneview_background.png" alt="drawing" width="400"/>
+<img src="https://thomasgorisse.github.io/sceneform-android-sdk/images/samples/screenshot_sceneview_background.png" alt="drawing" width="400"/>
 
-**[sample project...](samples/sceneview-background/)**
-
+**[sample project...](https://github.com/ThomasGorisse/sceneform-android-sdk/tree/master/samples/sceneview-background)**
 
 
 ## Emulator
@@ -267,7 +265,7 @@ public void onTapPlane(HitResult hitResult, Plane plane, MotionEvent motionEvent
    model.select();
 }
 ```
-**[sample...](https://github.com/ThomasGorisse/sceneform-android-sdk/blob/master/samples/texture/src/main/java/com/google/ar/sceneform/samples/texture/MainActivity.java)**
+**[sample...](https://github.com/ThomasGorisse/sceneform-android-sdk/tree/master/samples/gltf)**
 
 
 ## Animations
