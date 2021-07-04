@@ -1,4 +1,4 @@
-theme: jekyll-theme-minimal
+remote_theme : hydecorp/hydejack
 plugins:
   - jekyll-sitemap
   - jekyll-assets
