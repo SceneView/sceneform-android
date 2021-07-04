@@ -1,4 +1,4 @@
-remote_theme : chesterhow/tale
+remote_theme : jekyll/minima
 plugins:
   - jekyll-sitemap
   - jekyll-assets
