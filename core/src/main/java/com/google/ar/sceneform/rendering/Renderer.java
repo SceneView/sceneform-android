@@ -7,6 +7,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
+
 import android.view.Surface;
 import android.view.SurfaceView;
 import com.google.android.filament.Camera;
@@ -316,7 +317,7 @@ public class Renderer implements UiHelper.RendererCallback {
           synchronized (mirrors) {
             for (Mirror mirror : mirrors) {
               if (mirror.swapChain != null) {
-                renderer.mirrorFrame(
+                renderer.copyFrame(
                     mirror.swapChain,
                     getLetterboxViewport(currentView.getViewport(), mirror.viewport),
                     currentView.getViewport(),

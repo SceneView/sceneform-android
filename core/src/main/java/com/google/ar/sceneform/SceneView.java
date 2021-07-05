@@ -31,6 +31,11 @@ import java.util.concurrent.TimeUnit;
 public class SceneView extends SurfaceView implements Choreographer.FrameCallback {
     private static final String TAG = SceneView.class.getSimpleName();
 
+    private static final int DEFAULT_MAX_FRAMES_PER_SECONDS = 60;
+    private FrameRate frameRate = FrameRate.FULL;
+    private int maxFramesPerSeconds = DEFAULT_MAX_FRAMES_PER_SECONDS;
+    private Long lastTick = 0L;
+
     @Nullable
     private Renderer renderer = null;
     private final FrameTime frameTime = new FrameTime();
@@ -120,6 +125,37 @@ public class SceneView extends SurfaceView implements Choreographer.FrameCallbac
         setZOrderOnTop(transparent);
         getHolder().setFormat(transparent ? PixelFormat.TRANSLUCENT : PixelFormat.OPAQUE);
         renderer.getFilamentView().setBlendMode(transparent ? View.BlendMode.TRANSLUCENT : View.BlendMode.OPAQUE);
+    }
+
+    /**
+     * <pre>
+     *     Set a higher bound for the frame rate. It is possible
+     *     to obtain the higher bound from the {@link com.google.ar.core.Session}.
+     *     <code>session.getCameraConfig().getFpsRange().getUpper();</code>.
+     *
+     *     The default value is 60.
+     * </pre>
+     *
+     * @param maxFramesPerSeconds int
+     */
+    public void setMaxFramesPerSeconds(int maxFramesPerSeconds) {
+        this.maxFramesPerSeconds = maxFramesPerSeconds;
+    }
+
+    /**
+     * <pre>
+     *     Set this value for a finer adjustment of the upper fps value.
+     *     Three different modes are supported FULL, HALF, THIRD. As the names
+     *     already indicate means FULL, use the value from maxFramesPerSeconds. HALF means
+     *     to divide maxFramesPerSeconds by 2 and THIRD means to divide maxFramesPerSeconds by 3.
+     *
+     *     The default FrameRate is set to FULL.
+     * </pre>
+     *
+     * @param frameRateFactor {@link FrameRate}
+     */
+    public void setFrameRateFactor(FrameRate frameRateFactor) {
+        this.frameRate = frameRateFactor;
     }
 
     /**
@@ -312,6 +348,15 @@ public class SceneView extends SurfaceView implements Choreographer.FrameCallbac
     public void doFrame(long frameTimeNanos) {
         // Always post the callback for the next frame.
         Choreographer.getInstance().postFrameCallback(this);
+
+        // limit to max fps
+        long nanoTime = System.nanoTime();
+        long tick = nanoTime / (TimeUnit.SECONDS.toNanos(1) / maxFramesPerSeconds);
+        if(lastTick / frameRate.factor() == tick / frameRate.factor())
+            return;
+
+        lastTick = tick;
+
         doFrameNoRepost(frameTimeNanos);
     }
 
@@ -371,6 +416,35 @@ public class SceneView extends SurfaceView implements Choreographer.FrameCallbac
 
         if (debugEnabled) {
             frameRenderTracker.endSample();
+        }
+    }
+
+    /**
+     * <pre>
+     *     Further limit the maximal possible frame rate.
+     *     If the max frame rate is 60fps a factor of 1 results in 60fps,
+     *     a factor of 2 results in 30fps and a factor of 3 results in 20fps.
+     *
+     *     In overall this prevents any kind of processing with more than the
+     *     calculated max frame rate.
+     * </pre>
+     */
+    public enum FrameRate {
+        /** divide the maximal allowed frame rate by 1 */
+        FULL (1),
+        /** divide the maximal allowed frame rate by 2 */
+        HALF (2),
+        /** divide the maximal allowed frame rate by 3 */
+        THIRD (3);
+
+        private final int factor;
+
+        FrameRate(int factor) {
+            this.factor = factor;
+        }
+
+        public int factor() {
+            return this.factor;
         }
     }
 }

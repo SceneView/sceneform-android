@@ -20,6 +20,7 @@ import com.google.ar.core.Pose;
 import com.google.ar.core.Session;
 import com.google.ar.core.TrackingState;
 import com.google.ar.core.exceptions.CameraNotAvailableException;
+import com.google.ar.core.exceptions.DeadlineExceededException;
 import com.google.ar.core.exceptions.FatalException;
 import com.google.ar.core.exceptions.NotYetAvailableException;
 import com.google.ar.sceneform.math.Vector3;
@@ -156,6 +157,10 @@ public class ArSceneView extends SceneView {
         // Session needs access to a texture id for updating the camera stream.
         // Filament and the Main thread each have their own gl context that share resources for this.
         session.setCameraTextureName(cameraTextureId);
+
+        // Set max frames per seconds here.
+        int fpsBound = session.getCameraConfig().getFpsRange().getUpper();
+        setMaxFramesPerSeconds(fpsBound);
     }
 
     private void initializeFacingDirection(Session session) {
@@ -412,6 +417,10 @@ public class ArSceneView extends SceneView {
                 return false;
             }
 
+            if (currentFrame != null && currentFrame.getTimestamp() == frame.getTimestamp()) {
+                updated = false;
+            }
+
             // Setup Camera Stream if needed.
             if (!cameraStream.isTextureInitialized()) {
                 cameraStream.initializeTexture(frame);
@@ -422,12 +431,8 @@ public class ArSceneView extends SceneView {
                 cameraStream.recalculateCameraUvs(frame);
             }
 
-            if (currentFrame != null && currentFrame.getTimestamp() == frame.getTimestamp()) {
-                updated = false;
-            }
-
             currentFrame = frame;
-        } catch (CameraNotAvailableException e) {
+        } catch (CameraNotAvailableException | DeadlineExceededException e) {
             Log.w(TAG, "Exception updating ARCore session", e);
             return false;
         }
@@ -451,22 +456,24 @@ public class ArSceneView extends SceneView {
                     if (cameraStream.getDepthMode() == CameraStream.DepthMode.DEPTH) {
                         try (Image depthImage = currentFrame.acquireDepthImage()) {
                             cameraStream.recalculateOcclusion(depthImage);
-                        } catch (NotYetAvailableException e) {
+                        } catch (NotYetAvailableException | DeadlineExceededException ignored) {
                         }
                     } else if (cameraStream.getDepthMode() == CameraStream.DepthMode.RAW_DEPTH) {
                         try (Image depthImage = currentFrame.acquireRawDepthImage()) {
                             cameraStream.recalculateOcclusion(depthImage);
-                        } catch (NotYetAvailableException e) {
+                        } catch (NotYetAvailableException | DeadlineExceededException ignored) {
                         }
                     }
                 }
 
                 // Update the light estimate.
                 updateLightEstimate(frame);
-                // Update the plane renderer.
-                if (planeRenderer.isEnabled()) {
-                    planeRenderer.update(frame, getWidth(), getHeight());
-                }
+                try {
+                    // Update the plane renderer.
+                    if (planeRenderer.isEnabled()) {
+                        planeRenderer.update(frame, getWidth(), getHeight());
+                    }
+                } catch (DeadlineExceededException ignored) {}
             }
         }
 

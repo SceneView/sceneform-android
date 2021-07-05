@@ -20,6 +20,7 @@ import com.google.ar.core.Session;
 import com.google.ar.sceneform.AnchorNode;
 import com.google.ar.sceneform.ArSceneView;
 import com.google.ar.sceneform.Node;
+import com.google.ar.sceneform.SceneView;
 import com.google.ar.sceneform.Sceneform;
 import com.google.ar.sceneform.math.Vector3;
 import com.google.ar.sceneform.rendering.EngineInstance;
@@ -93,6 +94,9 @@ public class MainActivity extends AppCompatActivity implements
                             .build(EngineInstance.getEngine().getFilamentEngine())
             );
         }
+
+        // Fine adjust the maximum frame rate
+        arSceneView.setFrameRateFactor(SceneView.FrameRate.FULL);
     }
 
     public void loadModels() {
