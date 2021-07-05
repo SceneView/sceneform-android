@@ -133,7 +133,7 @@ public void onAttachFragment(Fragment childFragment) {
 ### glTF with animation
 
 [![Full Video](https://user-images.githubusercontent.com/6597529/124511737-1f6ee300-ddd7-11eb-8f97-ff8ba45809d5.gif)  
-**full video...**](https://github.com/sponsors/ThomasGorisse)
+**full video...**](https://user-images.githubusercontent.com/6597529/124378254-c4db6700-dcb0-11eb-80a2-2e7381d60906.mp4)
 
 ```java
 @Override
@@ -151,7 +151,7 @@ public void onTapPlane(HitResult hitResult, Plane plane, MotionEvent motionEvent
 
 ### Depth Occlusion
 
-<img src="https://thomasgorisse.github.io/sceneform-android-sdk/images/samples/screenshot_depth_01.png" alt="drawing" width="250"/><img src="https://thomasgorisse.github.io/sceneform-android-sdk/images/samples/screenshot_depth_02.png" alt="drawing" width="250"/><img src="https://thomasgorisse.github.io/sceneform-android-sdk/images/samples/screenshot_depth_03.png" alt="drawing" width="250"/>
+<img src="https://thomasgorisse.github.io/sceneform-android-sdk/images/samples/screenshot_depth_01.png" alt="drawing" width="250"/> <img src="https://thomasgorisse.github.io/sceneform-android-sdk/images/samples/screenshot_depth_02.png" alt="drawing" width="250"/> <img src="https://thomasgorisse.github.io/sceneform-android-sdk/images/samples/screenshot_depth_03.png" alt="drawing" width="250"/>
 
 ```java
 @Override
@@ -174,9 +174,9 @@ public void onViewCreated(ArFragment arFragment, ArSceneView arSceneView) {
 
 ### Video texture
 
-| Chroma Key | Shadows | Stress Test |
-| --- | --- | --- |
-| ![AR-Chickens-in-the-garden_Trim](https://user-images.githubusercontent.com/6597529/124380093-286a9200-dcbb-11eb-84f2-36f839cd24c9.gif) | ![Shadows](https://user-images.githubusercontent.com/6597529/124379676-b85b0c80-dcb8-11eb-8250-d7ec7a449fad.gif) | ![Stress Test](https://user-images.githubusercontent.com/6597529/124379556-13403400-dcb8-11eb-9b56-00e36979eb0f.gif) |
+![AR-Chickens-in-the-garden_Trim](https://user-images.githubusercontent.com/6597529/124380093-286a9200-dcbb-11eb-84f2-36f839cd24c9.gif)
+
+![Shadows](https://user-images.githubusercontent.com/6597529/124379676-b85b0c80-dcb8-11eb-8250-d7ec7a449fad.gif) ![Stress Test](https://user-images.githubusercontent.com/6597529/124379556-13403400-dcb8-11eb-9b56-00e36979eb0f.gif)
 
 ```java
 @Override
