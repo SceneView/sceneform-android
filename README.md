@@ -123,17 +123,17 @@ public void onAttachFragment(Fragment childFragment) {
     }
 }
 ```
-**[sample...](https://github.com/ThomasGorisse/sceneform-android-sdk/blob/master/samples/gltf/src/main/java/com/google/ar/sceneform/samples/gltf/MainActivity.java)**
+[**sample...**](https://github.com/ThomasGorisse/sceneform-android-sdk/blob/master/samples/gltf/src/main/java/com/google/ar/sceneform/samples/gltf/MainActivity.java)
 
 
 
 ## Samples
 
 
-
 ### glTF with animation
 
-https://user-images.githubusercontent.com/6597529/124378254-c4db6700-dcb0-11eb-80a2-2e7381d60906.mp4
+[![Full Video](https://user-images.githubusercontent.com/6597529/124511737-1f6ee300-ddd7-11eb-8f97-ff8ba45809d5.gif)  
+**full video...**](https://github.com/sponsors/ThomasGorisse)
 
 ```java
 @Override
