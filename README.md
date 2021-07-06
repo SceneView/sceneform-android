@@ -219,6 +219,11 @@ public void onTapPlane(HitResult hitResult, Plane plane, MotionEvent motionEvent
 **[more...](https://thomasgorisse.github.io/sceneform-android-sdk/emulator)**
 
 
+# FPS-Bound
+
+**[documentation...](https://thomasgorisse.github.io/sceneform-android-sdk/fps_bound)**
+
+
 ## Go further
 
 
