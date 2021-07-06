@@ -194,14 +194,18 @@ public void onTapPlane(HitResult hitResult, Plane plane, MotionEvent motionEvent
 **[sample project...](https://github.com/ThomasGorisse/sceneform-android-sdk/tree/master/samples/video-texture)**
 
 
-### Image texture
+### Dynamic materials/textures
 
-<img src="https://thomasgorisse.github.io/sceneform-android-sdk/images/samples/screenshot_image_texture.png" alt="drawing" width="400"/>
+![Dynamic materials 01](https://miro.medium.com/max/2000/1*0XSLVleiR5ijFD1aIoCm-A.jpeg)
+![Dynamic materials 02](https://images.squarespace-cdn.com/content/v1/5bf7a0d55ffd203cac0e0920/1583270741496-7FJ9O190FD2FXI5JCWM0/texture.png?format=350w)
+![Dynamic materials 03](https://images.squarespace-cdn.com/content/v1/5bf7a0d55ffd203cac0e0920/1583264336080-RQP89XDN9IOHLISPG9CC/custom_material.png?format=350w)
 
 **[sample project...](https://github.com/ThomasGorisse/sceneform-android-sdk/tree/master/samples/image-texture)**
 
 
 ### Non AR usage
+
+![Non AR Usage 01](https://miro.medium.com/max/1400/1*xJlxDnz5ZjHDO7Pr4bVwUQ.gif)
 
 <img src="https://thomasgorisse.github.io/sceneform-android-sdk/images/samples/screenshot_sceneview_background.png" alt="drawing" width="400"/>
 
