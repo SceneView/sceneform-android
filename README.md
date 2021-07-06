@@ -172,6 +172,21 @@ public void onViewCreated(ArFragment arFragment, ArSceneView arSceneView) {
 **[sample project...](https://github.com/ThomasGorisse/sceneform-android-sdk/tree/master/samples/depth)**
 
 
+### Augmented Images
+
+![Augmented Images 01](https://user-images.githubusercontent.com/6597529/124591171-47ecf080-de5c-11eb-9196-8fe123e7ea58.gif)
+
+[**sample project...**](https://github.com/ThomasGorisse/sceneform-android-sdk/tree/master/samples/augmented-images)
+
+### Dynamic materials/textures
+
+![Dynamic materials 01](https://miro.medium.com/max/2000/1*0XSLVleiR5ijFD1aIoCm-A.jpeg)
+![Dynamic materials 02](https://images.squarespace-cdn.com/content/v1/5bf7a0d55ffd203cac0e0920/1583270741496-7FJ9O190FD2FXI5JCWM0/texture.png?format=300w)
+![Dynamic materials 03](https://images.squarespace-cdn.com/content/v1/5bf7a0d55ffd203cac0e0920/1583264336080-RQP89XDN9IOHLISPG9CC/custom_material.png?format=300w)
+
+**[sample project...](https://github.com/ThomasGorisse/sceneform-android-sdk/tree/master/samples/image-texture)**
+
+
 ### Video texture
 
 ![AR-Chickens-in-the-garden_Trim](https://user-images.githubusercontent.com/6597529/124380093-286a9200-dcbb-11eb-84f2-36f839cd24c9.gif)
@@ -194,20 +209,9 @@ public void onTapPlane(HitResult hitResult, Plane plane, MotionEvent motionEvent
 **[sample project...](https://github.com/ThomasGorisse/sceneform-android-sdk/tree/master/samples/video-texture)**
 
 
-### Dynamic materials/textures
-
-![Dynamic materials 01](https://miro.medium.com/max/2000/1*0XSLVleiR5ijFD1aIoCm-A.jpeg)
-![Dynamic materials 02](https://images.squarespace-cdn.com/content/v1/5bf7a0d55ffd203cac0e0920/1583270741496-7FJ9O190FD2FXI5JCWM0/texture.png?format=350w)
-![Dynamic materials 03](https://images.squarespace-cdn.com/content/v1/5bf7a0d55ffd203cac0e0920/1583264336080-RQP89XDN9IOHLISPG9CC/custom_material.png?format=350w)
-
-**[sample project...](https://github.com/ThomasGorisse/sceneform-android-sdk/tree/master/samples/image-texture)**
-
-
 ### Non AR usage
 
-![Non AR Usage 01](https://miro.medium.com/max/1400/1*xJlxDnz5ZjHDO7Pr4bVwUQ.gif)
-
-<img src="https://thomasgorisse.github.io/sceneform-android-sdk/images/samples/screenshot_sceneview_background.png" alt="drawing" width="400"/>
+![Non AR Usage 01](http://download.tuxfamily.org/sdtraces/BottinHTML/Bottin_D-J_files/282584ef7ae1d420897d47bd7ba4d46f.jpeg)
 
 **[sample project...](https://github.com/ThomasGorisse/sceneform-android-sdk/tree/master/samples/sceneview-background)**
 
