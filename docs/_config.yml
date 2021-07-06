@@ -1,4 +1,9 @@
-remote_theme : jekyll/minima
+remote_theme : rundocs/jekyll-rtd-theme
 plugins:
   - jekyll-sitemap
   - jekyll-assets
+readme_index:
+  with_frontmatter: true
+minima:
+  social_links:
+    github: ThomasGorisse/sceneform-android-sdk
