@@ -219,23 +219,6 @@ public void onTapPlane(HitResult hitResult, Plane plane, MotionEvent motionEvent
 **[more...](https://thomasgorisse.github.io/sceneform-android-sdk/emulator)**
 
 
-## Frame Rate (FPS-Bound)
-
-
-### Upper-Bound
-
-The Update-Rate of the rendering is limited through the used camera config of ARCore. For most Smartphones it is 30 fps and for the Pixel Smartphones it is 60 fps. The user can manually change this value *(you should know what you are doing)*.
-
-```java
-@Override
-public void onViewCreated(ArFragment arFragment, ArSceneView arSceneView) {
-    arSceneView.setMaxFramesPerSeconds([int])
-}
-```
-> The default value is **60**.
-
-**[documentation...](https://thomasgorisse.github.io/sceneform-android-sdk/fps_bound)**
-
 
 ## Go further
 
@@ -284,6 +267,23 @@ public void onTapPlane(HitResult hitResult, Plane plane, MotionEvent motionEvent
 }
 ```
 **[sample...](https://github.com/ThomasGorisse/sceneform-android-sdk/tree/master/samples/gltf)**
+
+
+## Frame Rate (FPS-Bound)
+
+### Upper-Bound
+
+The Update-Rate of the rendering is limited through the used camera config of ARCore. For most Smartphones it is 30 fps and for the Pixel Smartphones it is 60 fps. The user can manually change this value *(you should know what you are doing)*.
+
+```java
+@Override
+public void onViewCreated(ArFragment arFragment, ArSceneView arSceneView) {
+    arSceneView.setMaxFramesPerSeconds([int])
+}
+```
+> The default value is **60**.
+
+**[documentation...](https://thomasgorisse.github.io/sceneform-android-sdk/fps_bound)**
 
 
 ## Animations
