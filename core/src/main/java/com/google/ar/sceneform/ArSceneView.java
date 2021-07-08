@@ -747,6 +747,42 @@ public class ArSceneView extends SceneView {
         }
     }
 
+    /**
+     * Retrieve if the view is currently tracking a plane.
+     *
+     * @return true if the current frame is tracking at least one plane.
+     */
+    public boolean isTrackingPlane() {
+        return hasTrackingPlaneStates(TrackingState.TRACKING);
+    }
+
+    /**
+     * Retrieve if the view has already tracked a plane.
+     *
+     * @return true if the current frame has tracked at least one plane.
+     */
+    public boolean hasTrackedPlane() {
+        return hasTrackingPlaneStates(TrackingState.TRACKING, TrackingState.PAUSED);
+    }
+
+    /**
+     * Retrieve if the view has currently a plane with the tracking states.
+     *
+     * @return true if the current frame is tracking at least one plane.
+     */
+    public boolean hasTrackingPlaneStates(TrackingState... trackingStates) {
+        if (session != null) {
+            for (Plane plane : session.getAllTrackables(Plane.class)) {
+                for (TrackingState trackingState : trackingStates) {
+                    if (plane.getTrackingState() == trackingState) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
     private void reportEngineType() {
         return;
     }

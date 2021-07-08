@@ -233,8 +233,6 @@ public class MainActivity extends AppCompatActivity implements
 
             for (AugmentedImage image : augmentedImageCollection) {
                 if (image.getTrackingState() == TrackingState.TRACKING) {
-                    arFragment.getPlaneDiscoveryController().hide();
-
                     // If matrix video haven't been placed yet and detected image has String identifier of "matrix"
                     if (!matrixDetected && image.getName().equals("matrix")) {
                         matrixDetected = true;

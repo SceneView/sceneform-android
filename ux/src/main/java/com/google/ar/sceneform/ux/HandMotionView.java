@@ -16,40 +16,57 @@ package com.google.ar.sceneform.ux;
 
 import android.app.Activity;
 import android.content.Context;
-import androidx.appcompat.widget.AppCompatImageView;
 import android.util.AttributeSet;
+import android.view.View;
 import android.view.animation.Animation;
 import android.widget.FrameLayout;
 
+import androidx.appcompat.widget.AppCompatImageView;
 
-/** This view contains the hand motion instructions with animation. */
 
+/**
+ * This view contains the hand motion instructions with animation.
+ */
 public class HandMotionView extends AppCompatImageView {
-  private HandMotionAnimation animation;
-  private static final long ANIMATION_SPEED_MS = 2500;
+    private HandMotionAnimation animation;
+    private static final long ANIMATION_SPEED_MS = 2500;
 
-  public HandMotionView(Context context) {
-    super(context);
-  }
+    public HandMotionView(Context context) {
+        super(context);
+    }
 
-  public HandMotionView(Context context, AttributeSet attrs) {
-    super(context, attrs);
-  }
+    public HandMotionView(Context context, AttributeSet attrs) {
+        super(context, attrs);
+    }
 
-  @Override
-  protected void onAttachedToWindow() {
-    super.onAttachedToWindow();
+    @Override
+    protected void onAttachedToWindow() {
+        super.onAttachedToWindow();
 
-    clearAnimation();
+        clearAnimation();
 
-    FrameLayout container =
-        (FrameLayout) ((Activity) getContext()).findViewById(R.id.sceneform_hand_layout);
+        FrameLayout container = ((Activity) getContext()).findViewById(R.id.handMotionLayout);
 
-    animation = new HandMotionAnimation(container, this);
-    animation.setRepeatCount(Animation.INFINITE);
-    animation.setDuration(ANIMATION_SPEED_MS);
-    animation.setStartOffset(1000);
+        animation = new HandMotionAnimation(container, this);
+        animation.setRepeatCount(Animation.INFINITE);
+        animation.setDuration(ANIMATION_SPEED_MS);
+        animation.setStartOffset(1000);
 
-    startAnimation(animation);
-  }
+        startAnimation(animation);
+    }
+
+    @Override
+    public void setVisibility(int visibility) {
+        super.setVisibility(visibility);
+
+        updateVisibility();
+    }
+
+    private void updateVisibility() {
+        if (getVisibility() == View.VISIBLE) {
+            startAnimation(animation);
+        } else {
+            clearAnimation();
+        }
+    }
 }
