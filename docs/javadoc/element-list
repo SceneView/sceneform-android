@@ -1,0 +1,10 @@
+com.google.ar.sceneform
+com.google.ar.sceneform.animation
+com.google.ar.sceneform.collision
+com.google.ar.sceneform.common
+com.google.ar.sceneform.lullmodel
+com.google.ar.sceneform.math
+com.google.ar.sceneform.rendering
+com.google.ar.sceneform.resources
+com.google.ar.sceneform.utilities
+com.google.flatbuffers

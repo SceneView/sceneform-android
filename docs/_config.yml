@@ -16,6 +16,7 @@ navigation:                # accepts {file, title, url, icon, sidebaricon}
   - {title: "Emulator", url: "/#emulator"}
   - {title: "Go further", url: "/#go-further"}
   - {title: "Sponsor", url: "https://github.com/sponsors/ThomasGorisse"}
+  - {title: "Javadoc", url: "/javadoc/index.html"}
 
 external:
   - {title: Github, icon: github, url: "https://github.com/ThomasGorisse/sceneform-android-sdk"}

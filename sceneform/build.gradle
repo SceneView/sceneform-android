@@ -5,8 +5,8 @@ android {
     defaultConfig {
         minSdkVersion 24
         targetSdkVersion 30
-        versionCode 13
-        versionName "1.19.3"
+        versionCode 14
+        versionName "1.19.4"
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -25,6 +25,6 @@ dependencies {
     api project(":ux")
 }
 
-if (project.hasProperty('mavenCentralRepositoryUsername') && project.hasProperty('mavenCentralRepositoryPassword')) {
-//    apply plugin: "com.vanniktech.maven.publish"
+if (project.hasProperty('mavenCentralUsername') && project.hasProperty('mavenCentralPassword')) {
+    apply plugin: "com.vanniktech.maven.publish"
 }

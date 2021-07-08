@@ -16,6 +16,7 @@ import com.google.ar.core.Config;
 import com.google.ar.core.Config.LightEstimationMode;
 import com.google.ar.core.Frame;
 import com.google.ar.core.LightEstimate;
+import com.google.ar.core.Plane;
 import com.google.ar.core.Pose;
 import com.google.ar.core.Session;
 import com.google.ar.core.TrackingState;
