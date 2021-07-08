@@ -1,17 +1,3 @@
-/*
- * Copyright 2018 Google LLC. All Rights Reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *      http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- */
 package com.google.ar.sceneform.ux;
 
 import android.Manifest;
@@ -47,10 +33,8 @@ import androidx.fragment.app.FragmentActivity;
 
 import com.google.ar.core.ArCoreApk;
 import com.google.ar.core.Config;
-import com.google.ar.core.DepthPoint;
 import com.google.ar.core.Frame;
 import com.google.ar.core.HitResult;
-import com.google.ar.core.InstantPlacementPoint;
 import com.google.ar.core.Plane;
 import com.google.ar.core.Session;
 import com.google.ar.core.Trackable;
@@ -132,7 +116,7 @@ public abstract class BaseArFragment extends Fragment
     private boolean installRequested;
     private boolean sessionInitializationFailed = false;
     private ArSceneView arSceneView;
-    private InstructionsController instructionsController = new InstructionsController();
+    private InstructionsController instructionsController;
     private TransformationSystem transformationSystem;
     private GestureDetector gestureDetector;
     private FrameLayout frameLayout;
@@ -158,11 +142,22 @@ public abstract class BaseArFragment extends Fragment
     }
 
     /**
-     * Gets the instruction view controller.
-     * Default = plane discovery instructions which displays instructions for how to scan
+     * Gets the instructions view controller.
+     * Default: plane discovery which displays instructions for how to scan
+     *
+     * @return the actual instructions controller
      */
     public InstructionsController getInstructionsController() {
         return instructionsController;
+    }
+
+    /**
+     * Set the instructions view controller.
+     *
+     * @param instructionsController the custom instructions for the view.
+     */
+    public void setInstructionsController(InstructionsController instructionsController) {
+        this.instructionsController = instructionsController;
     }
 
     /**
@@ -216,12 +211,8 @@ public abstract class BaseArFragment extends Fragment
         arSceneView = (ArSceneView) frameLayout.findViewById(R.id.sceneform_ar_scene_view);
 
         // Setup the instructions view.
-        View instructionsView = loadPlaneDiscoveryInstructionsView(inflater, container);
-        if (instructionsView != null) {
-            frameLayout.addView(instructionsView);
-        }
-        instructionsController.setView(InstructionsController.TYPE_PLANE_DISCOVERY
-                , instructionsView);
+        instructionsController = new InstructionsController(inflater, frameLayout);
+        instructionsController.setEnabled(InstructionsController.TYPE_PLANE_DISCOVERY, true);
 
         if (Build.VERSION.SDK_INT < VERSION_CODES.N) {
             // Enforce API level 24
@@ -604,8 +595,11 @@ public abstract class BaseArFragment extends Fragment
     @Override
     public void onUpdate(FrameTime frameTime) {
         boolean hasTrackingPlane = arSceneView.hasTrackedPlane();
-        if (instructionsController.isVisible(InstructionsController.TYPE_PLANE_DISCOVERY) == hasTrackingPlane) {
-            instructionsController.setVisible(InstructionsController.TYPE_PLANE_DISCOVERY, !hasTrackingPlane);
+        if(getInstructionsController() != null) {
+            boolean instructionsVisible = !hasTrackingPlane;
+            if(getInstructionsController().isVisible(InstructionsController.TYPE_PLANE_DISCOVERY) != instructionsVisible) {
+                getInstructionsController().setVisible(InstructionsController.TYPE_PLANE_DISCOVERY, instructionsVisible);
+            }
         }
     }
 
@@ -622,7 +616,9 @@ public abstract class BaseArFragment extends Fragment
                 sessionInitializationFailed = true;
             }
             if (!sessionInitializationFailed) {
-                instructionsController.setVisible(true);
+                if(getInstructionsController() != null) {
+                    getInstructionsController().setVisible(true);
+                }
             }
         }
     }
@@ -633,14 +629,10 @@ public abstract class BaseArFragment extends Fragment
         }
 
         isStarted = false;
-        instructionsController.setVisible(false);
+        if(getInstructionsController() != null) {
+            getInstructionsController().setVisible(false);
+        }
         arSceneView.pause();
-    }
-
-    // Load the default view we use for the plane discovery instructions.
-    @Nullable
-    protected View loadPlaneDiscoveryInstructionsView(LayoutInflater inflater, @Nullable ViewGroup container) {
-        return inflater.inflate(R.layout.sceneform_instructions_plane_discovery, container, false);
     }
 
     private void onSingleTap(MotionEvent motionEvent) {

@@ -41,6 +41,7 @@ import com.google.ar.sceneform.rendering.RenderableInstance;
 import com.google.ar.sceneform.rendering.Renderer;
 import com.google.ar.sceneform.ux.ArFragment;
 import com.google.ar.sceneform.ux.BaseArFragment;
+import com.google.ar.sceneform.ux.InstructionsController;
 import com.google.ar.sceneform.ux.TransformableNode;
 
 import java.lang.ref.WeakReference;
@@ -145,6 +146,11 @@ public class MainActivity extends AppCompatActivity implements
         arSceneView.getPlaneRenderer().setVisible(false);
         // Disable the rendering of detected planes.
         arSceneView.getPlaneRenderer().setEnabled(false);
+        //Enable only the augment images instructions
+        arFragment.getInstructionsController().setEnabled(
+                InstructionsController.TYPE_PLANE_DISCOVERY, false);
+        arFragment.getInstructionsController().setVisible(
+                InstructionsController.TYPE_AUGMENTED_IMAGE_SCAN, true);
     }
 
     @Override
@@ -231,8 +237,11 @@ public class MainActivity extends AppCompatActivity implements
             // This is collection of all images from our AugmentedImageDatabase that are currently detected by ARCore in this session
             Collection<AugmentedImage> augmentedImageCollection = frame.getUpdatedTrackables(AugmentedImage.class);
 
+
             for (AugmentedImage image : augmentedImageCollection) {
                 if (image.getTrackingState() == TrackingState.TRACKING) {
+                    arFragment.getInstructionsController().setVisible(
+                            InstructionsController.TYPE_AUGMENTED_IMAGE_SCAN, false);
                     // If matrix video haven't been placed yet and detected image has String identifier of "matrix"
                     if (!matrixDetected && image.getName().equals("matrix")) {
                         matrixDetected = true;
@@ -278,16 +287,13 @@ public class MainActivity extends AppCompatActivity implements
 
                                         // Setting anchor to the center of AR tag
                                         AnchorNode anchorNode = new AnchorNode(image.createAnchor(image.getCenterPose()));
+                                        anchorNode.setWorldScale(new Vector3(3.5f, 3.5f, 3.5f));
 
                                         arFragment.getArSceneView().getScene().addChild(anchorNode);
 
                                         TransformableNode modelNode = new TransformableNode(arFragment.getTransformationSystem());
                                         modelNode.setParent(anchorNode);
-                                        RenderableInstance renderableInstance = modelNode.setRenderable(rabbitModel);
-
-                                        // Removing shadows
-                                        renderableInstance.setShadowCaster(true);
-                                        renderableInstance.setShadowReceiver(true);
+                                        modelNode.setRenderable(rabbitModel);
                                     }
                                 })
                                 .exceptionally(
