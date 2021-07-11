@@ -6,12 +6,22 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.filament.Material;
+import com.google.android.filament.RenderableManager;
+import com.google.android.filament.View;
 import com.google.ar.core.exceptions.CameraNotAvailableException;
 import com.google.ar.sceneform.Node;
 import com.google.ar.sceneform.SceneView;
 import com.google.ar.sceneform.math.Quaternion;
 import com.google.ar.sceneform.math.Vector3;
+import com.google.ar.sceneform.rendering.Color;
+import com.google.ar.sceneform.rendering.MaterialFactory;
 import com.google.ar.sceneform.rendering.ModelRenderable;
+import com.google.ar.sceneform.rendering.Renderable;
+import com.google.ar.sceneform.rendering.RenderableInstance;
+
+import java.util.function.BiConsumer;
+import java.util.function.Function;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -57,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
     public void loadModels() {
         ModelRenderable.builder()
                 .setSource(this
-                        , Uri.parse("models/cube.glb"))
+                        , Uri.parse("models/DragonAttenuation.glb"))
                 .setIsFilamentGltf(true)
                 .build()
                 .thenAccept(model -> {

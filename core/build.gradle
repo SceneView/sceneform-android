@@ -36,5 +36,8 @@ dependencies {
 }
 
 if (project.hasProperty('mavenCentralUsername') && project.hasProperty('mavenCentralPassword')) {
-    apply plugin: "com.vanniktech.maven.publish"
+    try {
+        apply plugin: "com.vanniktech.maven.publish"
+    } catch (UnknownPluginException e) {
+    }
 }

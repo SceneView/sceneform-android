@@ -32,6 +32,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 
 import com.google.ar.core.ArCoreApk;
+import com.google.ar.core.AugmentedImage;
 import com.google.ar.core.Config;
 import com.google.ar.core.Frame;
 import com.google.ar.core.HitResult;
@@ -108,6 +109,22 @@ public abstract class BaseArFragment extends Fragment
     }
 
     /**
+     * Invoked when an ARCore AugmentedImage state updates.
+     */
+    public interface OnAugmentedImageUpdateListener {
+        /**
+         * Called when an ARCore AugmentedImage TrackingState/TrackingMethod is updated.
+         * The callback will be invoked on each AugmentedImage update.
+         *
+         * @param augmentedImage The ARCore AugmentedImage.
+         * @see #setOnAugmentedImageUpdateListener(OnAugmentedImageUpdateListener)
+         * @see AugmentedImage#getTrackingState()
+         * @see AugmentedImage#getTrackingMethod()
+         */
+        void onAugmentedImageTrackingUpdate(AugmentedImage augmentedImage);
+    }
+
+    /**
      * The key for the fullscreen argument
      */
     public static final String ARGUMENT_FULLSCREEN = "fullscreen";
@@ -129,6 +146,8 @@ public abstract class BaseArFragment extends Fragment
     private OnSessionConfigurationListener onSessionConfigurationListener;
     @Nullable
     private OnTapArPlaneListener onTapArPlaneListener;
+    @Nullable
+    private OnAugmentedImageUpdateListener onAugmentedImageUpdateListener;
 
     @SuppressWarnings({"initialization"})
     private final OnWindowFocusChangeListener onFocusListener =
@@ -199,6 +218,20 @@ public abstract class BaseArFragment extends Fragment
      */
     public void setOnTapArPlaneListener(@Nullable OnTapArPlaneListener onTapArPlaneListener) {
         this.onTapArPlaneListener = onTapArPlaneListener;
+    }
+
+    /**
+     * Called when an ARCore AugmentedImage TrackingState/TrackingMethod is updated.
+     * Registers a callback to be invoked when an ARCore AugmentedImage TrackingState/TrackingMethod
+     * is updated.
+     * The callback will be invoked on each AugmentedImage update.
+     *
+     * @param onAugmentedImageUpdateListener the {@link OnAugmentedImageUpdateListener} to attach
+     * @see AugmentedImage#getTrackingState()
+     * @see AugmentedImage#getTrackingMethod()
+     */
+    public void setOnAugmentedImageUpdateListener(@Nullable OnAugmentedImageUpdateListener onAugmentedImageUpdateListener) {
+        this.onAugmentedImageUpdateListener = onAugmentedImageUpdateListener;
     }
 
     @Override
@@ -594,11 +627,22 @@ public abstract class BaseArFragment extends Fragment
 
     @Override
     public void onUpdate(FrameTime frameTime) {
-        boolean hasTrackingPlane = arSceneView.hasTrackedPlane();
-        if(getInstructionsController() != null) {
-            boolean instructionsVisible = !hasTrackingPlane;
-            if(getInstructionsController().isVisible(InstructionsController.TYPE_PLANE_DISCOVERY) != instructionsVisible) {
-                getInstructionsController().setVisible(InstructionsController.TYPE_PLANE_DISCOVERY, instructionsVisible);
+        Frame frame = arSceneView.getArFrame();
+
+        if(onAugmentedImageUpdateListener != null && getArSceneView().getSession().getConfig().getAugmentedImageDatabase() != null) {
+            for (AugmentedImage augmentedImage : frame.getUpdatedTrackables(AugmentedImage.class)) {
+                onAugmentedImageUpdateListener.onAugmentedImageTrackingUpdate(augmentedImage);
+            }
+        }
+
+        if (getInstructionsController() != null) {
+            boolean showPlaneInstructions = !arSceneView.hasTrackedPlane();
+            if (getInstructionsController().isVisible(InstructionsController.TYPE_PLANE_DISCOVERY) != showPlaneInstructions) {
+                getInstructionsController().setVisible(InstructionsController.TYPE_PLANE_DISCOVERY, showPlaneInstructions);
+            }
+            boolean showAugmentedImageInstructions = !arSceneView.isTrackingFullyAugmentImage();
+            if (getInstructionsController().isVisible(InstructionsController.TYPE_AUGMENTED_IMAGE_SCAN) != showAugmentedImageInstructions) {
+                getInstructionsController().setVisible(InstructionsController.TYPE_AUGMENTED_IMAGE_SCAN, showAugmentedImageInstructions);
             }
         }
     }
@@ -616,7 +660,7 @@ public abstract class BaseArFragment extends Fragment
                 sessionInitializationFailed = true;
             }
             if (!sessionInitializationFailed) {
-                if(getInstructionsController() != null) {
+                if (getInstructionsController() != null) {
                     getInstructionsController().setVisible(true);
                 }
             }
@@ -629,7 +673,7 @@ public abstract class BaseArFragment extends Fragment
         }
 
         isStarted = false;
-        if(getInstructionsController() != null) {
+        if (getInstructionsController() != null) {
             getInstructionsController().setVisible(false);
         }
         arSceneView.pause();

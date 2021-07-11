@@ -23,12 +23,10 @@ import com.google.android.filament.filamat.MaterialPackage;
 import com.google.ar.core.AugmentedImage;
 import com.google.ar.core.AugmentedImageDatabase;
 import com.google.ar.core.Config;
-import com.google.ar.core.Frame;
 import com.google.ar.core.Session;
 import com.google.ar.core.TrackingState;
 import com.google.ar.sceneform.AnchorNode;
 import com.google.ar.sceneform.ArSceneView;
-import com.google.ar.sceneform.FrameTime;
 import com.google.ar.sceneform.Sceneform;
 import com.google.ar.sceneform.math.Quaternion;
 import com.google.ar.sceneform.math.Vector3;
@@ -44,9 +42,10 @@ import com.google.ar.sceneform.ux.BaseArFragment;
 import com.google.ar.sceneform.ux.InstructionsController;
 import com.google.ar.sceneform.ux.TransformableNode;
 
-import java.lang.ref.WeakReference;
 import java.nio.ByteBuffer;
-import java.util.Collection;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 public class MainActivity extends AppCompatActivity implements
         FragmentOnAttachListener,
@@ -63,6 +62,8 @@ public class MainActivity extends AppCompatActivity implements
     private Renderable plainVideoModel;
     private Material plainVideoMaterial;
     private MediaPlayer mediaPlayer;
+
+    private List<CompletableFuture> futures = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -91,6 +92,7 @@ public class MainActivity extends AppCompatActivity implements
         loadMatrixMaterial();
     }
 
+
     @Override
     public void onAttachFragment(@NonNull FragmentManager fragmentManager, @NonNull Fragment fragment) {
         if (fragment.getId() == R.id.arFragment) {
@@ -105,7 +107,7 @@ public class MainActivity extends AppCompatActivity implements
         // Disable plane detection
         config.setPlaneFindingMode(Config.PlaneFindingMode.DISABLED);
 
-        if(session.isDepthModeSupported(Config.DepthMode.AUTOMATIC))
+        if (session.isDepthModeSupported(Config.DepthMode.AUTOMATIC))
             config.setDepthMode(Config.DepthMode.AUTOMATIC);
 
         // Images to be detected by our AR need to be added in AugmentedImageDatabase
@@ -123,7 +125,7 @@ public class MainActivity extends AppCompatActivity implements
         config.setAugmentedImageDatabase(database);
 
         // Check for image detection
-        arFragment.getArSceneView().getScene().addOnUpdateListener(this::onUpdate);
+        arFragment.setOnAugmentedImageUpdateListener(this::onAugmentedImageTrackingUpdate);
     }
 
     @Override
@@ -149,13 +151,17 @@ public class MainActivity extends AppCompatActivity implements
         //Enable only the augment images instructions
         arFragment.getInstructionsController().setEnabled(
                 InstructionsController.TYPE_PLANE_DISCOVERY, false);
-        arFragment.getInstructionsController().setVisible(
-                InstructionsController.TYPE_AUGMENTED_IMAGE_SCAN, true);
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
+
+        for (CompletableFuture future : futures) {
+            if (!future.isDone()) {
+                future.cancel(true);
+            }
+        }
 
         if (mediaPlayer != null) {
             mediaPlayer.stop();
@@ -164,29 +170,24 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     private void loadMatrixModel() {
-        WeakReference<MainActivity> weakActivity = new WeakReference<>(this);
-        ModelRenderable.builder()
+        futures.add(ModelRenderable.builder()
                 .setSource(this, Uri.parse("models/Video.glb"))
                 .setIsFilamentGltf(true)
                 .build()
                 .thenAccept(model -> {
-                    MainActivity activity = weakActivity.get();
-                    if (activity != null) {
-                        //removing shadows for this Renderable
-                        model.setShadowCaster(false);
-                        model.setShadowReceiver(true);
-                        activity.plainVideoModel = model;
-                    }
+                    //removing shadows for this Renderable
+                    model.setShadowCaster(false);
+                    model.setShadowReceiver(true);
+                    plainVideoModel = model;
                 })
                 .exceptionally(
                         throwable -> {
                             Toast.makeText(this, "Unable to load renderable", Toast.LENGTH_LONG).show();
                             return null;
-                        });
+                        }));
     }
 
     private void loadMatrixMaterial() {
-        WeakReference<MainActivity> weakActivity = new WeakReference<>(this);
         Engine filamentEngine = EngineInstance.getEngine().getFilamentEngine();
 
         MaterialBuilder.init();
@@ -208,104 +209,87 @@ public class MainActivity extends AppCompatActivity implements
                 .build(filamentEngine);
         if (plainVideoMaterialPackage.isValid()) {
             ByteBuffer buffer = plainVideoMaterialPackage.getBuffer();
-            Material.builder()
+            futures.add(Material.builder()
                     .setSource(buffer)
                     .build()
                     .thenAccept(material -> {
-                        MainActivity activity = weakActivity.get();
-                        if (activity != null) {
-                            activity.plainVideoMaterial = material;
-                        }
+                        plainVideoMaterial = material;
                     })
                     .exceptionally(
                             throwable -> {
                                 Toast.makeText(this, "Unable to load material", Toast.LENGTH_LONG).show();
                                 return null;
-                            });
+                            }));
         }
         MaterialBuilder.shutdown();
     }
 
-    // Every time new image is processed by ARCore and ready, this method is called
-    public void onUpdate(FrameTime frameTime) {
+    public void onAugmentedImageTrackingUpdate(AugmentedImage augmentedImage) {
         // If there are both images already detected, for better CPU usage we do not need scan for them
         if (matrixDetected && rabbitDetected)
             return;
 
-        Frame frame = arFragment.getArSceneView().getArFrame();
-        try {
-            // This is collection of all images from our AugmentedImageDatabase that are currently detected by ARCore in this session
-            Collection<AugmentedImage> augmentedImageCollection = frame.getUpdatedTrackables(AugmentedImage.class);
+        if (augmentedImage.getTrackingState() == TrackingState.TRACKING
+                && augmentedImage.getTrackingMethod() == AugmentedImage.TrackingMethod.FULL_TRACKING) {
 
+            // Setting anchor to the center of Augmented Image
+            AnchorNode anchorNode = new AnchorNode(augmentedImage.createAnchor(augmentedImage.getCenterPose()));
 
-            for (AugmentedImage image : augmentedImageCollection) {
-                if (image.getTrackingState() == TrackingState.TRACKING) {
-                    arFragment.getInstructionsController().setVisible(
-                            InstructionsController.TYPE_AUGMENTED_IMAGE_SCAN, false);
-                    // If matrix video haven't been placed yet and detected image has String identifier of "matrix"
-                    if (!matrixDetected && image.getName().equals("matrix")) {
-                        matrixDetected = true;
-                        Toast.makeText(this, "Matrix tag detected", Toast.LENGTH_LONG).show();
+            // If matrix video haven't been placed yet and detected image has String identifier of "matrix"
+            if (!matrixDetected && augmentedImage.getName().equals("matrix")) {
+                matrixDetected = true;
+                Toast.makeText(this, "Matrix tag detected", Toast.LENGTH_LONG).show();
 
-                        // New AnchorNode placed to the detected tag and set it to the real size of the tag
-                        // This will cause deformation if your AR tag has different aspect ratio than your video
-                        AnchorNode anchorNode = new AnchorNode(image.createAnchor(image.getCenterPose()));
-                        anchorNode.setWorldScale(new Vector3(image.getExtentX(), 1f, image.getExtentZ()));
-                        arFragment.getArSceneView().getScene().addChild(anchorNode);
+                // AnchorNode placed to the detected tag and set it to the real size of the tag
+                // This will cause deformation if your AR tag has different aspect ratio than your video
+                anchorNode.setWorldScale(new Vector3(augmentedImage.getExtentX(), 1f, augmentedImage.getExtentZ()));
+                arFragment.getArSceneView().getScene().addChild(anchorNode);
 
-                        TransformableNode videoNode = new TransformableNode(arFragment.getTransformationSystem());
-                        videoNode.setParent(anchorNode);
-                        // For some reason it is shown upside down so this will rotate it correctly
-                        videoNode.setLocalRotation(Quaternion.axisAngle(new Vector3(0, 1f, 0), 180f));
+                TransformableNode videoNode = new TransformableNode(arFragment.getTransformationSystem());
+                // For some reason it is shown upside down so this will rotate it correctly
+                videoNode.setLocalRotation(Quaternion.axisAngle(new Vector3(0, 1f, 0), 180f));
+                anchorNode.addChild(videoNode);
 
-                        // Setting texture
-                        ExternalTexture externalTexture = new ExternalTexture();
-                        RenderableInstance renderableInstance = videoNode.setRenderable(plainVideoModel);
-                        renderableInstance.setMaterial(plainVideoMaterial);
+                // Setting texture
+                ExternalTexture externalTexture = new ExternalTexture();
+                RenderableInstance renderableInstance = videoNode.setRenderable(plainVideoModel);
+                renderableInstance.setMaterial(plainVideoMaterial);
 
-                        // Setting MediaPLayer
-                        renderableInstance.getMaterial().setExternalTexture("videoTexture", externalTexture);
-                        mediaPlayer = MediaPlayer.create(this, R.raw.matrix);
-                        mediaPlayer.setLooping(true);
-                        mediaPlayer.setSurface(externalTexture.getSurface());
-                        mediaPlayer.start();
-                    }
-                    // If rabbit model haven't been placed yet and detected image has String identifier of "rabbit"
-                    // This is also example of model loading and placing at runtime
-                    if (!rabbitDetected && image.getName().equals("rabbit")) {
-                        rabbitDetected = true;
-                        Toast.makeText(this, "Rabbit tag detected", Toast.LENGTH_LONG).show();
-
-                        WeakReference<MainActivity> weakActivity = new WeakReference<>(this);
-                        ModelRenderable.builder()
-                                .setSource(this, Uri.parse("models/Rabbit.glb"))
-                                .setIsFilamentGltf(true)
-                                .build()
-                                .thenAccept(rabbitModel -> {
-                                    MainActivity activity = weakActivity.get();
-                                    if (activity != null) {
-
-                                        // Setting anchor to the center of AR tag
-                                        AnchorNode anchorNode = new AnchorNode(image.createAnchor(image.getCenterPose()));
-                                        anchorNode.setWorldScale(new Vector3(3.5f, 3.5f, 3.5f));
-
-                                        arFragment.getArSceneView().getScene().addChild(anchorNode);
-
-                                        TransformableNode modelNode = new TransformableNode(arFragment.getTransformationSystem());
-                                        modelNode.setParent(anchorNode);
-                                        modelNode.setRenderable(rabbitModel);
-                                    }
-                                })
-                                .exceptionally(
-                                        throwable -> {
-                                            Toast.makeText(this, "Unable to load rabbit model", Toast.LENGTH_LONG).show();
-                                            return null;
-                                        });
-                    }
-                }
+                // Setting MediaPLayer
+                renderableInstance.getMaterial().setExternalTexture("videoTexture", externalTexture);
+                mediaPlayer = MediaPlayer.create(this, R.raw.matrix);
+                mediaPlayer.setLooping(true);
+                mediaPlayer.setSurface(externalTexture.getSurface());
+                mediaPlayer.start();
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+            // If rabbit model haven't been placed yet and detected image has String identifier of "rabbit"
+            // This is also example of model loading and placing at runtime
+            if (!rabbitDetected && augmentedImage.getName().equals("rabbit")) {
+                rabbitDetected = true;
+                Toast.makeText(this, "Rabbit tag detected", Toast.LENGTH_LONG).show();
+
+                anchorNode.setWorldScale(new Vector3(3.5f, 3.5f, 3.5f));
+                arFragment.getArSceneView().getScene().addChild(anchorNode);
+
+                futures.add(ModelRenderable.builder()
+                        .setSource(this, Uri.parse("models/Rabbit.glb"))
+                        .setIsFilamentGltf(true)
+                        .build()
+                        .thenAccept(rabbitModel -> {
+                            TransformableNode modelNode = new TransformableNode(arFragment.getTransformationSystem());
+                            modelNode.setRenderable(rabbitModel);
+                            anchorNode.addChild(modelNode);
+                        })
+                        .exceptionally(
+                                throwable -> {
+                                    Toast.makeText(this, "Unable to load rabbit model", Toast.LENGTH_LONG).show();
+                                    return null;
+                                }));
+            }
+        }
+        if (matrixDetected && rabbitDetected) {
+            arFragment.getInstructionsController().setEnabled(
+                    InstructionsController.TYPE_AUGMENTED_IMAGE_SCAN, false);
         }
     }
 }
