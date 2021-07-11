@@ -211,6 +211,8 @@ public class Node extends NodeParent implements TransformProvider {
     private boolean enabled = true;
     private boolean active = false;
 
+    private boolean selectable = true;
+
     // Rendering fields.
     private int renderableId = ChangeId.EMPTY_ID;
     @Nullable
@@ -428,6 +430,25 @@ public class Node extends NodeParent implements TransformProvider {
         return active;
     }
 
+
+    /**
+     * Retrieve if the node can be selected within the
+     * {@Link com.google.ar.sceneform.collision.CollisionSystem} when a touch event happened.
+     * @return true if the node can be selected
+     */
+    public boolean isSelectable() {
+        return selectable;
+    }
+
+    /**
+     * Defines if the node can be selected within the
+     * {@Link com.google.ar.sceneform.collision.CollisionSystem} when a touch event happened.
+     * @param selectable true if the node can be selected
+     */
+    public void setSelectable(boolean selectable) {
+        this.selectable = selectable;
+    }
+
     /**
      * Registers a callback to be invoked when a touch event is dispatched to this node. The way that
      * touch events are propagated mirrors the way touches are propagated to Android Views. This is
@@ -438,7 +459,7 @@ public class Node extends NodeParent implements TransformProvider {
      *
      * <ul>
      *   <li>Dispatch touch events to the node that was touched as detected by {@link
-     *       Scene#hitTest(MotionEvent)}.
+     *       Scene#hitTest(Ray, boolean)} .
      *   <li>If the node doesn't consume the event, recurse upwards through the node's parents and
      *       dispatch the touch event until one of the node's consumes the event.
      *   <li>If no nodes consume the event, the gesture is ignored and subsequent events that are part

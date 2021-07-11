@@ -2,6 +2,8 @@ package com.google.ar.sceneform.collision;
 
 import androidx.annotation.Nullable;
 
+import com.google.ar.sceneform.Node;
+import com.google.ar.sceneform.common.TransformProvider;
 import com.google.ar.sceneform.utilities.Preconditions;
 
 import java.util.ArrayList;
@@ -30,7 +32,7 @@ public class CollisionSystem {
     }
 
     @Nullable
-    public Collider raycast(Ray ray, RayHit resultHit) {
+    public Collider raycast(Ray ray, RayHit resultHit, boolean onlySelectableNodes) {
         Preconditions.checkNotNull(ray, "Parameter \"ray\" was null.");
         Preconditions.checkNotNull(resultHit, "Parameter \"resultHit\" was null.");
 
@@ -44,7 +46,10 @@ public class CollisionSystem {
             }
 
             if (collisionShape.rayIntersection(ray, tempResult)) {
-                if (tempResult.getDistance() < resultHit.getDistance()) {
+                TransformProvider transformProvider = collider.getTransformProvider();
+                if(!onlySelectableNodes 
+                        || !(transformProvider instanceof Node)
+                        || ((Node) transformProvider).isSelectable()) {
                     resultHit.set(tempResult);
                     result = collider;
                 }

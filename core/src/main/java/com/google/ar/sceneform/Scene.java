@@ -282,11 +282,12 @@ public class Scene extends NodeParent {
      * whose origin is the screen position of the motion event, and outputs a HitTestResult containing
      * the node closest to the screen.
      *
-     * @param motionEvent the motion event to use for the test
+     * @param motionEvent         the motion event to use for the test
+     * @param onlySelectableNodes Filter the HitTestResult on only selectable nodes
      * @return the result includes the first node that was hit by the motion event (may be null), and
      * information about where the motion event hit the node in world-space
      */
-    public HitTestResult hitTest(MotionEvent motionEvent) {
+    public HitTestResult hitTest(MotionEvent motionEvent, boolean onlySelectableNodes) {
         Preconditions.checkNotNull(motionEvent, "Parameter \"motionEvent\" was null.");
 
         if (camera == null) {
@@ -294,23 +295,24 @@ public class Scene extends NodeParent {
         }
 
         Ray ray = camera.motionEventToRay(motionEvent);
-        return hitTest(ray);
+        return hitTest(ray, onlySelectableNodes);
     }
 
     /**
      * Tests to see if a ray is hitting any nodes within the scene and outputs a HitTestResult
      * containing the node closest to the ray origin that intersects with the ray.
      *
-     * @param ray the ray to use for the test
+     * @param ray                 the ray to use for the test
+     * @param onlySelectableNodes Filter the HitTestResult on only selectable nodes
      * @return the result includes the first node that was hit by the ray (may be null), and
      * information about where the ray hit the node in world-space
      * @see Camera#screenPointToRay(float, float)
      */
-    public HitTestResult hitTest(Ray ray) {
+    public HitTestResult hitTest(Ray ray, boolean onlySelectableNodes) {
         Preconditions.checkNotNull(ray, "Parameter \"ray\" was null.");
 
         HitTestResult result = new HitTestResult();
-        Collider collider = collisionSystem.raycast(ray, result);
+        Collider collider = collisionSystem.raycast(ray, result, onlySelectableNodes);
         if (collider != null) {
             result.setNode((Node) collider.getTransformProvider());
         }
@@ -503,10 +505,8 @@ public class Scene extends NodeParent {
 
     void onTouchEvent(MotionEvent motionEvent) {
         Preconditions.checkNotNull(motionEvent, "Parameter \"motionEvent\" was null.");
-
-        // TODO: Investigate API for controlling what node's can be hit by the hitTest.
-        // i.e. layers, disabling collision shapes.
-        HitTestResult hitTestResult = hitTest(motionEvent);
+        
+        HitTestResult hitTestResult = hitTest(motionEvent, true);
         touchEventSystem.onTouchEvent(hitTestResult, motionEvent);
     }
 
