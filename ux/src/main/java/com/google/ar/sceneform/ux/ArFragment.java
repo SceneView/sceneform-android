@@ -51,7 +51,10 @@ import java.util.Set;
 public class ArFragment extends BaseArFragment {
     private static final String TAG = "StandardArFragment";
 
+    @Nullable
     private OnViewCreatedListener onViewCreatedListener;
+    @Nullable
+    private OnArUnavailableListener onArUnavailableListener;
     private Renderable onTapRenderable;
 
     /**
@@ -91,22 +94,25 @@ public class ArFragment extends BaseArFragment {
     }
 
     @Override
-    protected void handleSessionException(UnavailableException sessionException) {
-
-        String message;
-        if (sessionException instanceof UnavailableArcoreNotInstalledException) {
-            message = "Please install ARCore";
-        } else if (sessionException instanceof UnavailableApkTooOldException) {
-            message = "Please update ARCore";
-        } else if (sessionException instanceof UnavailableSdkTooOldException) {
-            message = "Please update this app";
-        } else if (sessionException instanceof UnavailableDeviceNotCompatibleException) {
-            message = "This device does not support AR";
+    protected void onArUnavailableException(UnavailableException sessionException) {
+        if (onArUnavailableListener != null) {
+            onArUnavailableException(sessionException);
         } else {
-            message = "Failed to create AR session";
+            String message;
+            if (sessionException instanceof UnavailableArcoreNotInstalledException) {
+                message = "Please install ARCore";
+            } else if (sessionException instanceof UnavailableApkTooOldException) {
+                message = "Please update ARCore";
+            } else if (sessionException instanceof UnavailableSdkTooOldException) {
+                message = "Please update this app";
+            } else if (sessionException instanceof UnavailableDeviceNotCompatibleException) {
+                message = "This device does not support AR";
+            } else {
+                message = "Failed to create AR session";
+            }
+            Log.e(TAG, "Error: " + message, sessionException);
+            Toast.makeText(requireActivity(), message, Toast.LENGTH_LONG).show();
         }
-        Log.e(TAG, "Error: " + message, sessionException);
-        Toast.makeText(requireActivity(), message, Toast.LENGTH_LONG).show();
     }
 
     @Override
@@ -125,6 +131,16 @@ public class ArFragment extends BaseArFragment {
      */
     public void setOnViewCreatedListener(OnViewCreatedListener onViewCreatedListener) {
         this.onViewCreatedListener = onViewCreatedListener;
+    }
+
+    /**
+     * Registers a callback to be invoked when the ARCore Session cannot be initialized because
+     * ARCore is not available on the device.
+     *
+     * @param onArUnavailableListener the {@link OnArUnavailableListener} to attach.
+     */
+    public void setOnArUnavailableListener(@Nullable OnArUnavailableListener onArUnavailableListener) {
+        this.onArUnavailableListener = onArUnavailableListener;
     }
 
     /**
@@ -219,5 +235,24 @@ public class ArFragment extends BaseArFragment {
          * @param arSceneView the created ARSceneView ready to be configured.
          */
         void onViewCreated(ArFragment arFragment, ArSceneView arSceneView);
+    }
+
+    /**
+     * Invoked when the ARCore Session cannot be initialized because ARCore is not available on
+     * the device.
+     */
+    public interface OnArUnavailableListener {
+        /**
+         * The callback will only be invoked once after a Session initialization exception.
+         *
+         * @param exception The thrown exception. One of UnavailableApkTooOldException,
+         *                  UnavailableArcoreNotInstalledException,
+         *                  UnavailableDeviceNotCompatibleException,
+         *                  UnavailableSdkTooOldException,
+         *                  UnavailableUserDeclinedInstallationException
+         * @see UnavailableException
+         * @see #setOnArUnavailableListener(OnArUnavailableListener)
+         */
+        void onArUnavailableException(UnavailableException exception);
     }
 }

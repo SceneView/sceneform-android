@@ -491,7 +491,7 @@ public abstract class BaseArFragment extends Fragment
                 sessionException.initCause(e);
             }
             sessionInitializationFailed = true;
-            handleSessionException(sessionException);
+            onArUnavailableException(sessionException);
 
         } else {
             requestDangerousPermissions();
@@ -560,7 +560,7 @@ public abstract class BaseArFragment extends Fragment
                         });
     }
 
-    protected abstract void handleSessionException(UnavailableException sessionException);
+    protected abstract void onArUnavailableException(UnavailableException sessionException);
 
     protected abstract Config getSessionConfiguration(Session session);
 
@@ -629,7 +629,7 @@ public abstract class BaseArFragment extends Fragment
     public void onUpdate(FrameTime frameTime) {
         Frame frame = arSceneView.getArFrame();
 
-        if(onAugmentedImageUpdateListener != null && getArSceneView().getSession().getConfig().getAugmentedImageDatabase() != null) {
+        if (onAugmentedImageUpdateListener != null && getArSceneView().getSession().getConfig().getAugmentedImageDatabase() != null) {
             for (AugmentedImage augmentedImage : frame.getUpdatedTrackables(AugmentedImage.class)) {
                 onAugmentedImageUpdateListener.onAugmentedImageTrackingUpdate(augmentedImage);
             }
