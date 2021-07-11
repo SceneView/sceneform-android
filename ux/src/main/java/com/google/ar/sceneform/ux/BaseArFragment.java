@@ -241,7 +241,7 @@ public abstract class BaseArFragment extends Fragment
             LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         frameLayout = (FrameLayout) inflater.inflate(R.layout.sceneform_ux_fragment_layout
                 , container, false);
-        arSceneView = (ArSceneView) frameLayout.findViewById(R.id.sceneform_ar_scene_view);
+        arSceneView = frameLayout.findViewById(R.id.sceneform_ar_scene_view);
 
         // Setup the instructions view.
         instructionsController = new InstructionsController(inflater, frameLayout);
@@ -368,8 +368,8 @@ public abstract class BaseArFragment extends Fragment
                 new AlertDialog.Builder(requireActivity(), android.R.style.Theme_Material_Dialog_Alert);
 
         builder
-                .setTitle("Camera permission required")
-                .setMessage("Add camera permission via Settings?")
+                .setTitle(R.string.sceneform_camera_permission_required)
+                .setMessage(R.string.sceneform_add_camera_permission_via_settings)
                 .setPositiveButton(
                         android.R.string.ok,
                         new DialogInterface.OnClickListener() {

@@ -100,15 +100,15 @@ public class ArFragment extends BaseArFragment {
         } else {
             String message;
             if (sessionException instanceof UnavailableArcoreNotInstalledException) {
-                message = "Please install ARCore";
+                message = getString(R.string.sceneform_unavailable_arcore_not_installed);
             } else if (sessionException instanceof UnavailableApkTooOldException) {
-                message = "Please update ARCore";
+                message = getString(R.string.sceneform_unavailable_apk_too_old);
             } else if (sessionException instanceof UnavailableSdkTooOldException) {
-                message = "Please update this app";
+                message = getString(R.string.sceneform_unavailable_sdk_too_old);
             } else if (sessionException instanceof UnavailableDeviceNotCompatibleException) {
-                message = "This device does not support AR";
+                message = getString(R.string.sceneform_unavailable_device_not_compatible);
             } else {
-                message = "Failed to create AR session";
+                message = getString(R.string.sceneform_failed_to_create_ar_session);
             }
             Log.e(TAG, "Error: " + message, sessionException);
             Toast.makeText(requireActivity(), message, Toast.LENGTH_LONG).show();
