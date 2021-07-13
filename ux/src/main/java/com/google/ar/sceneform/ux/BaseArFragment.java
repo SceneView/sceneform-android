@@ -33,6 +33,7 @@ import androidx.fragment.app.FragmentActivity;
 
 import com.google.ar.core.ArCoreApk;
 import com.google.ar.core.AugmentedImage;
+import com.google.ar.core.AugmentedImageDatabase;
 import com.google.ar.core.Config;
 import com.google.ar.core.Frame;
 import com.google.ar.core.HitResult;
@@ -629,7 +630,9 @@ public abstract class BaseArFragment extends Fragment
     public void onUpdate(FrameTime frameTime) {
         Frame frame = arSceneView.getArFrame();
 
-        if (onAugmentedImageUpdateListener != null && getArSceneView().getSession().getConfig().getAugmentedImageDatabase() != null) {
+        AugmentedImageDatabase augmentedImageDatabase = getArSceneView().getSession().getConfig().getAugmentedImageDatabase();
+        boolean hasAugmentedImageDatabase = augmentedImageDatabase != null && augmentedImageDatabase.getNumImages() > 0;
+        if (hasAugmentedImageDatabase && onAugmentedImageUpdateListener != null) {
             for (AugmentedImage augmentedImage : frame.getUpdatedTrackables(AugmentedImage.class)) {
                 onAugmentedImageUpdateListener.onAugmentedImageTrackingUpdate(augmentedImage);
             }
@@ -640,7 +643,8 @@ public abstract class BaseArFragment extends Fragment
             if (getInstructionsController().isVisible(InstructionsController.TYPE_PLANE_DISCOVERY) != showPlaneInstructions) {
                 getInstructionsController().setVisible(InstructionsController.TYPE_PLANE_DISCOVERY, showPlaneInstructions);
             }
-            boolean showAugmentedImageInstructions = !arSceneView.isTrackingFullyAugmentImage();
+            boolean showAugmentedImageInstructions = hasAugmentedImageDatabase
+                    && !arSceneView.isTrackingFullyAugmentImage();
             if (getInstructionsController().isVisible(InstructionsController.TYPE_AUGMENTED_IMAGE_SCAN) != showAugmentedImageInstructions) {
                 getInstructionsController().setVisible(InstructionsController.TYPE_AUGMENTED_IMAGE_SCAN, showAugmentedImageInstructions);
             }
