@@ -54,6 +54,7 @@ import com.google.ar.sceneform.Scene;
 import com.google.ar.sceneform.rendering.ModelRenderable;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -311,7 +312,9 @@ public abstract class BaseArFragment extends Fragment
      * Manifest.permission.CAMERA, which is needed by ARCore. If no additional permissions are needed,
      * an empty array should be returned.
      */
-    public abstract String[] getAdditionalPermissions();
+    public String[] getAdditionalPermissions() {
+        return new String[0];
+    }
 
     /**
      * Starts the process of requesting dangerous permissions. This combines the CAMERA permission
@@ -514,9 +517,8 @@ public abstract class BaseArFragment extends Fragment
      * Creates the ARCore Session with the with features defined in #getSessionFeatures. If this
      * returns null, the Session will be created with the default features.
      */
-
-    protected @Nullable
-    Session createSessionWithFeatures()
+    @Nullable
+    protected Session createSessionWithFeatures()
             throws UnavailableSdkTooOldException, UnavailableDeviceNotCompatibleException,
             UnavailableArcoreNotInstalledException, UnavailableApkTooOldException {
         return new Session(requireActivity(), getSessionFeatures());
@@ -564,14 +566,18 @@ public abstract class BaseArFragment extends Fragment
 
     protected abstract void onArUnavailableException(UnavailableException sessionException);
 
-    protected abstract Config getSessionConfiguration(Session session);
+    protected Config getSessionConfiguration(Session session) {
+        return new Config(session);
+    }
 
     /**
      * Specifies additional features for creating an ARCore {@link com.google.ar.core.Session}. See
      * {@link com.google.ar.core.Session.Feature}.
      */
 
-    protected abstract Set<Session.Feature> getSessionFeatures();
+    protected Set<Session.Feature> getSessionFeatures() {
+        return Collections.emptySet();
+    }
 
     protected void onWindowFocusChanged(boolean hasFocus) {
         FragmentActivity activity = getActivity();
@@ -631,7 +637,7 @@ public abstract class BaseArFragment extends Fragment
     public void onUpdate(FrameTime frameTime) {
         Frame frame = arSceneView.getArFrame();
 
-        if(frame == null)
+        if (frame == null)
             return;
 
         // ToDo don't forget to add a setter for isAugmentedImageDatabaseEnabled
@@ -642,7 +648,7 @@ public abstract class BaseArFragment extends Fragment
          * The default value if <code>isAugmentedImageDatabaseEnabled</code>
          * is always true, so that the normal SDK-User doesn't has to deal with it.
          */
-        if(isAugmentedImageDatabaseEnabled && getArSceneView().getSession() != null) {
+        if (isAugmentedImageDatabaseEnabled && getArSceneView().getSession() != null) {
             AugmentedImageDatabase augmentedImageDatabase = getArSceneView().getSession().getConfig().getAugmentedImageDatabase();
             boolean hasAugmentedImageDatabase = augmentedImageDatabase != null && augmentedImageDatabase.getNumImages() > 0;
 
