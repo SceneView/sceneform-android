@@ -65,19 +65,6 @@ public abstract class BaseArFragment extends Fragment
         implements Scene.OnPeekTouchListener, Scene.OnUpdateListener {
     private static final String TAG = BaseArFragment.class.getSimpleName();
 
-    /**
-     * Invoked when the ARCore Session is initialized.
-     */
-    public interface OnSessionInitializationListener {
-        /**
-         * The callback will only be invoked once after a Session is initialized and before it is
-         * resumed for the first time.
-         *
-         * @param session The ARCore Session.
-         * @see #setOnSessionInitializationListener(OnSessionInitializationListener)
-         */
-        void onSessionInitialization(Session session);
-    }
 
     /**
      * Invoked when the ARCore Session is to be configured.
@@ -144,8 +131,6 @@ public abstract class BaseArFragment extends Fragment
     private boolean fullscreen = true;
     private boolean isAugmentedImageDatabaseEnabled = true;
     @Nullable
-    private OnSessionInitializationListener onSessionInitializationListener;
-    @Nullable
     private OnSessionConfigurationListener onSessionConfigurationListener;
     @Nullable
     private OnTapArPlaneListener onTapArPlaneListener;
@@ -188,17 +173,6 @@ public abstract class BaseArFragment extends Fragment
      */
     public TransformationSystem getTransformationSystem() {
         return transformationSystem;
-    }
-
-    /**
-     * Registers a callback to be invoked when the ARCore Session is initialized. The callback will
-     * only be invoked once after the Session is initialized and before it is resumed.
-     *
-     * @param onSessionInitializationListener the {@link OnSessionInitializationListener} to attach.
-     */
-    public void setOnSessionInitializationListener(
-            @Nullable OnSessionInitializationListener onSessionInitializationListener) {
-        this.onSessionInitializationListener = onSessionInitializationListener;
     }
 
     /**
@@ -469,24 +443,7 @@ public abstract class BaseArFragment extends Fragment
                     return;
                 }
 
-                Session session = createSession();
-
-                if (this.onSessionInitializationListener != null) {
-                    this.onSessionInitializationListener.onSessionInitialization(session);
-                }
-
-                Config config = getSessionConfiguration(session);
-                config.setDepthMode(Config.DepthMode.DISABLED);
-                config.setPlaneFindingMode(Config.PlaneFindingMode.HORIZONTAL_AND_VERTICAL);
-                config.setFocusMode(Config.FocusMode.AUTO);
-                // Force the non-blocking mode for the session.
-                config.setUpdateMode(Config.UpdateMode.LATEST_CAMERA_IMAGE);
-
-                if (this.onSessionConfigurationListener != null) {
-                    this.onSessionConfigurationListener.onSessionConfiguration(session, config);
-                }
-
-                session.configure(config);
+                Session session = onCreateSession();
                 getArSceneView().setupSession(session);
                 return;
             } catch (UnavailableException e) {
@@ -503,25 +460,35 @@ public abstract class BaseArFragment extends Fragment
         }
     }
 
-    private Session createSession()
-            throws UnavailableSdkTooOldException, UnavailableDeviceNotCompatibleException,
+    /**
+     * - Creates the ARCore Session
+     * - Configure the Session
+     * - Specifies additional features for creating an ARCore {@link com.google.ar.core.Session}.
+     * See {@link com.google.ar.core.Session.Feature}.
+     * </p>
+     */
+    private Session onCreateSession() throws UnavailableSdkTooOldException, UnavailableDeviceNotCompatibleException,
             UnavailableArcoreNotInstalledException, UnavailableApkTooOldException {
-        Session session = createSessionWithFeatures();
-        if (session == null) {
-            session = new Session(requireActivity());
+        Session session = new Session(requireActivity());
+        Config config = onCreateSessionConfig(session);
+        if (this.onSessionConfigurationListener != null) {
+            this.onSessionConfigurationListener.onSessionConfiguration(session, config);
         }
+        session.configure(config);
         return session;
     }
 
     /**
-     * Creates the ARCore Session with the with features defined in #getSessionFeatures. If this
-     * returns null, the Session will be created with the default features.
+     * Creates the session config to be applied to the specified session.
      */
-    @Nullable
-    protected Session createSessionWithFeatures()
-            throws UnavailableSdkTooOldException, UnavailableDeviceNotCompatibleException,
-            UnavailableArcoreNotInstalledException, UnavailableApkTooOldException {
-        return new Session(requireActivity(), getSessionFeatures());
+    protected Config onCreateSessionConfig(Session session) {
+        Config config = new Config(session);
+        config.setDepthMode(Config.DepthMode.DISABLED);
+        config.setPlaneFindingMode(Config.PlaneFindingMode.HORIZONTAL_AND_VERTICAL);
+        config.setFocusMode(Config.FocusMode.AUTO);
+        // Force the non-blocking mode for the session.
+        config.setUpdateMode(Config.UpdateMode.LATEST_CAMERA_IMAGE);
+        return config;
     }
 
     /**
@@ -565,19 +532,6 @@ public abstract class BaseArFragment extends Fragment
     }
 
     protected abstract void onArUnavailableException(UnavailableException sessionException);
-
-    protected Config getSessionConfiguration(Session session) {
-        return new Config(session);
-    }
-
-    /**
-     * Specifies additional features for creating an ARCore {@link com.google.ar.core.Session}. See
-     * {@link com.google.ar.core.Session.Feature}.
-     */
-
-    protected Set<Session.Feature> getSessionFeatures() {
-        return Collections.emptySet();
-    }
 
     protected void onWindowFocusChanged(boolean hasFocus) {
         FragmentActivity activity = getActivity();
