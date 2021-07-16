@@ -141,6 +141,7 @@ public abstract class BaseArFragment extends Fragment
     private boolean isStarted;
     private boolean canRequestDangerousPermissions = true;
     private boolean fullscreen = true;
+    private boolean isAugmentedImageDatabaseEnabled = true;
     @Nullable
     private OnSessionInitializationListener onSessionInitializationListener;
     @Nullable
@@ -630,23 +631,41 @@ public abstract class BaseArFragment extends Fragment
     public void onUpdate(FrameTime frameTime) {
         Frame frame = arSceneView.getArFrame();
 
-        AugmentedImageDatabase augmentedImageDatabase = getArSceneView().getSession().getConfig().getAugmentedImageDatabase();
-        boolean hasAugmentedImageDatabase = augmentedImageDatabase != null && augmentedImageDatabase.getNumImages() > 0;
-        if (hasAugmentedImageDatabase && onAugmentedImageUpdateListener != null) {
-            for (AugmentedImage augmentedImage : frame.getUpdatedTrackables(AugmentedImage.class)) {
-                onAugmentedImageUpdateListener.onAugmentedImageTrackingUpdate(augmentedImage);
+        if(frame == null)
+            return;
+
+        // ToDo don't forget to add a setter for isAugmentedImageDatabaseEnabled
+        /*
+         * I Added for testing purposes an extra flag to check if a AugmentedImageDatabase
+         * is actually set. To fair I did that because of a very rare crash I noticed
+         * where the call to <code>getAugmentedImageDatabase</code> was mentioned.
+         * The default value if <code>isAugmentedImageDatabaseEnabled</code>
+         * is always true, so that the normal SDK-User doesn't has to deal with it.
+         */
+        if(isAugmentedImageDatabaseEnabled && getArSceneView().getSession() != null) {
+            AugmentedImageDatabase augmentedImageDatabase = getArSceneView().getSession().getConfig().getAugmentedImageDatabase();
+            boolean hasAugmentedImageDatabase = augmentedImageDatabase != null && augmentedImageDatabase.getNumImages() > 0;
+
+            if (hasAugmentedImageDatabase && onAugmentedImageUpdateListener != null) {
+                for (AugmentedImage augmentedImage : frame.getUpdatedTrackables(AugmentedImage.class)) {
+                    onAugmentedImageUpdateListener.onAugmentedImageTrackingUpdate(augmentedImage);
+                }
+            }
+
+            if (getInstructionsController() != null) {
+                boolean showAugmentedImageInstructions = hasAugmentedImageDatabase
+                        && !arSceneView.isTrackingFullyAugmentImage();
+                if (getInstructionsController().isVisible(InstructionsController.TYPE_AUGMENTED_IMAGE_SCAN) != showAugmentedImageInstructions) {
+                    getInstructionsController().setVisible(InstructionsController.TYPE_AUGMENTED_IMAGE_SCAN, showAugmentedImageInstructions);
+                }
             }
         }
 
+        // Instructions for the Plane finding mode.
         if (getInstructionsController() != null) {
             boolean showPlaneInstructions = !arSceneView.hasTrackedPlane();
             if (getInstructionsController().isVisible(InstructionsController.TYPE_PLANE_DISCOVERY) != showPlaneInstructions) {
                 getInstructionsController().setVisible(InstructionsController.TYPE_PLANE_DISCOVERY, showPlaneInstructions);
-            }
-            boolean showAugmentedImageInstructions = hasAugmentedImageDatabase
-                    && !arSceneView.isTrackingFullyAugmentImage();
-            if (getInstructionsController().isVisible(InstructionsController.TYPE_AUGMENTED_IMAGE_SCAN) != showAugmentedImageInstructions) {
-                getInstructionsController().setVisible(InstructionsController.TYPE_AUGMENTED_IMAGE_SCAN, showAugmentedImageInstructions);
             }
         }
     }
