@@ -12,6 +12,7 @@ import com.google.android.filament.RenderableManager;
 import com.google.android.filament.VertexBuffer;
 import com.google.android.filament.gltfio.MaterialProvider;
 import com.google.android.filament.gltfio.ResourceLoader;
+import com.google.android.filament.gltfio.UbershaderLoader;
 import com.google.ar.sceneform.math.Vector3;
 import com.google.ar.sceneform.rendering.RenderableInternalData.MeshData;
 
@@ -31,13 +32,25 @@ public class RenderableInternalFilamentAssetData implements IRenderableInternalD
   boolean isGltfBinary;
   ResourceLoader resourceLoader;
   @Nullable Function<String, Uri> urlResolver;
-  static MaterialProvider materialProvider;
+  //static MaterialProvider materialProvider;
+  static UbershaderLoader ubershaderLoader;
 
-  static MaterialProvider getMaterialProvider() {
+  // MaterialProvider is now an interface to create a custom MaterialProvider.
+  // a replacement is the UberShaderLoader.
+  // see: https://github.com/google/filament/pull/4231
+  /*static MaterialProvider getMaterialProvider() {
     if (materialProvider == null) {
       materialProvider = new MaterialProvider(EngineInstance.getEngine().getFilamentEngine());
     }
+
     return materialProvider;
+  }*/
+
+  static UbershaderLoader getUberShaderLoader() {
+    if(ubershaderLoader == null) {
+      ubershaderLoader = new UbershaderLoader(EngineInstance.getEngine().getFilamentEngine());
+    }
+    return ubershaderLoader;
   }
 
   @Override

@@ -18,6 +18,7 @@ import com.google.android.filament.TransformManager;
 import com.google.android.filament.gltfio.Animator;
 import com.google.android.filament.gltfio.AssetLoader;
 import com.google.android.filament.gltfio.FilamentAsset;
+import com.google.android.filament.gltfio.MaterialProvider;
 import com.google.ar.sceneform.animation.AnimatableModel;
 import com.google.ar.sceneform.animation.ModelAnimation;
 import com.google.ar.sceneform.collision.Box;
@@ -137,7 +138,7 @@ public class RenderableInstance implements AnimatableModel {
             AssetLoader loader =
                     new AssetLoader(
                             engine,
-                            RenderableInternalFilamentAssetData.getMaterialProvider(),
+                            RenderableInternalFilamentAssetData.getUberShaderLoader(),
                             EntityManager.get());
 
             FilamentAsset createdAsset = renderableData.isGltfBinary ? loader.createAssetFromBinary(renderableData.gltfByteBuffer)
