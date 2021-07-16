@@ -26,10 +26,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.google.ar.core.Anchor;
-import com.google.ar.core.Config;
 import com.google.ar.core.HitResult;
 import com.google.ar.core.Plane;
-import com.google.ar.core.Session;
 import com.google.ar.core.exceptions.UnavailableApkTooOldException;
 import com.google.ar.core.exceptions.UnavailableArcoreNotInstalledException;
 import com.google.ar.core.exceptions.UnavailableDeviceNotCompatibleException;
@@ -40,9 +38,6 @@ import com.google.ar.sceneform.ArSceneView;
 import com.google.ar.sceneform.rendering.ModelRenderable;
 import com.google.ar.sceneform.rendering.Renderable;
 import com.google.ar.sceneform.rendering.RenderableInstance;
-
-import java.util.Collections;
-import java.util.Set;
 
 /**
  * Implements AR Required ArFragment. Does not require additional permissions and uses the default
@@ -89,14 +84,9 @@ public class ArFragment extends BaseArFragment {
     }
 
     @Override
-    public String[] getAdditionalPermissions() {
-        return new String[0];
-    }
-
-    @Override
     protected void onArUnavailableException(UnavailableException sessionException) {
         if (onArUnavailableListener != null) {
-            onArUnavailableException(sessionException);
+            onArUnavailableListener.onArUnavailableException(sessionException);
         } else {
             String message;
             if (sessionException instanceof UnavailableArcoreNotInstalledException) {
@@ -113,16 +103,6 @@ public class ArFragment extends BaseArFragment {
             Log.e(TAG, "Error: " + message, sessionException);
             Toast.makeText(requireActivity(), message, Toast.LENGTH_LONG).show();
         }
-    }
-
-    @Override
-    protected Config getSessionConfiguration(Session session) {
-        return new Config(session);
-    }
-
-    @Override
-    protected Set<Session.Feature> getSessionFeatures() {
-        return Collections.emptySet();
     }
 
     /**

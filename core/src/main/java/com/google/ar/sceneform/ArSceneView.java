@@ -20,6 +20,7 @@ import com.google.ar.core.LightEstimate;
 import com.google.ar.core.Plane;
 import com.google.ar.core.Pose;
 import com.google.ar.core.Session;
+import com.google.ar.core.Trackable;
 import com.google.ar.core.TrackingState;
 import com.google.ar.core.exceptions.CameraNotAvailableException;
 import com.google.ar.core.exceptions.DeadlineExceededException;
@@ -38,6 +39,8 @@ import com.google.ar.sceneform.utilities.ArCoreVersion;
 import com.google.ar.sceneform.utilities.Preconditions;
 
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.function.Consumer;
@@ -67,6 +70,8 @@ public class ArSceneView extends SceneView {
     private Session session;
     @Nullable
     private Frame currentFrame;
+    private Collection<Trackable> allTrackables = new ArrayList<>();
+    private Collection<Trackable> updatedTrackables = new ArrayList<>();
     @Nullable
     private Config cachedConfig;
     private int minArCoreVersionCode;
@@ -458,12 +463,16 @@ public class ArSceneView extends SceneView {
 
         // If ARCore session has changed, update listeners.
         if (updated) {
+            allTrackables = session.getAllTrackables(Trackable.class);
+            if (currentFrame != null) {
+                updatedTrackables = currentFrame.getUpdatedTrackables(Trackable.class);
+            }
+
             // At the start of the frame, update the tracked pose of the camera
             // to use in any calculations during the frame.
             getScene().getCamera().updateTrackedPose(currentArCamera);
 
-            Frame frame = currentFrame;
-            if (frame != null) {
+            if (currentFrame != null) {
                 if (cameraStream.getDepthOcclusionMode() == CameraStream.DepthOcclusionMode.DEPTH_OCCLUSION_ENABLED) {
                     if (cameraStream.getDepthMode() == CameraStream.DepthMode.DEPTH) {
                         try (Image depthImage = currentFrame.acquireDepthImage()) {
@@ -479,11 +488,11 @@ public class ArSceneView extends SceneView {
                 }
 
                 // Update the light estimate.
-                updateLightEstimate(frame);
+                updateLightEstimate(currentFrame);
                 try {
                     // Update the plane renderer.
                     if (planeRenderer.isEnabled()) {
-                        planeRenderer.update(frame, getWidth(), getHeight());
+                        planeRenderer.update(currentFrame, getUpdatedPlanes(), getWidth(), getHeight());
                     }
                 } catch (DeadlineExceededException ignored) {
                 }
@@ -760,13 +769,17 @@ public class ArSceneView extends SceneView {
         }
     }
 
+    //
+    // TODO : When Kotlining it, move all those trackables parts to Trackables.kt as an ArSceneView extension.
+    //
+
     /**
      * Retrieve if the view is currently tracking a plane.
      *
      * @return true if the current frame is tracking at least one plane.
      */
     public boolean isTrackingPlane() {
-        return hasTrackingPlaneStates(TrackingState.TRACKING);
+        return getUpdatedPlanes(TrackingState.TRACKING).size() > 0;
     }
 
     /**
@@ -775,50 +788,93 @@ public class ArSceneView extends SceneView {
      * @return true if the current frame has tracked at least one plane.
      */
     public boolean hasTrackedPlane() {
-        return hasTrackingPlaneStates(TrackingState.TRACKING, TrackingState.PAUSED);
+        return getAllPlanes(TrackingState.TRACKING, TrackingState.PAUSED).size() > 0;
     }
 
     /**
-     * Retrieve if the view has currently a plane with the tracking states.
-     *
-     * @return true if the current frame is tracking at least one plane.
+     * Retrieve the view session tracked planes.
      */
-    public boolean hasTrackingPlaneStates(TrackingState... trackingStates) {
-        if (session != null) {
-            for (Plane plane : session.getAllTrackables(Plane.class)) {
-                for (TrackingState trackingState : trackingStates) {
-                    if (plane.getTrackingState() == trackingState) {
-                        return true;
-                    }
-                }
-            }
-        }
-        return false;
+    public Collection<Plane> getAllPlanes() {
+        return getAllPlanes(null);
     }
 
     /**
-     * Retrieve if the view is currently tracking an AugmentedImage using camera image.
+     * Retrieve the view session tracked planes with the specified tracking states.
      *
-     * @return true if the current frame is tracking at least one AugmentedImage.
+     * @param trackingStates  the trackable tracking states or null for no states filter
      */
-    public boolean isTrackingFullyAugmentImage() {
-        return hasTrackingAugmentedImageStates(TrackingState.TRACKING, AugmentedImage.TrackingMethod.FULL_TRACKING);
+    public Collection<Plane> getAllPlanes(@Nullable TrackingState... trackingStates) {
+        return Trackables.getPlanes(allTrackables, trackingStates);
     }
 
     /**
-     * Retrieve if the view has currently an AugmentedImage with the tracking state and method.
-     *
-     * @return true if the current frame is tracking at least one AugmentedImage.
+     * Retrieve the view last frame tracked planes.
      */
-    public boolean hasTrackingAugmentedImageStates(TrackingState trackingState, AugmentedImage.TrackingMethod trackingMethod) {
-        if (session != null) {
-            for (AugmentedImage augmentedImage : session.getAllTrackables(AugmentedImage.class)) {
-                if (augmentedImage.getTrackingState() == trackingState && augmentedImage.getTrackingMethod() == trackingMethod) {
-                    return true;
-                }
-            }
-        }
-        return false;
+    public Collection<Plane> getUpdatedPlanes() {
+        return getUpdatedPlanes(null);
+    }
+
+    /**
+     * Retrieve the view last frame tracked planes with the specified tracking states.
+     *
+     * @param trackingStates  the trackable tracking states or null for no states filter
+     */
+    public Collection<Plane> getUpdatedPlanes(@Nullable TrackingState... trackingStates) {
+        return Trackables.getPlanes(updatedTrackables, trackingStates);
+    }
+
+    /**
+     * Retrieve if the view is currently tracking an Augmented Image.
+     *
+     * @return true if the current frame is fully tracking at least one Augmented.
+     */
+    public boolean isTrackingAugmentedImage() {
+        return getUpdatedAugmentedImages(TrackingState.TRACKING, AugmentedImage.TrackingMethod.FULL_TRACKING).size() > 0;
+    }
+
+    /**
+     * Retrieve if the view has already tracked a Augmented Image.
+     *
+     * @return true if the current frame has tracked at least one Augmented Image.
+     */
+    public boolean hasTrackedAugmentedImage() {
+        return getAllAugmentedImages(TrackingState.TRACKING, AugmentedImage.TrackingMethod.FULL_TRACKING).size() > 0
+                && getAllAugmentedImages(TrackingState.PAUSED, AugmentedImage.TrackingMethod.FULL_TRACKING).size() > 0;
+    }
+
+    /**
+     * Retrieve the view session tracked Augmented Images.
+     */
+    public Collection<AugmentedImage> getAllAugmentedImages() {
+        return getAllAugmentedImages(null, null);
+    }
+
+    /**
+     * Retrieve the view session tracked Augmented Images with the specified tracking state and method.
+     *      @param trackingState  the trackable tracking state or null for no states filter
+     *      @param trackingMethod the trackable tracking method or null for no tracking method filter
+     */
+    public Collection<AugmentedImage> getAllAugmentedImages(@Nullable TrackingState trackingState
+            , @Nullable AugmentedImage.TrackingMethod trackingMethod) {
+        return Trackables.getAugmentedImages(allTrackables, trackingState, trackingMethod);
+    }
+
+    /**
+     * Retrieve the view last frame tracked Augmented Images.
+     */
+    public Collection<AugmentedImage> getUpdatedAugmentedImages() {
+        return getUpdatedAugmentedImages(null, null);
+    }
+
+    /**
+     * Retrieve the view last frame tracked Augmented Images with the specified tracking state and method.
+     *
+     * @param trackingState  the trackable tracking state or null for no states filter
+     * @param trackingMethod the trackable tracking method or null for no tracking method filter
+     */
+    public Collection<AugmentedImage> getUpdatedAugmentedImages(@Nullable TrackingState trackingState
+            , @Nullable AugmentedImage.TrackingMethod trackingMethod) {
+        return Trackables.getAugmentedImages(updatedTrackables, trackingState, trackingMethod);
     }
 
     private void reportEngineType() {

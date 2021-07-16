@@ -137,7 +137,7 @@ public class RenderableInstance implements AnimatableModel {
             AssetLoader loader =
                     new AssetLoader(
                             engine,
-                            RenderableInternalFilamentAssetData.getMaterialProvider(),
+                            RenderableInternalFilamentAssetData.getUberShaderLoader(),
                             EntityManager.get());
 
             FilamentAsset createdAsset = renderableData.isGltfBinary ? loader.createAssetFromBinary(renderableData.gltfByteBuffer)

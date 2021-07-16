@@ -52,10 +52,10 @@ import com.google.ar.sceneform.FrameTime;
 import com.google.ar.sceneform.HitTestResult;
 import com.google.ar.sceneform.Scene;
 import com.google.ar.sceneform.rendering.ModelRenderable;
+import com.google.ar.sceneform.rendering.PlaneRenderer;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 /**
  * The AR fragment brings in the required view layout and controllers for common AR features.
@@ -64,19 +64,6 @@ public abstract class BaseArFragment extends Fragment
         implements Scene.OnPeekTouchListener, Scene.OnUpdateListener {
     private static final String TAG = BaseArFragment.class.getSimpleName();
 
-    /**
-     * Invoked when the ARCore Session is initialized.
-     */
-    public interface OnSessionInitializationListener {
-        /**
-         * The callback will only be invoked once after a Session is initialized and before it is
-         * resumed for the first time.
-         *
-         * @param session The ARCore Session.
-         * @see #setOnSessionInitializationListener(OnSessionInitializationListener)
-         */
-        void onSessionInitialization(Session session);
-    }
 
     /**
      * Invoked when the ARCore Session is to be configured.
@@ -141,8 +128,7 @@ public abstract class BaseArFragment extends Fragment
     private boolean isStarted;
     private boolean canRequestDangerousPermissions = true;
     private boolean fullscreen = true;
-    @Nullable
-    private OnSessionInitializationListener onSessionInitializationListener;
+    private boolean isAugmentedImageDatabaseEnabled = true;
     @Nullable
     private OnSessionConfigurationListener onSessionConfigurationListener;
     @Nullable
@@ -186,17 +172,6 @@ public abstract class BaseArFragment extends Fragment
      */
     public TransformationSystem getTransformationSystem() {
         return transformationSystem;
-    }
-
-    /**
-     * Registers a callback to be invoked when the ARCore Session is initialized. The callback will
-     * only be invoked once after the Session is initialized and before it is resumed.
-     *
-     * @param onSessionInitializationListener the {@link OnSessionInitializationListener} to attach.
-     */
-    public void setOnSessionInitializationListener(
-            @Nullable OnSessionInitializationListener onSessionInitializationListener) {
-        this.onSessionInitializationListener = onSessionInitializationListener;
     }
 
     /**
@@ -310,7 +285,9 @@ public abstract class BaseArFragment extends Fragment
      * Manifest.permission.CAMERA, which is needed by ARCore. If no additional permissions are needed,
      * an empty array should be returned.
      */
-    public abstract String[] getAdditionalPermissions();
+    public String[] getAdditionalPermissions() {
+        return new String[0];
+    }
 
     /**
      * Starts the process of requesting dangerous permissions. This combines the CAMERA permission
@@ -465,25 +442,15 @@ public abstract class BaseArFragment extends Fragment
                     return;
                 }
 
-                Session session = createSession();
-
-                if (this.onSessionInitializationListener != null) {
-                    this.onSessionInitializationListener.onSessionInitialization(session);
-                }
-
-                Config config = getSessionConfiguration(session);
-                config.setDepthMode(Config.DepthMode.DISABLED);
-                config.setPlaneFindingMode(Config.PlaneFindingMode.HORIZONTAL_AND_VERTICAL);
-                config.setFocusMode(Config.FocusMode.AUTO);
-                // Force the non-blocking mode for the session.
-                config.setUpdateMode(Config.UpdateMode.LATEST_CAMERA_IMAGE);
-
+                Session session = onCreateSession();
+                Config config = onCreateSessionConfig(session);
                 if (this.onSessionConfigurationListener != null) {
                     this.onSessionConfigurationListener.onSessionConfiguration(session, config);
                 }
-
                 session.configure(config);
                 getArSceneView().setupSession(session);
+
+                onSessionConfigUpdated(session, config);
                 return;
             } catch (UnavailableException e) {
                 sessionException = e;
@@ -499,26 +466,57 @@ public abstract class BaseArFragment extends Fragment
         }
     }
 
-    private Session createSession()
-            throws UnavailableSdkTooOldException, UnavailableDeviceNotCompatibleException,
+    /**
+     * - Creates the ARCore Session
+     * - Specifies additional features for creating an ARCore {@link com.google.ar.core.Session}.
+     * See {@link com.google.ar.core.Session.Feature}.
+     * <p>
+     * Don't configure the session here.
+     * The {@link Session#configure(Config)} is made after this call.
+     * You must override the {@link #onCreateSessionConfig(Session)} to apply configuration.
+     */
+    private Session onCreateSession() throws UnavailableSdkTooOldException, UnavailableDeviceNotCompatibleException,
             UnavailableArcoreNotInstalledException, UnavailableApkTooOldException {
-        Session session = createSessionWithFeatures();
-        if (session == null) {
-            session = new Session(requireActivity());
-        }
-        return session;
+        return new Session(requireActivity());
     }
 
     /**
-     * Creates the ARCore Session with the with features defined in #getSessionFeatures. If this
-     * returns null, the Session will be created with the default features.
+     * Creates the session config applied to the specified session.
      */
+    protected Config onCreateSessionConfig(Session session) {
+        Config config = new Config(session);
+        config.setDepthMode(Config.DepthMode.DISABLED);
+        config.setPlaneFindingMode(Config.PlaneFindingMode.HORIZONTAL_AND_VERTICAL);
+        config.setFocusMode(Config.FocusMode.AUTO);
+        // Force the non-blocking mode for the session.
+        config.setUpdateMode(Config.UpdateMode.LATEST_CAMERA_IMAGE);
+        return config;
+    }
 
-    protected @Nullable
-    Session createSessionWithFeatures()
-            throws UnavailableSdkTooOldException, UnavailableDeviceNotCompatibleException,
-            UnavailableArcoreNotInstalledException, UnavailableApkTooOldException {
-        return new Session(requireActivity(), getSessionFeatures());
+    /**
+     * Occurs when a session configuration has changed.
+     */
+    protected void onSessionConfigUpdated(Session session, Config config) {
+        boolean isPlaneFindingEnable = config.getPlaneFindingMode() != Config.PlaneFindingMode.DISABLED;
+
+        PlaneRenderer planeRenderer = getArSceneView() != null ?
+                getArSceneView().getPlaneRenderer() : null;
+        if (planeRenderer != null) {
+            // Disable the rendering of detected planes.
+            arSceneView.getPlaneRenderer().setEnabled(isPlaneFindingEnable);
+        }
+
+        InstructionsController instructionsController = getInstructionsController();
+        if (instructionsController != null) {
+            // Planes
+            instructionsController.setEnabled(InstructionsController.TYPE_PLANE_DISCOVERY
+                    , isPlaneFindingEnable);
+
+            // AugmentedImages
+            AugmentedImageDatabase augmentedImageDatabase = config.getAugmentedImageDatabase();
+            instructionsController.setEnabled(InstructionsController.TYPE_AUGMENTED_IMAGE_SCAN
+                    , augmentedImageDatabase != null && augmentedImageDatabase.getNumImages() > 0);
+        }
     }
 
     /**
@@ -562,15 +560,6 @@ public abstract class BaseArFragment extends Fragment
     }
 
     protected abstract void onArUnavailableException(UnavailableException sessionException);
-
-    protected abstract Config getSessionConfiguration(Session session);
-
-    /**
-     * Specifies additional features for creating an ARCore {@link com.google.ar.core.Session}. See
-     * {@link com.google.ar.core.Session.Feature}.
-     */
-
-    protected abstract Set<Session.Feature> getSessionFeatures();
 
     protected void onWindowFocusChanged(boolean hasFocus) {
         FragmentActivity activity = getActivity();
@@ -628,26 +617,25 @@ public abstract class BaseArFragment extends Fragment
 
     @Override
     public void onUpdate(FrameTime frameTime) {
-        Frame frame = arSceneView.getArFrame();
-
-        AugmentedImageDatabase augmentedImageDatabase = getArSceneView().getSession().getConfig().getAugmentedImageDatabase();
-        boolean hasAugmentedImageDatabase = augmentedImageDatabase != null && augmentedImageDatabase.getNumImages() > 0;
-        if (hasAugmentedImageDatabase && onAugmentedImageUpdateListener != null) {
-            for (AugmentedImage augmentedImage : frame.getUpdatedTrackables(AugmentedImage.class)) {
-                onAugmentedImageUpdateListener.onAugmentedImageTrackingUpdate(augmentedImage);
-            }
-        }
+        if (getArSceneView() == null || getArSceneView().getSession() == null || getArSceneView().getArFrame() == null)
+            return;
 
         if (getInstructionsController() != null) {
-            boolean showPlaneInstructions = !arSceneView.hasTrackedPlane();
+            // Instructions for the Plane finding mode.
+            boolean showPlaneInstructions = !getArSceneView().hasTrackedPlane();
             if (getInstructionsController().isVisible(InstructionsController.TYPE_PLANE_DISCOVERY) != showPlaneInstructions) {
                 getInstructionsController().setVisible(InstructionsController.TYPE_PLANE_DISCOVERY, showPlaneInstructions);
             }
-            boolean showAugmentedImageInstructions = hasAugmentedImageDatabase
-                    && !arSceneView.isTrackingFullyAugmentImage();
+
+            // Instructions for the Augmented Image finding mode.
+            boolean showAugmentedImageInstructions = !getArSceneView().isTrackingAugmentedImage();
             if (getInstructionsController().isVisible(InstructionsController.TYPE_AUGMENTED_IMAGE_SCAN) != showAugmentedImageInstructions) {
                 getInstructionsController().setVisible(InstructionsController.TYPE_AUGMENTED_IMAGE_SCAN, showAugmentedImageInstructions);
             }
+        }
+
+        for (AugmentedImage augmentedImage : getArSceneView().getUpdatedAugmentedImages()) {
+            onAugmentedImageUpdateListener.onAugmentedImageTrackingUpdate(augmentedImage);
         }
     }
 
