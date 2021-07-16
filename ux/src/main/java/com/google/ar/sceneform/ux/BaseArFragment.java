@@ -52,11 +52,10 @@ import com.google.ar.sceneform.FrameTime;
 import com.google.ar.sceneform.HitTestResult;
 import com.google.ar.sceneform.Scene;
 import com.google.ar.sceneform.rendering.ModelRenderable;
+import com.google.ar.sceneform.rendering.PlaneRenderer;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.Set;
 
 /**
  * The AR fragment brings in the required view layout and controllers for common AR features.
@@ -444,7 +443,14 @@ public abstract class BaseArFragment extends Fragment
                 }
 
                 Session session = onCreateSession();
+                Config config = onCreateSessionConfig(session);
+                if (this.onSessionConfigurationListener != null) {
+                    this.onSessionConfigurationListener.onSessionConfiguration(session, config);
+                }
+                session.configure(config);
                 getArSceneView().setupSession(session);
+
+                onSessionConfigUpdated(session, config);
                 return;
             } catch (UnavailableException e) {
                 sessionException = e;
@@ -462,24 +468,20 @@ public abstract class BaseArFragment extends Fragment
 
     /**
      * - Creates the ARCore Session
-     * - Configure the Session
      * - Specifies additional features for creating an ARCore {@link com.google.ar.core.Session}.
      * See {@link com.google.ar.core.Session.Feature}.
-     * </p>
+     * <p>
+     * Don't configure the session here.
+     * The {@link Session#configure(Config)} is made after this call.
+     * You must override the {@link #onCreateSessionConfig(Session)} to apply configuration.
      */
     private Session onCreateSession() throws UnavailableSdkTooOldException, UnavailableDeviceNotCompatibleException,
             UnavailableArcoreNotInstalledException, UnavailableApkTooOldException {
-        Session session = new Session(requireActivity());
-        Config config = onCreateSessionConfig(session);
-        if (this.onSessionConfigurationListener != null) {
-            this.onSessionConfigurationListener.onSessionConfiguration(session, config);
-        }
-        session.configure(config);
-        return session;
+        return new Session(requireActivity());
     }
 
     /**
-     * Creates the session config to be applied to the specified session.
+     * Creates the session config applied to the specified session.
      */
     protected Config onCreateSessionConfig(Session session) {
         Config config = new Config(session);
@@ -489,6 +491,32 @@ public abstract class BaseArFragment extends Fragment
         // Force the non-blocking mode for the session.
         config.setUpdateMode(Config.UpdateMode.LATEST_CAMERA_IMAGE);
         return config;
+    }
+
+    /**
+     * Occurs when a session configuration has changed.
+     */
+    protected void onSessionConfigUpdated(Session session, Config config) {
+        boolean isPlaneFindingEnable = config.getPlaneFindingMode() != Config.PlaneFindingMode.DISABLED;
+
+        PlaneRenderer planeRenderer = getArSceneView() != null ?
+                getArSceneView().getPlaneRenderer() : null;
+        if (planeRenderer != null) {
+            // Disable the rendering of detected planes.
+            arSceneView.getPlaneRenderer().setEnabled(isPlaneFindingEnable);
+        }
+
+        InstructionsController instructionsController = getInstructionsController();
+        if (instructionsController != null) {
+            // Planes
+            instructionsController.setEnabled(InstructionsController.TYPE_PLANE_DISCOVERY
+                    , isPlaneFindingEnable);
+
+            // AugmentedImages
+            AugmentedImageDatabase augmentedImageDatabase = config.getAugmentedImageDatabase();
+            instructionsController.setEnabled(InstructionsController.TYPE_AUGMENTED_IMAGE_SCAN
+                    , augmentedImageDatabase != null && augmentedImageDatabase.getNumImages() > 0);
+        }
     }
 
     /**
@@ -589,44 +617,25 @@ public abstract class BaseArFragment extends Fragment
 
     @Override
     public void onUpdate(FrameTime frameTime) {
-        Frame frame = arSceneView.getArFrame();
-
-        if (frame == null)
+        if (getArSceneView() == null || getArSceneView().getSession() == null || getArSceneView().getArFrame() == null)
             return;
 
-        // ToDo don't forget to add a setter for isAugmentedImageDatabaseEnabled
-        /*
-         * I Added for testing purposes an extra flag to check if a AugmentedImageDatabase
-         * is actually set. To fair I did that because of a very rare crash I noticed
-         * where the call to <code>getAugmentedImageDatabase</code> was mentioned.
-         * The default value if <code>isAugmentedImageDatabaseEnabled</code>
-         * is always true, so that the normal SDK-User doesn't has to deal with it.
-         */
-        if (isAugmentedImageDatabaseEnabled && getArSceneView().getSession() != null) {
-            AugmentedImageDatabase augmentedImageDatabase = getArSceneView().getSession().getConfig().getAugmentedImageDatabase();
-            boolean hasAugmentedImageDatabase = augmentedImageDatabase != null && augmentedImageDatabase.getNumImages() > 0;
-
-            if (hasAugmentedImageDatabase && onAugmentedImageUpdateListener != null) {
-                for (AugmentedImage augmentedImage : frame.getUpdatedTrackables(AugmentedImage.class)) {
-                    onAugmentedImageUpdateListener.onAugmentedImageTrackingUpdate(augmentedImage);
-                }
-            }
-
-            if (getInstructionsController() != null) {
-                boolean showAugmentedImageInstructions = hasAugmentedImageDatabase
-                        && !arSceneView.isTrackingFullyAugmentImage();
-                if (getInstructionsController().isVisible(InstructionsController.TYPE_AUGMENTED_IMAGE_SCAN) != showAugmentedImageInstructions) {
-                    getInstructionsController().setVisible(InstructionsController.TYPE_AUGMENTED_IMAGE_SCAN, showAugmentedImageInstructions);
-                }
-            }
-        }
-
-        // Instructions for the Plane finding mode.
         if (getInstructionsController() != null) {
-            boolean showPlaneInstructions = !arSceneView.hasTrackedPlane();
+            // Instructions for the Plane finding mode.
+            boolean showPlaneInstructions = !getArSceneView().hasTrackedPlane();
             if (getInstructionsController().isVisible(InstructionsController.TYPE_PLANE_DISCOVERY) != showPlaneInstructions) {
                 getInstructionsController().setVisible(InstructionsController.TYPE_PLANE_DISCOVERY, showPlaneInstructions);
             }
+
+            // Instructions for the Augmented Image finding mode.
+            boolean showAugmentedImageInstructions = !getArSceneView().isTrackingAugmentedImage();
+            if (getInstructionsController().isVisible(InstructionsController.TYPE_AUGMENTED_IMAGE_SCAN) != showAugmentedImageInstructions) {
+                getInstructionsController().setVisible(InstructionsController.TYPE_AUGMENTED_IMAGE_SCAN, showAugmentedImageInstructions);
+            }
+        }
+
+        for (AugmentedImage augmentedImage : getArSceneView().getUpdatedAugmentedImages()) {
+            onAugmentedImageUpdateListener.onAugmentedImageTrackingUpdate(augmentedImage);
         }
     }
 

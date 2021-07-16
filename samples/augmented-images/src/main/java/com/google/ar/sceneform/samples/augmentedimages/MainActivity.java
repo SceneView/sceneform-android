@@ -143,14 +143,6 @@ public class MainActivity extends AppCompatActivity implements
                             .build(EngineInstance.getEngine().getFilamentEngine())
             );
         }
-
-        // Hide plane indicating dots
-        arSceneView.getPlaneRenderer().setVisible(false);
-        // Disable the rendering of detected planes.
-        arSceneView.getPlaneRenderer().setEnabled(false);
-        //Enable only the augment images instructions
-        arFragment.getInstructionsController().setEnabled(
-                InstructionsController.TYPE_PLANE_DISCOVERY, false);
     }
 
     @Override
