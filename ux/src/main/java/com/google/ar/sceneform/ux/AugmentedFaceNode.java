@@ -16,27 +16,31 @@
 package com.google.ar.sceneform.ux;
 
 import android.content.Context;
+import android.opengl.Matrix;
 import android.util.Log;
 
 import androidx.annotation.Nullable;
 
+import com.google.android.filament.TransformManager;
 import com.google.ar.core.AugmentedFace;
 import com.google.ar.core.AugmentedFace.RegionType;
 import com.google.ar.core.Pose;
 import com.google.ar.core.TrackingState;
-
 import com.google.ar.sceneform.FrameTime;
 import com.google.ar.sceneform.Node;
 import com.google.ar.sceneform.Scene;
 import com.google.ar.sceneform.math.Quaternion;
 import com.google.ar.sceneform.math.Vector3;
+import com.google.ar.sceneform.rendering.Color;
 import com.google.ar.sceneform.rendering.EngineInstance;
 import com.google.ar.sceneform.rendering.Material;
+import com.google.ar.sceneform.rendering.MaterialFactory;
 import com.google.ar.sceneform.rendering.ModelRenderable;
 import com.google.ar.sceneform.rendering.Renderable;
 import com.google.ar.sceneform.rendering.RenderableDefinition;
 import com.google.ar.sceneform.rendering.RenderableDefinition.Submesh;
 import com.google.ar.sceneform.rendering.RenderableInstance;
+import com.google.ar.sceneform.rendering.ShapeFactory;
 import com.google.ar.sceneform.rendering.Texture;
 import com.google.ar.sceneform.rendering.Vertex;
 import com.google.ar.sceneform.rendering.Vertex.UvCoordinate;
@@ -44,6 +48,7 @@ import com.google.ar.sceneform.rendering.Vertex.UvCoordinate;
 import java.nio.FloatBuffer;
 import java.nio.ShortBuffer;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.concurrent.ExecutionException;
 
@@ -85,6 +90,8 @@ public class AugmentedFaceNode extends Node {
 
     private final HashMap<RegionType, Integer> faceMeshSkeleton = new HashMap<>();
 
+    private final float[] matrix = new float[16];
+
     @Nullable
     private ModelRenderable faceMeshRenderable;
     @Nullable
@@ -96,6 +103,9 @@ public class AugmentedFaceNode extends Node {
 
     @Nullable
     private Texture faceMeshTexture;
+
+    @Nullable
+    private Node noseTipNode;
 
     private static final String FACE_MESH_TEXTURE_MATERIAL_PARAMETER = "texture";
 
@@ -123,10 +133,19 @@ public class AugmentedFaceNode extends Node {
      * Create an AugmentedFaceNode with the given AugmentedFace.
      */
     @SuppressWarnings({"initialization"})
-    public AugmentedFaceNode(AugmentedFace augmentedFace) {
+    public AugmentedFaceNode(Context context, AugmentedFace augmentedFace) {
         this();
 
         this.augmentedFace = augmentedFace;
+
+        MaterialFactory.makeOpaqueWithColor(context, new Color(1, 0, 0))
+                .thenApply(material -> ShapeFactory.makeSphere(0.01f, new Vector3(0, 0, 0), material))
+                .thenAccept(renderable -> {
+                    noseTipNode = new Node();
+                    noseTipNode.setParent(getScene());
+                    noseTipNode.setRenderable(renderable);
+                    noseTipNode.setEnabled(true);
+                });
     }
 
     /**
@@ -236,7 +255,7 @@ public class AugmentedFaceNode extends Node {
                 });
 
         // Face mesh occluder material
-        Material.builder()
+        /*Material.builder()
                 .setSource(context, R.raw.sceneform_face_mesh_occluder_material)
                 .build()
                 .handle(
@@ -249,7 +268,7 @@ public class AugmentedFaceNode extends Node {
                             faceMeshOccluderMaterial = material;
                             updateSubmeshes();
                             return true;
-                        });
+                        });*/
     }
 
     @Override
@@ -279,31 +298,34 @@ public class AugmentedFaceNode extends Node {
             return;
         }
 
+        if (noseTipNode != null) {
+            Pose noseTipPose = augmentedFace.getRegionPose(RegionType.NOSE_TIP);
+            noseTipNode.setWorldPosition(new Vector3(noseTipPose.tx(), noseTipPose.ty(), noseTipPose.tz()));
+        }
+
         TransformManager tfm = EngineInstance.getEngine().getTransformManager();
 
         for(RegionType type : RegionType.values()) {
             Pose pose = augmentedFace.getRegionPose(type);
+
+            Log.d(TAG, type + " " + pose.toString());
+
             int instance = tfm.getInstance(faceMeshSkeleton.get(type));
 
-            // TODO Figure out how to apply pose translation and rotation to instance transform
+            pose.toMatrix(matrix, 0);
 
-            // tfm.setTransform(instance, transform.data);
+            tfm.setTransform(instance, matrix);
 
+            tfm.getWorldTransform(instance, matrix);
+            float[] position = new float[4];
+            Matrix.multiplyMV(position, 0, matrix, 0, new float[] { 0, 0, 0, 1 }, 0);
+            Log.d(TAG, type + " " + Arrays.toString(position));
         }
         faceRegionNode.getRenderableInstance().getFilamentAsset().getAnimator().updateBoneMatrices();
 
         Pose centerPose = augmentedFace.getCenterPose();
 
         faceRegionNode.setWorldPosition(new Vector3(centerPose.tx(), centerPose.ty(), centerPose.tz()));
-
-        // Rotate the bones by 180 degrees because the .fbx template's coordinate system is
-        // inversed of Sceneform's coordinate system. This is so the .fbx works with other
-        // 3D rendering engines as well
-        //TODO: Remove the inversion here and on the .blend and .glb files
-        Quaternion rotation = new Quaternion(centerPose.qx(), centerPose.qy(), centerPose.qz(), centerPose.qw());
-        Quaternion inverse = new Quaternion(Vector3.up(), 180f);
-        rotation = Quaternion.multiply(rotation, inverse);
-        faceRegionNode.setWorldRotation(rotation);
     }
 
     private boolean isTracking() {
