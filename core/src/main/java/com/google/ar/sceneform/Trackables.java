@@ -25,7 +25,7 @@ public class Trackables {
      *                   or {@link Frame#getUpdatedTrackables(Class)} depending on your needs.
      */
     public static <T extends Trackable> Collection<Plane> getPlanes(Collection<T> trackables) {
-        return getPlanes(trackables, null);
+        return getPlanes(trackables, (TrackingState[]) null);
     }
 
     /**
