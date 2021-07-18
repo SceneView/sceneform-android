@@ -795,7 +795,7 @@ public class ArSceneView extends SceneView {
      * Retrieve the view session tracked planes.
      */
     public Collection<Plane> getAllPlanes() {
-        return getAllPlanes(null);
+        return getAllPlanes((TrackingState[]) null);
     }
 
     /**
@@ -811,7 +811,7 @@ public class ArSceneView extends SceneView {
      * Retrieve the view last frame tracked planes.
      */
     public Collection<Plane> getUpdatedPlanes() {
-        return getUpdatedPlanes(null);
+        return getUpdatedPlanes((TrackingState[]) null);
     }
 
     /**
