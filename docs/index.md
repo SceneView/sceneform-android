@@ -17,7 +17,6 @@ Sceneform Maintained SDK for Android
 
 ![Logo](https://thomasgorisse.github.io/sceneform-android-sdk/images/logos/logo.png)
 
-## Usage benefits
 * Continuous compatibility with the latests versions of [ARCore SDK](https://github.com/google-ar/arcore-android-sdk) and [Filament](https://github.com/google/filament) 
 * Based on AndroidX
 * Available as gradle `mavenCentral()` dependency
