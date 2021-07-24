@@ -139,9 +139,9 @@ public void onAttachFragment(Fragment childFragment) {
 public void onTapPlane(HitResult hitResult, Plane plane, MotionEvent motionEvent) {
    …
    // Create the transformable model and add it to the anchor.
-   TransformableNode model = new TransformableNode(arFragment.getTransformationSystem());
-   model.setParent(anchorNode);
-   model.setRenderable(this.model)
+   TransformableNode modelNode = new TransformableNode(arFragment.getTransformationSystem());
+   modelNode.setParent(anchorNode);
+   modelNode.setRenderable(this.model)
         .animate(true).start();
 }
 ```
