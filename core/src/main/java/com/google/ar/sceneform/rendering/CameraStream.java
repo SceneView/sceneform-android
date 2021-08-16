@@ -348,15 +348,17 @@ public class CameraStream {
             return;
         }
 
-        Camera arCamera = frame.getCamera();
-        CameraIntrinsics intrinsics = arCamera.getTextureIntrinsics();
-        int[] dimensions = intrinsics.getImageDimensions();
-
         // External Camera Texture
-        cameraTexture = new ExternalTexture(
-                cameraTextureId,
-                dimensions[0],
-                dimensions[1]);
+        if(cameraTexture == null) {
+            Camera arCamera = frame.getCamera();
+            CameraIntrinsics intrinsics = arCamera.getTextureIntrinsics();
+            int[] dimensions = intrinsics.getImageDimensions();
+
+            cameraTexture = new ExternalTexture(
+                    cameraTextureId,
+                    dimensions[0],
+                    dimensions[1]);
+        }
 
         if (depthOcclusionMode == DepthOcclusionMode.DEPTH_OCCLUSION_ENABLED && (
                 depthMode == DepthMode.DEPTH ||

@@ -45,6 +45,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 
 /**
@@ -455,6 +456,7 @@ public class ArSceneView extends SceneView {
         }
     }
 
+    private AtomicBoolean processing = new AtomicBoolean(false);
     /**
      * Before the render call occurs, update the ARCore session to grab the latest frame and update
      * listeners.
@@ -466,13 +468,20 @@ public class ArSceneView extends SceneView {
     @SuppressWarnings("AndroidApiChecker")
     @Override
     protected boolean onBeginFrame(long frameTimeNanos) {
+        if(processing.get())
+            return false;
+
+        processing.set(true);
+
         // No session, no drawing.
         Session session = this.session;
         if (session == null) {
+            processing.set(false);
             return false;
         }
 
         if (!pauseResumeTask.isDone()) {
+            processing.set(false);
             return false;
         }
 
@@ -484,6 +493,7 @@ public class ArSceneView extends SceneView {
             Frame frame = session.update();
             // No frame, no drawing.
             if (frame == null) {
+                processing.set(false);
                 return false;
             }
 
@@ -494,20 +504,11 @@ public class ArSceneView extends SceneView {
                 updated = false;
             }
 
-            // Setup Camera Stream if needed.
-            if (!cameraStream.isTextureInitialized()) {
-                cameraStream.initializeTexture(frame);
-            }
-
-            // Recalculate camera Uvs if necessary.
-            if (shouldRecalculateCameraUvs(frame)) {
-                cameraStream.recalculateCameraUvs(frame);
-            }
-
             currentFrame = frame;
             timestamp = frame.getTimestamp();
         } catch (CameraNotAvailableException | DeadlineExceededException | FatalException e) {
             Log.w(TAG, "Exception updating ARCore session", e);
+            processing.set(false);
             return false;
         }
 
@@ -515,9 +516,19 @@ public class ArSceneView extends SceneView {
         com.google.ar.core.Camera currentArCamera = currentFrame.getCamera();
         if (currentArCamera == null) {
             getScene().setUseHdrLightEstimate(false);
+            processing.set(false);
             return false;
         }
 
+        // Setup Camera Stream if needed.
+        if (!cameraStream.isTextureInitialized()) {
+            cameraStream.initializeTexture(currentFrame);
+        }
+
+        // Recalculate camera Uvs if necessary.
+        if (shouldRecalculateCameraUvs(currentFrame)) {
+            cameraStream.recalculateCameraUvs(currentFrame);
+        }
         // If ARCore session has changed, update listeners.
         shouldUpdate(
                 updated,
@@ -525,6 +536,7 @@ public class ArSceneView extends SceneView {
                 currentArCamera,
                 currentFrame);
 
+        processing.set(false);
         return updated;
     }
 
@@ -773,6 +785,7 @@ public class ArSceneView extends SceneView {
 
     private void ensureUpdateMode() {
         if (session == null) {
+            processing.set(false);
             return;
         }
 

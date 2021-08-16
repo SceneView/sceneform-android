@@ -42,7 +42,8 @@ public class ExternalTexture {
     // Create the filament stream.
     Stream stream =
         new Stream.Builder()
-            .stream(surfaceTexture).build(EngineInstance.getEngine().getFilamentEngine());
+            .stream(surfaceTexture)
+                .build(EngineInstance.getEngine().getFilamentEngine());
 
     initialize(stream);
   }
@@ -57,15 +58,18 @@ public class ExternalTexture {
     surfaceTexture = null;
     surface = null;
 
-    // Create the filament stream.
-    Stream stream =
-        new Stream.Builder()
-            .stream(textureId)
-                .width(width)
-                .height(height)
-                .build(EngineInstance.getEngine().getFilamentEngine());
+    filamentTexture = new Texture
+            .Builder()
+            .importTexture(textureId)
+            .width(width)
+            .height(height)
+            .sampler(Texture.Sampler.SAMPLER_EXTERNAL)
+            .format(Texture.InternalFormat.RGB8)
+            .build(EngineInstance.getEngine().getFilamentEngine());
 
-    initialize(stream);
+    ResourceManager.getInstance()
+            .getExternalTextureCleanupRegistry()
+            .register(this, new CleanupCallback(filamentTexture, null));
   }
 
   /** Gets the surface texture created for this ExternalTexture. */
@@ -97,7 +101,6 @@ public class ExternalTexture {
     // Create the filament stream.
     IEngine engine = EngineInstance.getEngine();
     this.filamentStream = filamentStream;
-
     // Create the filament texture.
     filamentTexture =
         new com.google.android.filament.Texture.Builder()
