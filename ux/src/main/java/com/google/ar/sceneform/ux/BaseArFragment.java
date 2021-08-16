@@ -593,6 +593,12 @@ public abstract class BaseArFragment extends Fragment
         }
     }
 
+    public void closeSession() {
+        if(arSceneView.getSession() != null)
+            arSceneView.getSession().close();
+        arSceneView.setSession(null);
+    }
+
     @Override
     public void onPause() {
         super.onPause();

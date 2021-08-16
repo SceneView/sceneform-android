@@ -620,7 +620,7 @@ public class CameraStream {
             }
 
             if (cameraStreamRenderable != UNINITIALIZED_FILAMENT_RENDERABLE) {
-                scene.remove(cameraStreamRenderable);
+                scene.removeEntity(cameraStreamRenderable);
             }
 
             engine.destroyIndexBuffer(cameraIndexBuffer);

@@ -7,11 +7,13 @@ import android.util.Log;
 import android.view.Display;
 import android.view.WindowManager;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 
 import com.google.ar.core.Anchor;
 import com.google.ar.core.AugmentedImage;
+import com.google.ar.core.Camera;
 import com.google.ar.core.CameraConfig.FacingDirection;
 import com.google.ar.core.Config;
 import com.google.ar.core.Config.LightEstimationMode;
@@ -70,6 +72,7 @@ public class ArSceneView extends SceneView {
     private Session session;
     @Nullable
     private Frame currentFrame;
+    private Long timestamp = 0L;
     private Collection<Trackable> allTrackables = new ArrayList<>();
     private Collection<Trackable> updatedTrackables = new ArrayList<>();
     @Nullable
@@ -377,6 +380,8 @@ public class ArSceneView extends SceneView {
         return session;
     }
 
+    public void setSession(Session session) {this.session = session;}
+
     /**
      * Returns the most recent ARCore Frame if it is available. The frame is updated at the beginning
      * of each drawing frame. Callers of this method should not retain a reference to the return
@@ -400,6 +405,54 @@ public class ArSceneView extends SceneView {
      */
     public CameraStream getCameraStream() {
         return cameraStream;
+    }
+
+
+    private void shouldUpdate(
+            boolean updated,
+            @NonNull Session session,
+            @NonNull Camera currentArCamera,
+            Frame currentFrame) {
+        if (updated) {
+            allTrackables = session.getAllTrackables(Trackable.class);
+            if (currentFrame != null) {
+                updatedTrackables = currentFrame.getUpdatedTrackables(Trackable.class);
+            }
+
+            // At the start of the frame, update the tracked pose of the camera
+            // to use in any calculations during the frame.
+            getScene().getCamera().updateTrackedPose(currentArCamera);
+
+            if (currentFrame != null) {
+                if (cameraStream.getDepthOcclusionMode() == CameraStream.DepthOcclusionMode.DEPTH_OCCLUSION_ENABLED) {
+                    if (cameraStream.getDepthMode() == CameraStream.DepthMode.DEPTH) {
+                        try (Image depthImage = currentFrame.acquireDepthImage()) {
+                            cameraStream.recalculateOcclusion(depthImage);
+                        } catch (NotYetAvailableException | DeadlineExceededException ignored) {
+                        }
+                    } else if (cameraStream.getDepthMode() == CameraStream.DepthMode.RAW_DEPTH) {
+                        try (Image depthImage = currentFrame.acquireRawDepthImage()) {
+                            cameraStream.recalculateOcclusion(depthImage);
+                        } catch (NotYetAvailableException | DeadlineExceededException ignored) {
+                        }
+                    }
+                }
+
+                // Update the light estimate.
+                updateLightEstimate(currentFrame);
+                try {
+                    // Update the plane renderer.
+                    if (planeRenderer.isEnabled()) {
+                        planeRenderer.update(
+                                currentFrame,
+                                getUpdatedPlanes(),
+                                getWidth(),
+                                getHeight());
+                    }
+                } catch (DeadlineExceededException ignored) {
+                }
+            }
+        }
     }
 
     /**
@@ -434,7 +487,10 @@ public class ArSceneView extends SceneView {
                 return false;
             }
 
-            if (currentFrame != null && currentFrame.getTimestamp() == frame.getTimestamp()) {
+            if(timestamp == 0L)
+                updated = false;
+
+            if (timestamp == frame.getTimestamp()) {
                 updated = false;
             }
 
@@ -449,7 +505,8 @@ public class ArSceneView extends SceneView {
             }
 
             currentFrame = frame;
-        } catch (CameraNotAvailableException | DeadlineExceededException e) {
+            timestamp = frame.getTimestamp();
+        } catch (CameraNotAvailableException | DeadlineExceededException | FatalException e) {
             Log.w(TAG, "Exception updating ARCore session", e);
             return false;
         }
@@ -462,42 +519,11 @@ public class ArSceneView extends SceneView {
         }
 
         // If ARCore session has changed, update listeners.
-        if (updated) {
-            allTrackables = session.getAllTrackables(Trackable.class);
-            if (currentFrame != null) {
-                updatedTrackables = currentFrame.getUpdatedTrackables(Trackable.class);
-            }
-
-            // At the start of the frame, update the tracked pose of the camera
-            // to use in any calculations during the frame.
-            getScene().getCamera().updateTrackedPose(currentArCamera);
-
-            if (currentFrame != null) {
-                if (cameraStream.getDepthOcclusionMode() == CameraStream.DepthOcclusionMode.DEPTH_OCCLUSION_ENABLED) {
-                    if (cameraStream.getDepthMode() == CameraStream.DepthMode.DEPTH) {
-                        try (Image depthImage = currentFrame.acquireDepthImage()) {
-                            cameraStream.recalculateOcclusion(depthImage);
-                        } catch (NotYetAvailableException | DeadlineExceededException ignored) {
-                        }
-                    } else if (cameraStream.getDepthMode() == CameraStream.DepthMode.RAW_DEPTH) {
-                        try (Image depthImage = currentFrame.acquireRawDepthImage()) {
-                            cameraStream.recalculateOcclusion(depthImage);
-                        } catch (NotYetAvailableException | DeadlineExceededException ignored) {
-                        }
-                    }
-                }
-
-                // Update the light estimate.
-                updateLightEstimate(currentFrame);
-                try {
-                    // Update the plane renderer.
-                    if (planeRenderer.isEnabled()) {
-                        planeRenderer.update(currentFrame, getUpdatedPlanes(), getWidth(), getHeight());
-                    }
-                } catch (DeadlineExceededException ignored) {
-                }
-            }
-        }
+        shouldUpdate(
+                updated,
+                session,
+                currentArCamera,
+                currentFrame);
 
         return updated;
     }

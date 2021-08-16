@@ -205,6 +205,7 @@ public class SceneView extends SurfaceView implements Choreographer.FrameCallbac
      * <p>Typically called from onDestroy().
      */
     public void destroy() {
+        Choreographer.getInstance().removeFrameCallback(this);
         if (renderer != null) {
             renderer.dispose();
             renderer = null;
@@ -374,8 +375,8 @@ public class SceneView extends SurfaceView implements Choreographer.FrameCallbac
         }
 
         if (onBeginFrame(frameTimeNanos)) {
-            doUpdate(frameTimeNanos);
             doRender(frameTimeNanos);
+            doUpdate(frameTimeNanos);
         }
 
         if (debugEnabled) {
