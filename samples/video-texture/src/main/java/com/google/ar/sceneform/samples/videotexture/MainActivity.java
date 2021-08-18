@@ -12,11 +12,13 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentOnAttachListener;
 
 import com.google.android.filament.ColorGrading;
+import com.google.android.filament.ToneMapper;
 import com.google.ar.core.Anchor;
 import com.google.ar.core.HitResult;
 import com.google.ar.core.Plane;
@@ -25,7 +27,6 @@ import com.google.ar.sceneform.ArSceneView;
 import com.google.ar.sceneform.Sceneform;
 import com.google.ar.sceneform.rendering.Color;
 import com.google.ar.sceneform.rendering.EngineInstance;
-import com.google.ar.sceneform.rendering.RenderableInstance;
 import com.google.ar.sceneform.rendering.Renderer;
 import com.google.ar.sceneform.ux.ArFragment;
 import com.google.ar.sceneform.ux.BaseArFragment;
@@ -40,9 +41,8 @@ public class MainActivity extends AppCompatActivity implements
         ArFragment.OnViewCreatedListener,
         BaseArFragment.OnTapArPlaneListener {
 
+    private final List<MediaPlayer> mediaPlayers = new ArrayList<>();
     private ArFragment arFragment;
-    private List<MediaPlayer> mediaPlayers = new ArrayList<>();
-
     private int mode = R.id.menuPlainVideo;
 
     @Override
@@ -53,8 +53,11 @@ public class MainActivity extends AppCompatActivity implements
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         ViewCompat.setOnApplyWindowInsetsListener(toolbar, (v, insets) -> {
-            ((ViewGroup.MarginLayoutParams) toolbar.getLayoutParams()).topMargin = insets.getSystemWindowInsetTop();
-            return insets.consumeSystemWindowInsets();
+            ((ViewGroup.MarginLayoutParams) toolbar.getLayoutParams()).topMargin = insets
+                    .getInsets(WindowInsetsCompat.Type.systemBars())
+                    .top;
+
+            return WindowInsetsCompat.CONSUMED;
         });
 
         getSupportFragmentManager().addFragmentOnAttachListener(this);
@@ -87,8 +90,9 @@ public class MainActivity extends AppCompatActivity implements
 
         if (renderer != null) {
             renderer.getFilamentView().setColorGrading(
-                    new ColorGrading.Builder()
-                            .toneMapping(ColorGrading.ToneMapping.FILMIC)
+                    new ColorGrading
+                            .Builder()
+                            .toneMapper(new ToneMapper.Filmic())
                             .build(EngineInstance.getEngine().getFilamentEngine())
             );
         }
@@ -103,11 +107,7 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.isChecked()) {
-            item.setChecked(false);
-        } else {
-            item.setChecked(true);
-        }
+        item.setChecked(!item.isChecked());
         this.mode = item.getItemId();
         return true;
     }

@@ -8,6 +8,7 @@ import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.filament.ColorGrading;
+import com.google.android.filament.ToneMapper;
 import com.google.ar.core.Anchor;
 import com.google.ar.core.HitResult;
 import com.google.ar.core.Plane;
@@ -69,8 +70,9 @@ public class MainActivity extends AppCompatActivity implements
 
         if (renderer != null) {
             renderer.getFilamentView().setColorGrading(
-                    new ColorGrading.Builder()
-                            .toneMapping(ColorGrading.ToneMapping.FILMIC)
+                    new ColorGrading
+                            .Builder()
+                            .toneMapper(new ToneMapper.Filmic())
                             .build(EngineInstance.getEngine().getFilamentEngine())
             );
         }

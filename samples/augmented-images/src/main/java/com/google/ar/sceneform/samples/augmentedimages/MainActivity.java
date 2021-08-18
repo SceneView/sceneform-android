@@ -18,6 +18,7 @@ import androidx.fragment.app.FragmentOnAttachListener;
 
 import com.google.android.filament.ColorGrading;
 import com.google.android.filament.Engine;
+import com.google.android.filament.ToneMapper;
 import com.google.android.filament.filamat.MaterialBuilder;
 import com.google.android.filament.filamat.MaterialPackage;
 import com.google.ar.core.AugmentedImage;
@@ -138,8 +139,9 @@ public class MainActivity extends AppCompatActivity implements
 
         if (renderer != null) {
             renderer.getFilamentView().setColorGrading(
-                    new ColorGrading.Builder()
-                            .toneMapping(ColorGrading.ToneMapping.FILMIC)
+                    new ColorGrading
+                            .Builder()
+                            .toneMapper(new ToneMapper.Filmic())
                             .build(EngineInstance.getEngine().getFilamentEngine())
             );
         }
@@ -149,11 +151,10 @@ public class MainActivity extends AppCompatActivity implements
     protected void onDestroy() {
         super.onDestroy();
 
-        for (CompletableFuture future : futures) {
-            if (!future.isDone()) {
+        futures.forEach(future -> {
+            if (!future.isDone())
                 future.cancel(true);
-            }
-        }
+        });
 
         if (mediaPlayer != null) {
             mediaPlayer.stop();

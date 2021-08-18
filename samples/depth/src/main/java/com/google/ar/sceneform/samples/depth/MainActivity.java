@@ -12,6 +12,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentOnAttachListener;
 
 import com.google.android.filament.ColorGrading;
+import com.google.android.filament.ToneMapper;
 import com.google.ar.core.Anchor;
 import com.google.ar.core.Config;
 import com.google.ar.core.HitResult;
@@ -82,15 +83,16 @@ public class MainActivity extends AppCompatActivity implements
 
         if (renderer != null) {
             renderer.getFilamentView().setColorGrading(
-                    new ColorGrading.Builder()
-                            .toneMapping(ColorGrading.ToneMapping.FILMIC)
+                    new ColorGrading
+                            .Builder()
+                            .toneMapper(new ToneMapper.Filmic())
                             .build(EngineInstance.getEngine().getFilamentEngine())
             );
         }
 
         // Available modes: DEPTH_OCCLUSION_DISABLED, DEPTH_OCCLUSION_ENABLED
         arSceneView.getCameraStream()
-            .setDepthOcclusionMode(CameraStream.DepthOcclusionMode.DEPTH_OCCLUSION_ENABLED);
+                .setDepthOcclusionMode(CameraStream.DepthOcclusionMode.DEPTH_OCCLUSION_ENABLED);
     }
 
     public void loadModels() {
