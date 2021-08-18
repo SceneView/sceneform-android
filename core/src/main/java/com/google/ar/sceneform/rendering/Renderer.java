@@ -310,9 +310,11 @@ public class Renderer implements UiHelper.RendererCallback {
         updateMirrorConfig();
 
         @Nullable SwapChain swapChainLocal = swapChain;
-        if (swapChainLocal == null) {
+        if(swapChainLocal == null)
+            return;
+        /*if (swapChainLocal == null) {
             throw new AssertionError("Internal Error: Failed to get swap chain");
-        }
+        }*/
 
         // Render the scene, unless the renderer wants to skip the frame.
         // This means you are sending frames too quickly to the GPU
