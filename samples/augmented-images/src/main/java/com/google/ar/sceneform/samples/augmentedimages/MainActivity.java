@@ -12,6 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentOnAttachListener;
@@ -64,7 +65,7 @@ public class MainActivity extends AppCompatActivity implements
     private Material plainVideoMaterial;
     private MediaPlayer mediaPlayer;
 
-    private List<CompletableFuture> futures = new ArrayList<>();
+    private final List<CompletableFuture<Void>> futures = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,8 +75,11 @@ public class MainActivity extends AppCompatActivity implements
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         ViewCompat.setOnApplyWindowInsetsListener(toolbar, (v, insets) -> {
-            ((ViewGroup.MarginLayoutParams) toolbar.getLayoutParams()).topMargin = insets.getSystemWindowInsetTop();
-            return insets.consumeSystemWindowInsets();
+            ((ViewGroup.MarginLayoutParams) toolbar.getLayoutParams()).topMargin = insets
+                    .getInsets(WindowInsetsCompat.Type.systemBars())
+                    .top;
+
+            return WindowInsetsCompat.CONSUMED;
         });
         getSupportFragmentManager().addFragmentOnAttachListener(this);
 
@@ -190,7 +194,7 @@ public class MainActivity extends AppCompatActivity implements
                 .require(MaterialBuilder.VertexAttribute.UV0)
                 .shading(MaterialBuilder.Shading.UNLIT)
                 .doubleSided(true)
-                .samplerParameter(MaterialBuilder.SamplerType.SAMPLER_EXTERNAL, MaterialBuilder.SamplerFormat.FLOAT, MaterialBuilder.SamplerPrecision.DEFAULT, "videoTexture")
+                .samplerParameter(MaterialBuilder.SamplerType.SAMPLER_EXTERNAL, MaterialBuilder.SamplerFormat.FLOAT, MaterialBuilder.ParameterPrecision.DEFAULT, "videoTexture")
                 .optimization(MaterialBuilder.Optimization.NONE);
 
         MaterialPackage plainVideoMaterialPackage = materialBuilder
