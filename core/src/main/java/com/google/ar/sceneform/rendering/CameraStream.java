@@ -324,17 +324,18 @@ public class CameraStream {
      * </pre>
      *
      * @param session {@link Session}
+     * @param config {@link Config}
      */
-    public void checkIfDepthIsEnabled(Session session) {
+    public void checkIfDepthIsEnabled(Session session, Config config) {
         depthMode = DepthMode.NO_DEPTH;
 
         if (session.isDepthModeSupported(Config.DepthMode.AUTOMATIC))
-            if (session.getConfig().getDepthMode() == Config.DepthMode.AUTOMATIC) {
+            if (config.getDepthMode() == Config.DepthMode.AUTOMATIC) {
                 depthMode = DepthMode.DEPTH;
             }
 
         if (session.isDepthModeSupported(Config.DepthMode.RAW_DEPTH_ONLY))
-            if (session.getConfig().getDepthMode() == Config.DepthMode.RAW_DEPTH_ONLY) {
+            if (config.getDepthMode() == Config.DepthMode.RAW_DEPTH_ONLY) {
                 depthMode = DepthMode.RAW_DEPTH;
             }
     }
