@@ -42,12 +42,8 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
         try {
             backgroundSceneView.resume();
-        } catch (CameraNotAvailableException e) {
-            e.printStackTrace();
-        }
-        try {
             transparentSceneView.resume();
-        } catch (CameraNotAvailableException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

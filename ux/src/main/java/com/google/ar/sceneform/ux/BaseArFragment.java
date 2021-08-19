@@ -41,7 +41,6 @@ import com.google.ar.core.Plane;
 import com.google.ar.core.Session;
 import com.google.ar.core.Trackable;
 import com.google.ar.core.TrackingState;
-import com.google.ar.core.exceptions.CameraNotAvailableException;
 import com.google.ar.core.exceptions.UnavailableApkTooOldException;
 import com.google.ar.core.exceptions.UnavailableArcoreNotInstalledException;
 import com.google.ar.core.exceptions.UnavailableDeviceNotCompatibleException;
@@ -52,7 +51,6 @@ import com.google.ar.sceneform.FrameTime;
 import com.google.ar.sceneform.HitTestResult;
 import com.google.ar.sceneform.Scene;
 import com.google.ar.sceneform.rendering.ModelRenderable;
-import com.google.ar.sceneform.rendering.PlaneRenderer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -218,6 +216,7 @@ public abstract class BaseArFragment extends Fragment
         frameLayout = (FrameLayout) inflater.inflate(R.layout.sceneform_ux_fragment_layout
                 , container, false);
         arSceneView = frameLayout.findViewById(R.id.sceneform_ar_scene_view);
+        arSceneView.setOnSessionConfigChangeListener(this::onSessionConfigChanged);
 
         // Setup the instructions view.
         instructionsController = new InstructionsController(inflater, frameLayout);
@@ -272,6 +271,76 @@ public abstract class BaseArFragment extends Fragment
     public void onDestroyView() {
         super.onDestroyView();
         arSceneView.getViewTreeObserver().removeOnWindowFocusChangeListener(onFocusListener);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (isArRequired() && arSceneView.getSession() == null) {
+            initializeSession();
+        }
+        resume();
+    }
+
+    public void resume() {
+        if (isStarted) {
+            return;
+        }
+
+        if (getActivity() != null) {
+            isStarted = true;
+            try {
+                arSceneView.resume();
+            } catch (Exception ex) {
+                sessionInitializationFailed = true;
+            }
+            if (!sessionInitializationFailed) {
+                if (getInstructionsController() != null) {
+                    getInstructionsController().setVisible(true);
+                }
+            }
+        }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        pause();
+    }
+
+    public void pause() {
+        if (!isStarted) {
+            return;
+        }
+
+        isStarted = false;
+        if (getInstructionsController() != null) {
+            getInstructionsController().setVisible(false);
+        }
+        arSceneView.pause();
+    }
+
+    @Override
+    public void onDestroy() {
+        destroy();
+        super.onDestroy();
+    }
+
+    /**
+     * Required to exit Sceneform.
+     *
+     * <p>Typically called from onDestroy().
+     */
+    public void destroy() {
+        pause();
+        arSceneView.destroy();
+    }
+
+    /**
+     * Destroy the session without touching the scene
+     */
+    public void destroySession() {
+        arSceneView.destroySession();
     }
 
     /**
@@ -398,15 +467,6 @@ public abstract class BaseArFragment extends Fragment
         this.canRequestDangerousPermissions = canRequestDangerousPermissions;
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        if (isArRequired() && arSceneView.getSession() == null) {
-            initializeSession();
-        }
-        start();
-    }
-
     protected final boolean requestInstall() throws UnavailableException {
         switch (ArCoreApk.getInstance().requestInstall(requireActivity(), !installRequested)) {
             case INSTALL_REQUESTED:
@@ -448,9 +508,7 @@ public abstract class BaseArFragment extends Fragment
                     this.onSessionConfigurationListener.onSessionConfiguration(session, config);
                 }
                 session.configure(config);
-                getArSceneView().setupSession(session);
-
-                onSessionConfigUpdated(session, config);
+                setSession(session);
                 return;
             } catch (UnavailableException e) {
                 sessionException = e;
@@ -494,23 +552,45 @@ public abstract class BaseArFragment extends Fragment
     }
 
     /**
+     * Define the session used by this Fragment and so the ArSceneView.
+     *
+     * Before calling this function, make sure to call the {@link Session#configure(Config)}
+     *
+     * If you only want to change the Session Config please call
+     * {@link #setSessionConfig(Config, boolean)} and check that all your Session Config parameters
+     * are taken in account by ARCore at runtime.
+     * If it's not the case, you will have to create a new session and call this function.
+     *
+     * @param session the new session
+     */
+    public void setSession(Session session) {
+        getArSceneView().setSession(session);
+    }
+
+    /**
+     * Define the session config used by this Fragment and so the ArSceneView.
+     *
+     * Please check that all your Session Config parameters are taken in account by ARCore at
+     * runtime.
+     * If it's not the case, you will have to create a new session and call
+     * {@link #setSession(Session)}.
+     *
+     * @param config           the new config to apply
+     * @param configureSession false if you already called the {@link Session#configure(Config)}
+     */
+    public void setSessionConfig(Config config, boolean configureSession) {
+        getArSceneView().setSessionConfig(config, configureSession);
+    }
+
+    /**
      * Occurs when a session configuration has changed.
      */
-    protected void onSessionConfigUpdated(Session session, Config config) {
-        boolean isPlaneFindingEnable = config.getPlaneFindingMode() != Config.PlaneFindingMode.DISABLED;
-
-        PlaneRenderer planeRenderer = getArSceneView() != null ?
-                getArSceneView().getPlaneRenderer() : null;
-        if (planeRenderer != null) {
-            // Disable the rendering of detected planes.
-            arSceneView.getPlaneRenderer().setEnabled(isPlaneFindingEnable);
-        }
-
+    protected void onSessionConfigChanged(Config config) {
         InstructionsController instructionsController = getInstructionsController();
         if (instructionsController != null) {
             // Planes
             instructionsController.setEnabled(InstructionsController.TYPE_PLANE_DISCOVERY
-                    , isPlaneFindingEnable);
+                    , config.getPlaneFindingMode() != Config.PlaneFindingMode.DISABLED);
 
             // AugmentedImages
             AugmentedImageDatabase augmentedImageDatabase = config.getAugmentedImageDatabase();
@@ -593,25 +673,6 @@ public abstract class BaseArFragment extends Fragment
         }
     }
 
-    public void closeSession() {
-        if(arSceneView.getSession() != null)
-            arSceneView.getSession().close();
-        arSceneView.setSession(null);
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        stop();
-    }
-
-    @Override
-    public void onDestroy() {
-        stop();
-        arSceneView.destroy();
-        super.onDestroy();
-    }
-
     @Override
     public void onPeekTouch(HitTestResult hitTestResult, MotionEvent motionEvent) {
         transformationSystem.onTouch(hitTestResult, motionEvent);
@@ -643,38 +704,6 @@ public abstract class BaseArFragment extends Fragment
         for (AugmentedImage augmentedImage : getArSceneView().getUpdatedAugmentedImages()) {
             onAugmentedImageUpdateListener.onAugmentedImageTrackingUpdate(augmentedImage);
         }
-    }
-
-    private void start() {
-        if (isStarted) {
-            return;
-        }
-
-        if (getActivity() != null) {
-            isStarted = true;
-            try {
-                arSceneView.resume();
-            } catch (CameraNotAvailableException ex) {
-                sessionInitializationFailed = true;
-            }
-            if (!sessionInitializationFailed) {
-                if (getInstructionsController() != null) {
-                    getInstructionsController().setVisible(true);
-                }
-            }
-        }
-    }
-
-    private void stop() {
-        if (!isStarted) {
-            return;
-        }
-
-        isStarted = false;
-        if (getInstructionsController() != null) {
-            getInstructionsController().setVisible(false);
-        }
-        arSceneView.pause();
     }
 
     private void onSingleTap(MotionEvent motionEvent) {
