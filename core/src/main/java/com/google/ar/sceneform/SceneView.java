@@ -14,9 +14,11 @@ import android.view.SurfaceView;
 
 import androidx.annotation.Nullable;
 
+import com.google.android.filament.ColorGrading;
+import com.google.android.filament.ToneMapper;
 import com.google.android.filament.View;
-import com.google.ar.core.exceptions.CameraNotAvailableException;
 import com.google.ar.sceneform.rendering.Color;
+import com.google.ar.sceneform.rendering.EngineInstance;
 import com.google.ar.sceneform.rendering.Renderer;
 import com.google.ar.sceneform.utilities.AndroidPreconditions;
 import com.google.ar.sceneform.utilities.MovingAverageMillisecondsTracker;
@@ -174,13 +176,19 @@ public class SceneView extends SurfaceView implements Choreographer.FrameCallbac
      * Resume Sceneform, which resumes the rendering thread.
      * <p>
      * Typically called from onResume().
-     *
-     * @throws CameraNotAvailableException if the camera can not be opened
      */
-    public void resume() throws CameraNotAvailableException {
-        if (renderer != null) {
-            renderer.onResume();
+    public void resume() throws Exception {
+        resumeScene();
+    }
+
+    /**
+     * Resumes the scene
+     */
+    protected void resumeScene() throws IllegalStateException {
+        if (renderer == null) {
+            throw new IllegalStateException("Sceneform requires Android N or later");
         }
+        renderer.onResume();
         // Start the drawing when the renderer is resumed.  Remove and re-add the callback
         // to avoid getting called twice.
         Choreographer.getInstance().removeFrameCallback(this);
@@ -193,6 +201,13 @@ public class SceneView extends SurfaceView implements Choreographer.FrameCallbac
      * <p>Typically called from onPause().
      */
     public void pause() {
+        pauseScene();
+    }
+
+    /**
+     * Pause the scene without touching the session
+     */
+    protected void pauseScene() {
         Choreographer.getInstance().removeFrameCallback(this);
         if (renderer != null) {
             renderer.onPause();
@@ -205,9 +220,16 @@ public class SceneView extends SurfaceView implements Choreographer.FrameCallbac
      * <p>Typically called from onDestroy().
      */
     public void destroy() {
+        destroyScene();
+    }
+
+    /**
+     * Destroy the scene without touching the session
+     */
+    protected void destroyScene() {
+        Choreographer.getInstance().removeFrameCallback(this);
         if (renderer != null) {
-            renderer.dispose();
-            renderer = null;
+            renderer.onPause();
         }
     }
 
@@ -307,7 +329,7 @@ public class SceneView extends SurfaceView implements Choreographer.FrameCallbac
      *
      * @see #SceneView(Context, AttributeSet)
      */
-    private void initialize() {
+    protected void initialize() {
         if (isInitialized) {
             Log.w(TAG, "SceneView already initialized.");
             return;
@@ -323,6 +345,15 @@ public class SceneView extends SurfaceView implements Choreographer.FrameCallbac
             }
             scene = new Scene(this);
             renderer.setCameraProvider(scene.getCamera());
+
+            // Change the ToneMapper to FILMIC to avoid some over saturated
+            // colors, for example material orange 500.
+            renderer.getFilamentView().setColorGrading(
+                    new ColorGrading
+                            .Builder()
+                            .toneMapper(new ToneMapper.Filmic())
+                            .build(EngineInstance.getEngine().getFilamentEngine())
+            );
         }
         isInitialized = true;
     }
@@ -352,7 +383,7 @@ public class SceneView extends SurfaceView implements Choreographer.FrameCallbac
         // limit to max fps
         long nanoTime = System.nanoTime();
         long tick = nanoTime / (TimeUnit.SECONDS.toNanos(1) / maxFramesPerSeconds);
-        if(lastTick / frameRate.factor() == tick / frameRate.factor())
+        if (lastTick / frameRate.factor() == tick / frameRate.factor())
             return;
 
         lastTick = tick;
@@ -374,8 +405,8 @@ public class SceneView extends SurfaceView implements Choreographer.FrameCallbac
         }
 
         if (onBeginFrame(frameTimeNanos)) {
-            doUpdate(frameTimeNanos);
             doRender(frameTimeNanos);
+            doUpdate(frameTimeNanos);
         }
 
         if (debugEnabled) {
@@ -430,12 +461,18 @@ public class SceneView extends SurfaceView implements Choreographer.FrameCallbac
      * </pre>
      */
     public enum FrameRate {
-        /** divide the maximal allowed frame rate by 1 */
-        FULL (1),
-        /** divide the maximal allowed frame rate by 2 */
-        HALF (2),
-        /** divide the maximal allowed frame rate by 3 */
-        THIRD (3);
+        /**
+         * divide the maximal allowed frame rate by 1
+         */
+        FULL(1),
+        /**
+         * divide the maximal allowed frame rate by 2
+         */
+        HALF(2),
+        /**
+         * divide the maximal allowed frame rate by 3
+         */
+        THIRD(3);
 
         private final int factor;
 

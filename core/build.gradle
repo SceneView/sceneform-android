@@ -1,19 +1,17 @@
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion 30
+    compileSdkVersion 31
     defaultConfig {
         // Sceneform requires minSdkVersion >= 24.
         minSdkVersion 24
-        targetSdkVersion 30
-        versionCode 15
-        versionName "1.19.5"
+        targetSdkVersion 31
     }
     compileOptions {
         // Sceneform libraries use language constructs from Java 8.
         // Add these compile options if targeting minSdkVersion < 26.
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_11
+        targetCompatibility JavaVersion.VERSION_11
     }
     buildTypes {
         release {
@@ -24,15 +22,20 @@ android {
 }
 
 dependencies {
-    api 'com.google.android.filament:filament-android:1.10.7'
-    api 'com.google.android.filament:gltfio-android:1.10.7'
-    api 'com.google.android.filament:filament-utils-android:1.10.7'
+    def filament_version = '1.12.0'
+    def arcore_version = '1.26.0'
+    def appcompat_version = '1.3.1'
+    def material_version = '1.3.0'
+
+    api "com.google.android.filament:filament-android:$filament_version"
+    api "com.google.android.filament:gltfio-android:$filament_version"
+    api "com.google.android.filament:filament-utils-android:$filament_version"
     implementation files("libs/libsceneform_runtime_schemas.jar")
 
-    api "com.google.ar:core:1.25.0"
+    api "com.google.ar:core:$arcore_version"
 
-    implementation 'androidx.appcompat:appcompat:1.2.0'
-    implementation 'com.google.android.material:material:1.3.0'
+    implementation "androidx.appcompat:appcompat:$appcompat_version"
+    implementation "com.google.android.material:material:$material_version"
 }
 
 if (project.hasProperty('mavenCentralUsername') && project.hasProperty('mavenCentralPassword')) {

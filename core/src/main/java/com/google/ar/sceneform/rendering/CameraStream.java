@@ -324,17 +324,18 @@ public class CameraStream {
      * </pre>
      *
      * @param session {@link Session}
+     * @param config {@link Config}
      */
-    public void checkIfDepthIsEnabled(Session session) {
+    public void checkIfDepthIsEnabled(Session session, Config config) {
         depthMode = DepthMode.NO_DEPTH;
 
         if (session.isDepthModeSupported(Config.DepthMode.AUTOMATIC))
-            if (session.getConfig().getDepthMode() == Config.DepthMode.AUTOMATIC) {
+            if (config.getDepthMode() == Config.DepthMode.AUTOMATIC) {
                 depthMode = DepthMode.DEPTH;
             }
 
         if (session.isDepthModeSupported(Config.DepthMode.RAW_DEPTH_ONLY))
-            if (session.getConfig().getDepthMode() == Config.DepthMode.RAW_DEPTH_ONLY) {
+            if (config.getDepthMode() == Config.DepthMode.RAW_DEPTH_ONLY) {
                 depthMode = DepthMode.RAW_DEPTH;
             }
     }
@@ -348,15 +349,17 @@ public class CameraStream {
             return;
         }
 
-        Camera arCamera = frame.getCamera();
-        CameraIntrinsics intrinsics = arCamera.getTextureIntrinsics();
-        int[] dimensions = intrinsics.getImageDimensions();
-
         // External Camera Texture
-        cameraTexture = new ExternalTexture(
-                cameraTextureId,
-                dimensions[0],
-                dimensions[1]);
+        if(cameraTexture == null) {
+            Camera arCamera = frame.getCamera();
+            CameraIntrinsics intrinsics = arCamera.getTextureIntrinsics();
+            int[] dimensions = intrinsics.getImageDimensions();
+
+            cameraTexture = new ExternalTexture(
+                    cameraTextureId,
+                    dimensions[0],
+                    dimensions[1]);
+        }
 
         if (depthOcclusionMode == DepthOcclusionMode.DEPTH_OCCLUSION_ENABLED && (
                 depthMode == DepthMode.DEPTH ||
@@ -620,7 +623,7 @@ public class CameraStream {
             }
 
             if (cameraStreamRenderable != UNINITIALIZED_FILAMENT_RENDERABLE) {
-                scene.remove(cameraStreamRenderable);
+                scene.removeEntity(cameraStreamRenderable);
             }
 
             engine.destroyIndexBuffer(cameraIndexBuffer);
