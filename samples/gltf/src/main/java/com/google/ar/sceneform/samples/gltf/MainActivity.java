@@ -11,8 +11,6 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentOnAttachListener;
 
-import com.google.android.filament.ColorGrading;
-import com.google.android.filament.ToneMapper;
 import com.google.ar.core.Anchor;
 import com.google.ar.core.Config;
 import com.google.ar.core.HitResult;
@@ -24,10 +22,8 @@ import com.google.ar.sceneform.Node;
 import com.google.ar.sceneform.SceneView;
 import com.google.ar.sceneform.Sceneform;
 import com.google.ar.sceneform.math.Vector3;
-import com.google.ar.sceneform.rendering.EngineInstance;
 import com.google.ar.sceneform.rendering.ModelRenderable;
 import com.google.ar.sceneform.rendering.Renderable;
-import com.google.ar.sceneform.rendering.Renderer;
 import com.google.ar.sceneform.rendering.ViewRenderable;
 import com.google.ar.sceneform.ux.ArFragment;
 import com.google.ar.sceneform.ux.BaseArFragment;
@@ -82,20 +78,7 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public void onViewCreated(ArFragment arFragment, ArSceneView arSceneView) {
-        // Currently, the tone-mapping should be changed to FILMIC
-        // because with other tone-mapping operators except LINEAR
-        // the inverseTonemapSRGB function in the materials can produce incorrect results.
-        // The LINEAR tone-mapping cannot be used together with the inverseTonemapSRGB function.
-        Renderer renderer = arSceneView.getRenderer();
-
-        if (renderer != null) {
-            renderer.getFilamentView().setColorGrading(
-                    new ColorGrading
-                            .Builder()
-                            .toneMapper(new ToneMapper.Filmic())
-                            .build(EngineInstance.getEngine().getFilamentEngine())
-            );
-        }
+        arFragment.setOnViewCreatedListener(null);
 
         // Fine adjust the maximum frame rate
         arSceneView.setFrameRateFactor(SceneView.FrameRate.FULL);

@@ -107,7 +107,7 @@ public class MainActivity extends AppCompatActivity {
                         modelNode4.setLocalRotation(Quaternion.axisAngle(new Vector3(0f, 1f, 0f), 35));
                         modelNode4.setLocalPosition(new Vector3(0f, 0f, -1.0f));
                         transparentSceneView.getScene().addChild(modelNode4);
-                    } catch (InterruptedException | ExecutionException unused) {
+                    } catch (InterruptedException | ExecutionException ignore) {
 
                     }
                     return null;

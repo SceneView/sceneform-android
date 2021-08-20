@@ -17,9 +17,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentOnAttachListener;
 
-import com.google.android.filament.ColorGrading;
 import com.google.android.filament.Engine;
-import com.google.android.filament.ToneMapper;
 import com.google.android.filament.filamat.MaterialBuilder;
 import com.google.android.filament.filamat.MaterialPackage;
 import com.google.ar.core.AugmentedImage;
@@ -28,7 +26,6 @@ import com.google.ar.core.Config;
 import com.google.ar.core.Session;
 import com.google.ar.core.TrackingState;
 import com.google.ar.sceneform.AnchorNode;
-import com.google.ar.sceneform.ArSceneView;
 import com.google.ar.sceneform.Sceneform;
 import com.google.ar.sceneform.math.Quaternion;
 import com.google.ar.sceneform.math.Vector3;
@@ -38,7 +35,6 @@ import com.google.ar.sceneform.rendering.Material;
 import com.google.ar.sceneform.rendering.ModelRenderable;
 import com.google.ar.sceneform.rendering.Renderable;
 import com.google.ar.sceneform.rendering.RenderableInstance;
-import com.google.ar.sceneform.rendering.Renderer;
 import com.google.ar.sceneform.ux.ArFragment;
 import com.google.ar.sceneform.ux.BaseArFragment;
 import com.google.ar.sceneform.ux.InstructionsController;
@@ -51,21 +47,16 @@ import java.util.concurrent.CompletableFuture;
 
 public class MainActivity extends AppCompatActivity implements
         FragmentOnAttachListener,
-        BaseArFragment.OnSessionConfigurationListener,
-        ArFragment.OnViewCreatedListener {
+        BaseArFragment.OnSessionConfigurationListener {
 
+    private final List<CompletableFuture<Void>> futures = new ArrayList<>();
     private ArFragment arFragment;
-
     private boolean matrixDetected = false;
     private boolean rabbitDetected = false;
-
     private AugmentedImageDatabase database;
-
     private Renderable plainVideoModel;
     private Material plainVideoMaterial;
     private MediaPlayer mediaPlayer;
-
-    private final List<CompletableFuture<Void>> futures = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -103,7 +94,6 @@ public class MainActivity extends AppCompatActivity implements
         if (fragment.getId() == R.id.arFragment) {
             arFragment = (ArFragment) fragment;
             arFragment.setOnSessionConfigurationListener(this);
-            arFragment.setOnViewCreatedListener(this);
         }
     }
 
@@ -133,23 +123,6 @@ public class MainActivity extends AppCompatActivity implements
         arFragment.setOnAugmentedImageUpdateListener(this::onAugmentedImageTrackingUpdate);
     }
 
-    @Override
-    public void onViewCreated(ArFragment arFragment, ArSceneView arSceneView) {
-        // Currently, the tone-mapping should be changed to FILMIC
-        // because with other tone-mapping operators except LINEAR
-        // the inverseTonemapSRGB function in the materials can produce incorrect results.
-        // The LINEAR tone-mapping cannot be used together with the inverseTonemapSRGB function.
-        Renderer renderer = arSceneView.getRenderer();
-
-        if (renderer != null) {
-            renderer.getFilamentView().setColorGrading(
-                    new ColorGrading
-                            .Builder()
-                            .toneMapper(new ToneMapper.Filmic())
-                            .build(EngineInstance.getEngine().getFilamentEngine())
-            );
-        }
-    }
 
     @Override
     protected void onDestroy() {

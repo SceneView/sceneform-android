@@ -7,19 +7,14 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.google.android.filament.ColorGrading;
-import com.google.android.filament.ToneMapper;
 import com.google.ar.core.Anchor;
 import com.google.ar.core.HitResult;
 import com.google.ar.core.Plane;
 import com.google.ar.sceneform.AnchorNode;
-import com.google.ar.sceneform.ArSceneView;
 import com.google.ar.sceneform.Sceneform;
-import com.google.ar.sceneform.rendering.EngineInstance;
 import com.google.ar.sceneform.rendering.ModelRenderable;
 import com.google.ar.sceneform.rendering.Renderable;
 import com.google.ar.sceneform.rendering.RenderableInstance;
-import com.google.ar.sceneform.rendering.Renderer;
 import com.google.ar.sceneform.rendering.Texture;
 import com.google.ar.sceneform.ux.ArFragment;
 import com.google.ar.sceneform.ux.BaseArFragment;
@@ -28,8 +23,7 @@ import com.google.ar.sceneform.ux.TransformableNode;
 import java.lang.ref.WeakReference;
 
 public class MainActivity extends AppCompatActivity implements
-        BaseArFragment.OnTapArPlaneListener,
-        ArFragment.OnViewCreatedListener {
+        BaseArFragment.OnTapArPlaneListener {
 
     private ArFragment arFragment;
     private Renderable model;
@@ -44,7 +38,6 @@ public class MainActivity extends AppCompatActivity implements
             if (fragment.getId() == R.id.arFragment) {
                 arFragment = (ArFragment) fragment;
                 arFragment.setOnTapArPlaneListener(MainActivity.this);
-                arFragment.setOnViewCreatedListener(MainActivity.this);
             }
         });
 
@@ -60,23 +53,6 @@ public class MainActivity extends AppCompatActivity implements
         loadTexture();
     }
 
-    @Override
-    public void onViewCreated(ArFragment arFragment, ArSceneView arSceneView) {
-        // Currently, the tone-mapping should be changed to FILMIC
-        // because with other tone-mapping operators except LINEAR
-        // the inverseTonemapSRGB function in the materials can produce incorrect results.
-        // The LINEAR tone-mapping cannot be used together with the inverseTonemapSRGB function.
-        Renderer renderer = arSceneView.getRenderer();
-
-        if (renderer != null) {
-            renderer.getFilamentView().setColorGrading(
-                    new ColorGrading
-                            .Builder()
-                            .toneMapper(new ToneMapper.Filmic())
-                            .build(EngineInstance.getEngine().getFilamentEngine())
-            );
-        }
-    }
 
     public void loadModel() {
         WeakReference<MainActivity> weakActivity = new WeakReference<>(this);
