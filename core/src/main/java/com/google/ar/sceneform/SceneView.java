@@ -14,8 +14,11 @@ import android.view.SurfaceView;
 
 import androidx.annotation.Nullable;
 
+import com.google.android.filament.ColorGrading;
+import com.google.android.filament.ToneMapper;
 import com.google.android.filament.View;
 import com.google.ar.sceneform.rendering.Color;
+import com.google.ar.sceneform.rendering.EngineInstance;
 import com.google.ar.sceneform.rendering.Renderer;
 import com.google.ar.sceneform.utilities.AndroidPreconditions;
 import com.google.ar.sceneform.utilities.MovingAverageMillisecondsTracker;
@@ -342,6 +345,15 @@ public class SceneView extends SurfaceView implements Choreographer.FrameCallbac
             }
             scene = new Scene(this);
             renderer.setCameraProvider(scene.getCamera());
+
+            // Change the ToneMapper to FILMIC to avoid some over saturated
+            // colors, for example material orange 500.
+            renderer.getFilamentView().setColorGrading(
+                    new ColorGrading
+                            .Builder()
+                            .toneMapper(new ToneMapper.Filmic())
+                            .build(EngineInstance.getEngine().getFilamentEngine())
+            );
         }
         isInitialized = true;
     }
