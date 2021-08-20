@@ -32,7 +32,7 @@ Sceneform Maintained SDK for Android
 *app/build.gradle*
 ```gradle
 dependencies {
-     implementation("com.gorisse.thomas.sceneform:sceneform:1.19.5")
+     implementation("com.gorisse.thomas.sceneform:sceneform:1.19.6")
 }
 ```
 **[more...](https://thomasgorisse.github.io/sceneform-android-sdk/dependencies)**
