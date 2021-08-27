@@ -6,3 +6,4 @@ project(':sample-image-texture').projectDir = new File('samples/image-texture')
 project(':sample-video-texture').projectDir = new File('samples/video-texture')
 project(':sample-augmented-images').projectDir = new File('samples/augmented-images')
 project(':sample-depth').projectDir = new File(rootDir, 'samples/depth')
+include ':samples-default-material-test'
