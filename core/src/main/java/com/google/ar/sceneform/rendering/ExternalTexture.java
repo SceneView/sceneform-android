@@ -38,29 +38,19 @@ public class ExternalTexture {
      */
     @SuppressWarnings("initialization")
     public ExternalTexture() {
-        // Create the Android surface texture.
         SurfaceTexture surfaceTexture = new SurfaceTexture(0);
         surfaceTexture.detachFromGLContext();
         this.surfaceTexture = surfaceTexture;
 
         // Create the Android surface.
-        this.surface = new Surface(surfaceTexture);
+        surface = new Surface(surfaceTexture);
 
         // Create the filament stream.
-        this.filamentStream = new Stream.Builder()
-                .stream(surfaceTexture)
-                .build(EngineInstance.getEngine().getFilamentEngine());
-        // Create the filament texture.
-        this.filamentTexture = new Texture.Builder()
-                .sampler(Texture.Sampler.SAMPLER_EXTERNAL)
-                .format(Texture.InternalFormat.RGB8)
-                .build(EngineInstance.getEngine().getFilamentEngine());
-        this.filamentTexture.setExternalStream(EngineInstance.getEngine().getFilamentEngine()
-                , this.filamentStream);
+        Stream stream =
+                new Stream.Builder()
+                        .stream(surfaceTexture).build(EngineInstance.getEngine().getFilamentEngine());
 
-        ResourceManager.getInstance()
-                .getExternalTextureCleanupRegistry()
-                .register(this, new CleanupCallback(this.filamentTexture, this.filamentStream));
+        initialize(stream);
     }
 
     /**
@@ -68,10 +58,7 @@ public class ExternalTexture {
      * use only.
      */
     public ExternalTexture(int textureId, int width, int height) {
-        // Explicitly set the surface, surfaceTexture and stream to null, since they are unused in this case.
-        this.surfaceTexture = null;
         this.surface = null;
-        this.filamentStream = null;
 
         this.filamentTexture = new Texture
                 .Builder()
@@ -82,9 +69,47 @@ public class ExternalTexture {
                 .format(Texture.InternalFormat.RGB8)
                 .build(EngineInstance.getEngine().getFilamentEngine());
 
+        SurfaceTexture surfaceTexture = new SurfaceTexture(0);
+        surfaceTexture.detachFromGLContext();
+        this.surfaceTexture = surfaceTexture;
+
+        filamentStream = new Stream.Builder()
+                .stream(surfaceTexture)
+                .build(EngineInstance.getEngine().getFilamentEngine());
+
+        filamentTexture.setExternalStream(
+                EngineInstance.getEngine().getFilamentEngine(),
+                filamentStream);
+
         ResourceManager.getInstance()
                 .getExternalTextureCleanupRegistry()
-                .register(this, new CleanupCallback(this.filamentTexture, null));
+                .register(this, new CleanupCallback(filamentTexture, filamentStream));
+    }
+
+
+    @SuppressWarnings("initialization")
+    private void initialize(Stream filamentStream) {
+        if (filamentTexture != null) {
+            throw new AssertionError("Stream was initialized twice");
+        }
+
+        // Create the filament stream.
+        IEngine engine = EngineInstance.getEngine();
+        this.filamentStream = filamentStream;
+
+        // Create the filament texture.
+        filamentTexture =
+                new com.google.android.filament.Texture.Builder()
+                        .sampler(Texture.Sampler.SAMPLER_EXTERNAL)
+                        .format(Texture.InternalFormat.RGB8)
+                        .build(engine.getFilamentEngine());
+
+        filamentTexture.setExternalStream(
+                engine.getFilamentEngine(),
+                filamentStream);
+        ResourceManager.getInstance()
+                .getExternalTextureCleanupRegistry()
+                .register(this, new CleanupCallback(filamentTexture, filamentStream));
     }
 
     /**
