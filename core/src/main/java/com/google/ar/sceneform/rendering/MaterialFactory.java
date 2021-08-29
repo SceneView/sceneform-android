@@ -59,9 +59,48 @@ public final class MaterialFactory {
    */
   public static final String MATERIAL_REFLECTANCE = "reflectance";
 
+    /**
+     * TBD
+     */
+  public static final String MATERIAL_SHEEN_COLOR = "sheenColor";
+
+    /**
+     * TBD
+     */
+  public static final String MATERIAL_ANISOTROPY = "anisotropy";
+
+    /**
+     * TBD
+     */
+  public static final String MATERIAL_CLEAR_COAT = "clearCoat";
+
+    /**
+     *
+     */
+  public static final String MATERIAL_CLEAR_COAT_ROUGHNESS = "clearCoatRoughness";
+
+
   private static final float DEFAULT_METALLIC_PROPERTY = 0.0f;
   private static final float DEFAULT_ROUGHNESS_PROPERTY = 0.4f;
   private static final float DEFAULT_REFLECTANCE_PROPERTY = 0.5f;
+
+
+  public static CompletableFuture<Material> makeAdvancedOpaqueWithColor(Context context, Color color) {
+      CompletableFuture<Material> materialFuture =
+              Material.builder()
+                      .setSource(
+                              context,
+                              RenderingResources.GetSceneformResource(
+                                      context, RenderingResources.Resource.ADVANCED_OPAQUE_COLORED_MATERIAL))
+                      .build();
+
+      return materialFuture.thenApply(
+              material -> {
+                  material.setFloat3(MATERIAL_COLOR, color);
+                  applyAdvancedPbrParams(material);
+                  return material;
+              });
+  }
 
   /**
    * Creates an opaque {@link Material} with the {@link Color} passed in. The {@link Color} can be
@@ -197,5 +236,13 @@ public final class MaterialFactory {
     material.setFloat(MATERIAL_METALLIC, DEFAULT_METALLIC_PROPERTY);
     material.setFloat(MATERIAL_ROUGHNESS, DEFAULT_ROUGHNESS_PROPERTY);
     material.setFloat(MATERIAL_REFLECTANCE, DEFAULT_REFLECTANCE_PROPERTY);
+  }
+
+  private static void applyAdvancedPbrParams(Material material) {
+      applyDefaultPbrParams(material);
+      material.setFloat3(MATERIAL_SHEEN_COLOR, -1f,-1f,-1f);
+      material.setFloat(MATERIAL_ANISOTROPY, -1f);
+      material.setFloat(MATERIAL_CLEAR_COAT, -1f);
+      material.setFloat(MATERIAL_CLEAR_COAT_ROUGHNESS, -1f);
   }
 }

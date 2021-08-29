@@ -40,7 +40,7 @@ material {
         },
         {
             "type" : "float4",
-            "name" : "emissive"robert!
+            "name" : "emissive"
             
         }
     ],
@@ -58,6 +58,25 @@ fragment {
         material.baseColor.rgb = materialParams.color;
         material.metallic = materialParams.metallic;
         material.roughness = materialParams.roughness;
-        material.reflectance = materialParams.reflectance;
+        
+        if(materialParams.reflectance != -1.0) {
+            material.reflectance = materialParams.reflectance;
+        }
+        
+        if(materialParams.sheenColor.r != -1.0) {
+            material.sheenColor = materialParams.sheenColor;
+        }
+        
+        if(materialParams.anisotropy != -1.0) {
+            material.anisotropy = materialParams.anisotropy;
+        }
+        
+        if(materialParams.clearCoat != -1.0) {
+            material.clearCoat = materialParams.clearCoat;
+        }
+        
+        if(materialParams.clearCoatRoughness != -1.0) {
+            material.clearCoatRoughness = materialParams.clearCoatRoughness;
+        }
     }
 }
