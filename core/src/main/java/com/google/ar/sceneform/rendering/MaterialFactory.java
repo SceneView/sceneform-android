@@ -75,10 +75,14 @@ public final class MaterialFactory {
   public static final String MATERIAL_CLEAR_COAT = "clearCoat";
 
     /**
-     *
+     * TBD
      */
   public static final String MATERIAL_CLEAR_COAT_ROUGHNESS = "clearCoatRoughness";
 
+    /**
+     * TBD
+     */
+  public static final String MATERIAL_EMISSIVE = "emissive";
 
   private static final float DEFAULT_METALLIC_PROPERTY = 0.0f;
   private static final float DEFAULT_ROUGHNESS_PROPERTY = 0.4f;
@@ -238,11 +242,20 @@ public final class MaterialFactory {
     material.setFloat(MATERIAL_REFLECTANCE, DEFAULT_REFLECTANCE_PROPERTY);
   }
 
+    /**
+     * <pre>
+     *     By default set all parameter to -1. By setting everything to -1 this makes sure
+     *     to not do unnecessary computations.
+     * </pre>
+     *
+     * @param material {@link Material}
+     */
   private static void applyAdvancedPbrParams(Material material) {
       applyDefaultPbrParams(material);
-      material.setFloat3(MATERIAL_SHEEN_COLOR, -1f,-1f,-1f);
+      material.setFloat3(MATERIAL_SHEEN_COLOR, -1f,0f,0f);
       material.setFloat(MATERIAL_ANISOTROPY, -1f);
       material.setFloat(MATERIAL_CLEAR_COAT, -1f);
       material.setFloat(MATERIAL_CLEAR_COAT_ROUGHNESS, -1f);
+      material.setFloat4(MATERIAL_EMISSIVE, new Color(-1f, 0f, 0f, 0f));
   }
 }

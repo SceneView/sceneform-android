@@ -16,6 +16,7 @@ import com.google.android.filament.IndirectLight;
 import com.google.android.filament.Scene;
 import com.google.android.filament.SwapChain;
 import com.google.android.filament.TransformManager;
+import com.google.android.filament.View;
 import com.google.android.filament.View.DynamicResolutionOptions;
 import com.google.android.filament.Viewport;
 import com.google.android.filament.android.UiHelper;
@@ -629,6 +630,13 @@ public class Renderer implements UiHelper.RendererCallback {
         setDefaultClearColor();
         view.setCamera(camera);
         view.setScene(scene);
+
+        // Test
+        View.BloomOptions bloomOptions = new View.BloomOptions();
+        bloomOptions.enabled = true;
+        bloomOptions.levels = 5;
+
+        view.setBloomOptions(bloomOptions);
 
         setDynamicResolutionEnabled(true);
 

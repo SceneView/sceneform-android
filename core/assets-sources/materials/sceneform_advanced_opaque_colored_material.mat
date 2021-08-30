@@ -78,5 +78,9 @@ fragment {
         if(materialParams.clearCoatRoughness != -1.0) {
             material.clearCoatRoughness = materialParams.clearCoatRoughness;
         }
+        
+        if(materialParams.emissive.r != -1.0) {
+            material.emissive = materialParams.emissive;
+        }
     }
 }

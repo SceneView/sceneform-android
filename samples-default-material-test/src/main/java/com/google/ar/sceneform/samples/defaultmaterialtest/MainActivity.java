@@ -54,11 +54,12 @@ public class MainActivity extends AppCompatActivity implements
 
     private void prepareMaterial() {
         material = MaterialFactory
-                .makeAdvancedOpaqueWithColor(this, new Color(getColor(R.color.copper)))
+                .makeAdvancedOpaqueWithColor(this, new Color(getColor(R.color.red_500)))
                 .thenApply(material -> {
                     material.setFloat(MaterialFactory.MATERIAL_METALLIC, 1.0f);
-                    material.setFloat(MaterialFactory.MATERIAL_REFLECTANCE, -1f);
+                    material.setFloat(MaterialFactory.MATERIAL_REFLECTANCE, 0.4f);
                     material.setFloat(MaterialFactory.MATERIAL_ROUGHNESS, 0.65f);
+                    material.setFloat4(MaterialFactory.MATERIAL_EMISSIVE, new Color(0.5f, 0.5f, 0.5f, 0f));
                     //material.setFloat3(MaterialFactory.MATERIAL_SHEEN_COLOR, new Color(getColor(R.color.green_500)));
                     //material.setFloat(MaterialFactory.MATERIAL_ANISOTROPY, 1);
                     //material.setFloat(MaterialFactory.MATERIAL_CLEAR_COAT, 1f);
@@ -66,20 +67,21 @@ public class MainActivity extends AppCompatActivity implements
                     return material;
                 });
     }
-    /*
-    float3 sheenColor;          // default: float3(0.0)
-    float  sheenRoughness;      // default: 0.0
-    float  clearCoat;           // default: 1.0
-    float  clearCoatRoughness;  // default: 0.0
-    float3 clearCoatNormal;     // default: float3(0.0, 0.0, 1.0)
-    float  anisotropy;          // default: 0.0
-    float3 anisotropyDirection; // default: float3(1.0, 0.0, 0.0)
-     */
+
 
     private void prepareCube() {
         material.thenAccept(material1 -> {
+            model = ShapeFactory.makeCube(
+                    new Vector3(0.1f, 0.1f, 0.1f).scaled(1f),
+                    new Vector3(0.0f, 0.0f, 0.0f).scaled(1f),
+                    material1);
+        });
+    }
+
+    private void prepareSphere() {
+        material.thenAccept(material1 -> {
             model = ShapeFactory.makeSphere(
-                    0.2f,
+                    0.1f,
                     new Vector3(0.0f, 0.0f, 0.0f).scaled(1f),
                     material1);
         });
@@ -115,7 +117,8 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public void onViewCreated(ArFragment arFragment, ArSceneView arSceneView) {
         prepareMaterial();
-        prepareCube();
+        //prepareCube();
+        prepareSphere();
         arFragment.setOnTapArPlaneListener(MainActivity.this);
     }
 }
