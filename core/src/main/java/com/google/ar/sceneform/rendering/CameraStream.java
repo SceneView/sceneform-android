@@ -71,16 +71,24 @@ public class CameraStream {
     private final IEngine engine;
     private int cameraStreamRenderable = UNINITIALIZED_FILAMENT_RENDERABLE;
 
-    /** By default the depthMode is set to {@link DepthMode#NO_DEPTH} */
+    /**
+     * By default the depthMode is set to {@link DepthMode#NO_DEPTH}
+     */
     private DepthMode depthMode = DepthMode.NO_DEPTH;
-    /** By default the depthOcclusionMode ist set to {@link DepthOcclusionMode#DEPTH_OCCLUSION_DISABLED} */
+    /**
+     * By default the depthOcclusionMode ist set to {@link DepthOcclusionMode#DEPTH_OCCLUSION_DISABLED}
+     */
     private DepthOcclusionMode depthOcclusionMode = DepthOcclusionMode.DEPTH_OCCLUSION_DISABLED;
 
-    @Nullable private ExternalTexture cameraTexture;
-    @Nullable private DepthTexture depthTexture;
+    @Nullable
+    private ExternalTexture cameraTexture;
+    @Nullable
+    private DepthTexture depthTexture;
 
-    @Nullable private Material cameraMaterial = null;
-    @Nullable private Material occlusionCameraMaterial = null;
+    @Nullable
+    private Material cameraMaterial = null;
+    @Nullable
+    private Material occlusionCameraMaterial = null;
 
     private int renderablePriority = Renderable.RENDER_PRIORITY_LAST;
 
@@ -189,7 +197,7 @@ public class CameraStream {
                                             4);
 
                             // Only set the camera material if it hasn't already been set to a custom material.
-                            if(cameraMaterial == null) {
+                            if (cameraMaterial == null) {
                                 cameraMaterial = material;
                             }
                         })
@@ -316,15 +324,11 @@ public class CameraStream {
 
 
     /**
-     * <pre>
-     *     The {@link Session} holds the information if the
-     *     DepthMode is configured or not. Based on
-     *     that result different materials and textures are
-     *     used for the camera.
-     * </pre>
+     * The {@link Session} holds the information if the DepthMode is configured or not. Based on
+     * that result different materials and textures are used for the camera.
      *
      * @param session {@link Session}
-     * @param config {@link Config}
+     * @param config  {@link Config}
      */
     public void checkIfDepthIsEnabled(Session session, Config config) {
         depthMode = DepthMode.NO_DEPTH;
@@ -350,7 +354,7 @@ public class CameraStream {
         }
 
         // External Camera Texture
-        if(cameraTexture == null) {
+        if (cameraTexture == null) {
             Camera arCamera = frame.getCamera();
             CameraIntrinsics intrinsics = arCamera.getTextureIntrinsics();
             int[] dimensions = intrinsics.getImageDimensions();
@@ -363,7 +367,7 @@ public class CameraStream {
 
         if (depthOcclusionMode == DepthOcclusionMode.DEPTH_OCCLUSION_ENABLED && (
                 depthMode == DepthMode.DEPTH ||
-                depthMode == DepthMode.RAW_DEPTH)) {
+                        depthMode == DepthMode.RAW_DEPTH)) {
             if (occlusionCameraMaterial != null) {
                 isTextureInitialized = true;
                 setOcclusionMaterial(occlusionCameraMaterial);
@@ -466,10 +470,10 @@ public class CameraStream {
 
     /**
      * Gets the current Depth Occlusion Mode
-     * 
+     *
+     * @return the occlusion mode currently defined for the CarmeraStream
      * @see #setDepthOcclusionMode
      * @see DepthOcclusionMode
-     * @return the occlusion mode currently defined for the CarmeraStream
      */
     public DepthOcclusionMode getDepthOcclusionMode() {
         return depthOcclusionMode;

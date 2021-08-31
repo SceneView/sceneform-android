@@ -434,6 +434,7 @@ public class Node extends NodeParent implements TransformProvider {
     /**
      * Retrieve if the node can be selected within the
      * {@Link com.google.ar.sceneform.collision.CollisionSystem} when a touch event happened.
+     *
      * @return true if the node can be selected
      */
     public boolean isSelectable() {
@@ -443,6 +444,7 @@ public class Node extends NodeParent implements TransformProvider {
     /**
      * Defines if the node can be selected within the
      * {@Link com.google.ar.sceneform.collision.CollisionSystem} when a touch event happened.
+     *
      * @param selectable true if the node can be selected
      */
     public void setSelectable(boolean selectable) {
@@ -911,7 +913,7 @@ public class Node extends NodeParent implements TransformProvider {
 
         if (renderable != null) {
             RenderableInstance instance = renderable.createInstance(this);
-            if (active && (scene != null && !scene.isUnderTesting())) {
+            if (active && scene != null) {
                 instance.attachToRenderer(getRendererOrDie());
             }
             renderableInstance = instance;
@@ -946,7 +948,7 @@ public class Node extends NodeParent implements TransformProvider {
      *
      * @param collisionShape represents a geometric shape, i.e. sphere, box, convex hull. If null,
      *                       this node's current collision shape will be removed.
-     * @see Scene#hitTest(Ray)
+     * @see Scene#hitTest(Ray, boolean)
      * @see Scene#hitTestAll(Ray)
      * @see Scene#overlapTest(Node)
      * @see Scene#overlapTestAll(Node)
@@ -964,7 +966,7 @@ public class Node extends NodeParent implements TransformProvider {
      * detect collisions for this {@link Node}.
      *
      * @return represents a geometric shape, i.e. sphere, box, convex hull.
-     * @see Scene#hitTest(Ray)
+     * @see Scene#hitTest(Ray, boolean)
      * @see Scene#hitTestAll(Ray)
      * @see Scene#overlapTest(Node)
      * @see Scene#overlapTestAll(Node)
@@ -1105,7 +1107,7 @@ public class Node extends NodeParent implements TransformProvider {
      *
      * <ul>
      *   <li>Dispatch touch events to the node that was touched as detected by {@link
-     *       Scene#hitTest(MotionEvent)}.
+     *       Scene#hitTest(MotionEvent, boolean)}.
      *   <li>If the node doesn't consume the event, recurse upwards through the node's parents and
      *       dispatch the touch event until one of the node's consumes the event.
      *   <li>If no nodes consume the event, the gesture is ignored and subsequent events that are part
@@ -1377,7 +1379,9 @@ public class Node extends NodeParent implements TransformProvider {
     }
 
     private void updateActiveStatusRecursively() {
-        final boolean shouldBeActive = shouldBeActive();
+        final boolean shouldBeActive = enabled
+                && scene != null
+                && (parentAsNode == null || parentAsNode.isActive());
         if (active != shouldBeActive) {
             if (shouldBeActive) {
                 activate();
@@ -1389,22 +1393,6 @@ public class Node extends NodeParent implements TransformProvider {
         for (Node node : getChildren()) {
             node.updateActiveStatusRecursively();
         }
-    }
-
-    private boolean shouldBeActive() {
-        if (!enabled) {
-            return false;
-        }
-
-        if (scene == null) {
-            return false;
-        }
-
-        if (parentAsNode != null && !parentAsNode.isActive()) {
-            return false;
-        }
-
-        return true;
     }
 
     private void activate() {
@@ -1419,7 +1407,7 @@ public class Node extends NodeParent implements TransformProvider {
 
         active = true;
 
-        if ((scene != null && !scene.isUnderTesting()) && renderableInstance != null) {
+        if (scene != null && renderableInstance != null) {
             renderableInstance.attachToRenderer(getRendererOrDie());
         }
 
