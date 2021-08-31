@@ -405,8 +405,8 @@ public class SceneView extends SurfaceView implements Choreographer.FrameCallbac
         }
 
         if (onBeginFrame(frameTimeNanos)) {
-            doRender(frameTimeNanos);
             doUpdate(frameTimeNanos);
+            doRender(frameTimeNanos);
         }
 
         if (debugEnabled) {
