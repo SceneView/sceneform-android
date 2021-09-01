@@ -488,6 +488,7 @@ public abstract class BaseArFragment extends Fragment
      */
     protected Config onCreateSessionConfig(Session session) {
         Config config = new Config(session);
+        config.setLightEstimationMode(Config.LightEstimationMode.ENVIRONMENTAL_HDR);
         config.setDepthMode(Config.DepthMode.DISABLED);
         config.setPlaneFindingMode(Config.PlaneFindingMode.HORIZONTAL_AND_VERTICAL);
         config.setFocusMode(Config.FocusMode.AUTO);

@@ -231,6 +231,9 @@ public class SceneView extends SurfaceView implements Choreographer.FrameCallbac
         if (renderer != null) {
             renderer.onPause();
         }
+        if(scene != null) {
+            scene.destroy();
+        }
     }
 
     /**
