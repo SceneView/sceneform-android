@@ -11,7 +11,7 @@ android {
         dataBinding true
     }
     defaultConfig {
-        applicationId "com.google.ar.sceneform.samples.gltf"
+        applicationId "com.gorisse.thomas.ar.environmentlights"
 
         // Sceneform requires minSdkVersion >= 24.
         minSdkVersion 24
@@ -46,5 +46,5 @@ dependencies {
     implementation 'androidx.fragment:fragment-ktx:1.3.6'
     implementation "androidx.constraintlayout:constraintlayout:2.0.4"
 
-    api project(":sceneform")
+    implementation project(":sceneform")
 }

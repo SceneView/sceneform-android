@@ -66,10 +66,6 @@ open class EnvironmentLights private constructor(val scene: Scene) {
 
     /**
      * Represents the "sun" / the default directional light in the scene.
-     *
-     * All other functionality in Node is supported. You can access the position and rotation of the
-     * sun, assign a collision shape to the sun, or add children to the sun. Disabling the sun turns off
-     * the default directional light.
      */
     @Entity
     var directionalLight: Light? = null
@@ -129,6 +125,7 @@ open class EnvironmentLights private constructor(val scene: Scene) {
     private var lightEstimationMode = Config.LightEstimationMode.DISABLED
         set(value) {
             if (field != value) {
+                field = value
                 when (value) {
                     Config.LightEstimationMode.DISABLED -> {
                         indirectLight = baseIndirectLight
@@ -136,7 +133,6 @@ open class EnvironmentLights private constructor(val scene: Scene) {
                     }
                     else -> {}
                 }
-                field = value
             }
         }
 
@@ -267,14 +263,15 @@ open class EnvironmentLights private constructor(val scene: Scene) {
                     }.build(Filament.engine)
 
                     frame.lightEstimate.environmentalHdrMainLightDirection.let { (x, y, z) ->
-                        // If light is detected as shining up from below, we flip the Y
-                        // component so that we always end up with a shadow on the ground to
-                        // fulfill UX requirements.
+                        // TODO (or not):
+                        //  If light is detected as shining up from below, we flip the Y
+                        //  component so that we always end up with a shadow on the ground to
+                        //  fulfill UX requirements.
                         directionalLight?.direction = Direction(-x, -y, -z)
                     }
 
                     frame.lightEstimate.environmentalHdrMainLightIntensity.let { (r, g, b) ->
-                        val rgbIntensity = Float3(r, g, b)
+                        val rgbIntensity = Color(r, g, b)
                         // Scale hdr rgb values to fit in range [0, 1).
                         val intensityScale = 1 / max(1.0f, max(rgbIntensity))
                         val lightColor = rgbIntensity / intensityScale
@@ -311,7 +308,7 @@ open class EnvironmentLights private constructor(val scene: Scene) {
 
         // Convert Environmental HDR's spherical harmonics to Filament spherical harmonics.
         // This conversion is calculated to include the following:
-        // pre-scaling by SH basis normalization factor [shader optimization]
+        //  - pre-scaling by SH basis normalization factor [shader optimization]
         //  - sqrt(2) factor coming from keeping only the real part of the basis [shader optimization]
         //  - 1/pi factor for the diffuse lambert BRDF [shader optimization]
         //  - |dot(n,l)| spherical harmonics [irradiance]

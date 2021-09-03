@@ -6,10 +6,10 @@
 
         <variable
             name="activity"
-            type="com.google.ar.sceneform.samples.environmentlights.MainActivity" />
+            type="com.gorisse.thomas.ar.environmentlights.MainActivity" />
     </data>
 
-    <com.google.ar.sceneform.samples.environmentlights.FitsSystemWindowsConstraintLayout
+    <com.gorisse.thomas.ar.environmentlights.FitsSystemWindowsConstraintLayout
         android:id="@+id/rootLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -155,5 +155,5 @@
                 android:onClick="@{activity.takeScreenshot}"
                 android:text="Take Screenshot" />
         </LinearLayout>
-    </com.google.ar.sceneform.samples.environmentlights.FitsSystemWindowsConstraintLayout>
+    </com.gorisse.thomas.ar.environmentlights.FitsSystemWindowsConstraintLayout>
 </layout>

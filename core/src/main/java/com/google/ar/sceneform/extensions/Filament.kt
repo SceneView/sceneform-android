@@ -19,7 +19,6 @@ typealias Direction = Float3
 
 fun colorOf(r: Float = 0.0f, g: Float = 0.0f, b: Float = 0.0f) = Color(r, g, b)
 
-
 object Filament {
 
     @JvmStatic
