@@ -1,18 +1,11 @@
 package com.google.ar.sceneform.extensions
 
-import android.content.res.AssetManager
 import com.google.android.filament.EntityManager
-import com.google.android.filament.IndirectLight
-import com.google.android.filament.Skybox
-import com.google.android.filament.Texture
 import com.google.android.filament.gltfio.AssetLoader
 import com.google.android.filament.gltfio.ResourceLoader
 import com.google.android.filament.gltfio.UbershaderLoader
 import com.google.android.filament.utils.Float3
-import com.google.android.filament.utils.HDRLoader
-import com.google.android.filament.utils.IBLPrefilterContext
 import com.google.ar.sceneform.rendering.EngineInstance
-import com.google.ar.sceneform.utilities.useBuffer
 
 typealias Color = Float3
 typealias Direction = Float3
@@ -41,37 +34,7 @@ object Filament {
 
     val lightManager get() = engine.lightManager
 
-    fun loadHdr(
-        assets: AssetManager,
-        hdrFileName: String,
-        reflections: ((Texture) -> Unit)? = null,
-        ibl: ((IndirectLight) -> Unit)? = null,
-        skybox: ((Skybox) -> Unit)? = null,
-        error: (Exception) -> Unit = {}
-    ) {
-        val engine = EngineInstance.getEngine().filamentEngine
-        assets.open(hdrFileName).useBuffer { buffer ->
-            HDRLoader.createTexture(engine, buffer)
-        }?.let { hdrTexture ->
-            val context = IBLPrefilterContext(engine)
-            IBLPrefilterContext.EquirectangularToCubemap(context)
-                .run(hdrTexture)?.let { skyboxTexture ->
-                    if (reflections != null || ibl != null) {
-                        IBLPrefilterContext.SpecularFilter(context)
-                            .run(skyboxTexture)?.let { reflectionsTexture ->
-                                reflections?.invoke(reflectionsTexture)
-                                ibl?.invoke(
-                                    IndirectLight.Builder()
-                                        .reflections(reflectionsTexture)
-                                        .intensity(30000.0f)
-                                        .build(engine)
-                                )
-                            } ?: error(Exception("Could not decode reflections texture"))
-                    }
-                    skybox?.invoke(Skybox.Builder().environment(skyboxTexture).build(engine))
-                } ?: error(java.lang.Exception("Could not load hdr texture"))
-        }
-    }
+    val iblPrefilter by lazy { IBLPrefilter(engine) }
 }
 
 fun FloatArray.toFloat3() = this.let { (x, y, z) -> Float3(x, y, z) }
