@@ -118,7 +118,7 @@ public class MainActivity extends AppCompatActivity {
         loaders.add(ModelRenderable.builder()
 //                .setSource(this, Uri.parse("models/canonical_face_transparent.glb"))
                 //.setSource(this, Uri.parse("models/fox_face.glb"))
-                .setSource(this, Uri.parse("models/fox_rotated.glb"))
+                .setSource(this, Uri.parse("models/fox.glb"))
                 .setIsFilamentGltf(true)
                 .build()
                 .thenAccept(model -> faceModel = model)
@@ -162,7 +162,7 @@ public class MainActivity extends AppCompatActivity {
             switch (augmentedFace.getTrackingState()) {
                 case TRACKING:
                     if (existingFaceNode == null) {
-                        AugmentedFaceNode faceNode = new AugmentedFaceNode(this, augmentedFace);
+                        AugmentedFaceNode faceNode = new AugmentedFaceNode(augmentedFace);
                         RenderableInstance modelInstance = faceNode.setFaceRegionsRenderable(faceModel);
                         modelInstance.setShadowCaster(false);
                         modelInstance.setShadowReceiver(true);

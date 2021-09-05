@@ -31,16 +31,13 @@ import com.google.ar.sceneform.Node;
 import com.google.ar.sceneform.Scene;
 import com.google.ar.sceneform.math.Quaternion;
 import com.google.ar.sceneform.math.Vector3;
-import com.google.ar.sceneform.rendering.Color;
 import com.google.ar.sceneform.rendering.EngineInstance;
 import com.google.ar.sceneform.rendering.Material;
-import com.google.ar.sceneform.rendering.MaterialFactory;
 import com.google.ar.sceneform.rendering.ModelRenderable;
 import com.google.ar.sceneform.rendering.Renderable;
 import com.google.ar.sceneform.rendering.RenderableDefinition;
 import com.google.ar.sceneform.rendering.RenderableDefinition.Submesh;
 import com.google.ar.sceneform.rendering.RenderableInstance;
-import com.google.ar.sceneform.rendering.ShapeFactory;
 import com.google.ar.sceneform.rendering.Texture;
 import com.google.ar.sceneform.rendering.Vertex;
 import com.google.ar.sceneform.rendering.Vertex.UvCoordinate;
@@ -90,6 +87,8 @@ public class AugmentedFaceNode extends Node {
 
     private final HashMap<RegionType, Integer> faceMeshSkeleton = new HashMap<>();
 
+    private final float[] inverseRootNodeMatrix = new float[16];
+    private final float[] regionPoseMatrix = new float[16];
     private final float[] matrix = new float[16];
 
     @Nullable
@@ -103,9 +102,6 @@ public class AugmentedFaceNode extends Node {
 
     @Nullable
     private Texture faceMeshTexture;
-
-    @Nullable
-    private Node noseTipNode;
 
     private static final String FACE_MESH_TEXTURE_MATERIAL_PARAMETER = "texture";
 
@@ -133,19 +129,10 @@ public class AugmentedFaceNode extends Node {
      * Create an AugmentedFaceNode with the given AugmentedFace.
      */
     @SuppressWarnings({"initialization"})
-    public AugmentedFaceNode(Context context, AugmentedFace augmentedFace) {
+    public AugmentedFaceNode(AugmentedFace augmentedFace) {
         this();
 
         this.augmentedFace = augmentedFace;
-
-        MaterialFactory.makeOpaqueWithColor(context, new Color(1, 0, 0))
-                .thenApply(material -> ShapeFactory.makeSphere(0.01f, new Vector3(0, 0, 0), material))
-                .thenAccept(renderable -> {
-                    noseTipNode = new Node();
-                    noseTipNode.setParent(getScene());
-                    noseTipNode.setRenderable(renderable);
-                    noseTipNode.setEnabled(true);
-                });
     }
 
     /**
@@ -298,21 +285,20 @@ public class AugmentedFaceNode extends Node {
             return;
         }
 
-        if (noseTipNode != null) {
-            Pose noseTipPose = augmentedFace.getRegionPose(RegionType.NOSE_TIP);
-            noseTipNode.setWorldPosition(new Vector3(noseTipPose.tx(), noseTipPose.ty(), noseTipPose.tz()));
-        }
-
         TransformManager tfm = EngineInstance.getEngine().getTransformManager();
+
+        Matrix.invertM(inverseRootNodeMatrix, 0, getWorldModelMatrix().data, 0);
 
         for(RegionType type : RegionType.values()) {
             Pose pose = augmentedFace.getRegionPose(type);
 
             Log.d(TAG, type + " " + pose.toString());
 
-            int instance = tfm.getInstance(faceMeshSkeleton.get(type));
+            pose.toMatrix(regionPoseMatrix, 0);
 
-            pose.toMatrix(matrix, 0);
+            Matrix.multiplyMM(matrix, 0, inverseRootNodeMatrix, 0, regionPoseMatrix, 0);
+
+            int instance = tfm.getInstance(faceMeshSkeleton.get(type));
 
             tfm.setTransform(instance, matrix);
 
@@ -322,10 +308,6 @@ public class AugmentedFaceNode extends Node {
             Log.d(TAG, type + " " + Arrays.toString(position));
         }
         faceRegionNode.getRenderableInstance().getFilamentAsset().getAnimator().updateBoneMatrices();
-
-        Pose centerPose = augmentedFace.getCenterPose();
-
-        faceRegionNode.setWorldPosition(new Vector3(centerPose.tx(), centerPose.ty(), centerPose.tz()));
     }
 
     private boolean isTracking() {
