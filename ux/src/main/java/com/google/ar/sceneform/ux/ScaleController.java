@@ -15,10 +15,13 @@
  */
 package com.google.ar.sceneform.ux;
 
+import androidx.annotation.Nullable;
+
 import com.google.ar.sceneform.FrameTime;
 import com.google.ar.sceneform.Node;
 import com.google.ar.sceneform.math.MathHelper;
 import com.google.ar.sceneform.math.Vector3;
+import com.google.ar.sceneform.ux.TransformationSystem.OnNodeTransformationEventListener;
 
 /**
  * Manipulates the Scale of a {@link BaseTransformableNode} using a Pinch {@link
@@ -43,6 +46,10 @@ public class ScaleController extends BaseTransformationController<PinchGesture> 
 
   //the last scale  value
   private float lastScaleValue = 0.0f;
+
+  @Nullable
+  private OnNodeTransformationEventListener onNodeTransformationEventListener;
+
 
   public ScaleController(
       BaseTransformableNode transformableNode, PinchGestureRecognizer gestureRecognizer) {
@@ -154,7 +161,11 @@ public class ScaleController extends BaseTransformationController<PinchGesture> 
   }
 
   @Override
-  public void onEndTransformation(PinchGesture gesture) {}
+  public void onEndTransformation(PinchGesture gesture) {
+    if(onNodeTransformationEventListener!=null) {
+      onNodeTransformationEventListener.onScaleFinish(getTransformableNode());
+    }
+  }
 
   private float getScaleDelta() {
     float scaleDelta = maxScale - minScale;
@@ -187,6 +198,27 @@ public class ScaleController extends BaseTransformationController<PinchGesture> 
     }
 
     return (1.0f - (1.0f / ((Math.abs(overRatio) * elasticity) + 1.0f))) * Math.signum(overRatio);
+  }
+
+  @Nullable
+  public OnNodeTransformationEventListener getOnNodeTransformationEventListener() {
+    return onNodeTransformationEventListener;
+  }
+
+  public void setOnNodeTransformationEventListener(@Nullable OnNodeTransformationEventListener onNodeTransformationEventListener) {
+    this.onNodeTransformationEventListener = onNodeTransformationEventListener;
+  }
+
+  public void setInitCurrentScaleRatio(float fValue) {
+    currentScaleRatio = fValue;
+
+    float finalScaleValue = getFinalScale();
+
+    //The scale value had been changed, scale the node.
+    Vector3 finalScale = new Vector3(finalScaleValue, finalScaleValue, finalScaleValue);
+    getTransformableNode().setLocalScale(finalScale);
+    lastScaleValue = finalScaleValue;
+
   }
 
 }

@@ -50,6 +50,7 @@ import com.google.ar.core.Config;
 import com.google.ar.core.Frame;
 import com.google.ar.core.HitResult;
 import com.google.ar.core.Plane;
+import com.google.ar.core.Pose;
 import com.google.ar.core.Session;
 import com.google.ar.core.Trackable;
 import com.google.ar.core.TrackingState;
@@ -64,6 +65,8 @@ import com.google.ar.sceneform.FrameTime;
 import com.google.ar.sceneform.HitTestResult;
 import com.google.ar.sceneform.Node;
 import com.google.ar.sceneform.Scene;
+import com.google.ar.sceneform.collision.Ray;
+import com.google.ar.sceneform.math.Vector3;
 import com.google.ar.sceneform.rendering.ModelRenderable;
 
 import java.util.ArrayList;
@@ -124,6 +127,66 @@ public abstract class BaseArFragment extends Fragment
     }
 
     /**
+     * Invoked when a single tap occur.
+     */
+    public interface OnSingleArTapListener {
+        /**
+         * Called when an ARCore anchor is tapped.
+         *
+         * @param pose   The ARCore hit pose
+         * @param motionEvent the motion event that triggered the tap
+         */
+        void onSingleTap(HitTestResult hitResult,Pose pose, MotionEvent motionEvent);
+
+        /**
+         * Called when nothing is tapped.
+         * @param ray  calculates a ray in world space going from the near-plane of the camera and going through a
+         *    * point in screen space. Screen space is in Android device screen coordinates: TopLeft = (0, 0)
+         *    * BottomRight = (Screen Width, Screen Height) The device coordinate space is unaffected by the
+         *    * orientation of the device.
+         * @param motionEvent the motion event that triggered the tap
+         */
+        void onSingleTapNothing(HitTestResult hitResult,Ray ray,MotionEvent motionEvent);
+
+        /**
+         * Called when an ARCore node is tapped.
+         *
+         * @param node   The hit ARCore node
+         * @param pos   The hit position of the ARCore node
+         * @param motionEvent the motion event that triggered the tap
+         */
+        void onSingleTapOnNode(Node node, Vector3 pos, MotionEvent motionEvent);
+    }
+
+    /**
+     * Invoked when an ARCore plane is found.
+     */
+    public interface OnArPlaneFoundListener {
+        /**
+         * Called when an ARCore plane is found.
+         *
+         * @param plane       The ARCore Plane that was found
+         * @see #setOnArPlaneFoundListener(OnArPlaneFoundListener)
+         */
+        void onPlaneFound(Plane plane);
+    }
+
+    /**
+     * Invoked when a double tap occur.
+     */
+    public interface OnDoubleArTapListener {
+        /**
+         * Called when a double tap occur on the AR fragment.
+         *
+         * @param node        The node is tapped, if null, nothing is tapped
+         * @param hitResult   The ARCore hit test result
+         * @param motionEvent the motion event that triggered the tap
+         */
+        void onDoubleTap(Node node,HitTestResult hitResult,MotionEvent motionEvent);
+    }
+
+
+    /**
      * The key for the fullscreen argument
      */
     public static final String ARGUMENT_FULLSCREEN = "fullscreen";
@@ -145,9 +208,18 @@ public abstract class BaseArFragment extends Fragment
     private OnSessionConfigurationListener onSessionConfigurationListener;
     @Nullable
     private OnTapArPlaneListener onTapArPlaneListener;
+    @Nullable
+    private OnSingleArTapListener  onSingleTapListener;
 
     private Node selectedNode = null;
     private HitTestResult currentHitResult = null;
+
+    @Nullable
+    private OnArPlaneFoundListener onArPlaneFoundListener=null;
+
+    @Nullable
+    private OnDoubleArTapListener onDoubleTapListener=null;
+
 
     @SuppressWarnings({"initialization"})
     private final OnWindowFocusChangeListener onFocusListener =
@@ -237,13 +309,18 @@ public abstract class BaseArFragment extends Fragment
                         new GestureDetector.SimpleOnGestureListener() {
                             @Override
                             public boolean onSingleTapUp(MotionEvent e) {
-                                if(selectedNode!=null) {
-                                    selectedNode.receiveSingleTap(currentHitResult,e);
-                                }else {
-                                    onSingleTap(e);
+                                onSingleTap(e);
+                                return true;
+                            }
+
+                            @Override
+                            public boolean onDoubleTapEvent(MotionEvent e) {
+                                if(onDoubleTapListener!=null) {
+                                    onDoubleTapListener.onDoubleTap(selectedNode,currentHitResult,e);
                                 }
                                 return true;
                             }
+
 
                             @Override
                             public boolean onDown(MotionEvent e) {
@@ -602,13 +679,13 @@ public abstract class BaseArFragment extends Fragment
         transformationSystem.onTouch(hitTestResult, motionEvent);
 
         currentHitResult = hitTestResult;
-        if (hitTestResult.getNode() == null) {
-            selectedNode = null;
-            gestureDetector.onTouchEvent(motionEvent);
-        }else {
-            selectedNode = hitTestResult.getNode();
-            gestureDetector.onTouchEvent(motionEvent);
+        selectedNode = hitTestResult.getNode();
+        /*
+        if(selectedNode!=null && (selectedNode instanceof BaseTransformableNode)) {
+            transformationSystem.selectNode((BaseTransformableNode)selectedNode);
         }
+         */
+        gestureDetector.onTouchEvent(motionEvent);
     }
 
     @Override
@@ -621,6 +698,9 @@ public abstract class BaseArFragment extends Fragment
         for (Plane plane : frame.getUpdatedTrackables(Plane.class)) {
             if (plane.getTrackingState() == TrackingState.TRACKING) {
                 planeDiscoveryController.hide();
+                if(onArPlaneFoundListener!=null) {
+                    onArPlaneFoundListener.onPlaneFound(plane);
+                }
             }
         }
     }
@@ -660,8 +740,18 @@ public abstract class BaseArFragment extends Fragment
     }
 
     private void onSingleTap(MotionEvent motionEvent) {
-        Frame frame = arSceneView.getArFrame();
+        if(selectedNode!=null) {
+            Vector3 hitPos = currentHitResult.getPoint();
+            if (onSingleTapListener != null && currentHitResult.getPoint() != null) {
+                if(selectedNode instanceof BaseTransformableNode)
+                    transformationSystem.selectNode((BaseTransformableNode)selectedNode);
+                onSingleTapListener.onSingleTapOnNode(selectedNode, hitPos, motionEvent);
+                selectedNode.receiveSingleTap(currentHitResult,motionEvent);
+            }
+            return ;
+        }
 
+        Frame frame = arSceneView.getArFrame();
         transformationSystem.selectNode(null);
 
         // Local variable for nullness static-analysis.
@@ -669,15 +759,48 @@ public abstract class BaseArFragment extends Fragment
 
         if (frame != null && onTapArPlaneListener != null) {
             if (motionEvent != null && frame.getCamera().getTrackingState() == TrackingState.TRACKING) {
+                Pose hitPos = null;
                 for (HitResult hit : frame.hitTest(motionEvent)) {
                     Trackable trackable = hit.getTrackable();
                     if (trackable instanceof Plane && ((Plane) trackable).isPoseInPolygon(hit.getHitPose())) {
                         Plane plane = (Plane) trackable;
                         onTapArPlaneListener.onTapPlane(hit, plane, motionEvent);
+                        hitPos = hit.getHitPose();
                         break;
+                    } else {
+                        hitPos = hit.getHitPose();
+                    }
+                }
+
+                if (onSingleTapListener != null) {
+                    if(hitPos != null) {
+                        onSingleTapListener.onSingleTap(currentHitResult, hitPos, motionEvent);
+                    }else {
+                        int index = motionEvent.getActionIndex();
+                        Ray ray = arSceneView.getScene().getCamera().screenPointToRay(motionEvent.getX(index), motionEvent.getY(index));
+                        onSingleTapListener.onSingleTapNothing(currentHitResult, ray, motionEvent);
                     }
                 }
             }
+        } else {
+            if (frame != null && motionEvent != null && onSingleTapListener != null) {
+                int index = motionEvent.getActionIndex();
+                Ray ray = arSceneView.getScene().getCamera().screenPointToRay(motionEvent.getX(index), motionEvent.getY(index));
+                onSingleTapListener.onSingleTapNothing(currentHitResult, ray, motionEvent);
+            }
         }
+    }
+
+
+    public void setOnArPlaneFoundListener(OnArPlaneFoundListener listener) {
+        this.onArPlaneFoundListener = listener;
+    }
+
+    public void setOnDoubleTapListener(@Nullable OnDoubleArTapListener onDoubleTapListener) {
+        this.onDoubleTapListener = onDoubleTapListener;
+    }
+
+    public void setOnSingleTapListener(@Nullable OnSingleArTapListener onSingleTapListener) {
+        this.onSingleTapListener = onSingleTapListener;
     }
 }

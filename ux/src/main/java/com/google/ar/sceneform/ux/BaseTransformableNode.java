@@ -16,9 +16,12 @@
 package com.google.ar.sceneform.ux;
 
 import android.view.MotionEvent;
+
 import com.google.ar.sceneform.HitTestResult;
 import com.google.ar.sceneform.Node;
+
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Base class for nodes that can be transformed using gestures from {@link TransformationSystem}.
@@ -26,6 +29,12 @@ import java.util.ArrayList;
 public abstract class BaseTransformableNode extends Node implements Node.OnTapListener {
   private final TransformationSystem transformationSystem;
   private final ArrayList<BaseTransformationController<?>> controllers = new ArrayList<>();
+
+  //limit the node's moving on the parental plane
+  private boolean limitMovingOnParentHorizontalPlane = false;
+
+  //when a child node is draged, only move itself, not move the entire nodes group.
+  private boolean canOnlyMoveChildNodeItself = false;
 
   @SuppressWarnings("initialization")
   public BaseTransformableNode(TransformationSystem transformationSystem) {
@@ -78,5 +87,29 @@ public abstract class BaseTransformableNode extends Node implements Node.OnTapLi
   protected void removeTransformationController(
       BaseTransformationController<?> transformationController) {
     controllers.remove(transformationController);
+  }
+
+  public boolean isLimitMovingOnParentHorizontalPlane() {
+    return limitMovingOnParentHorizontalPlane;
+  }
+
+  public void setLimitMovingOnParentHorizontalPlane(boolean limitMovingOnParentHorizontalPlane) {
+    this.limitMovingOnParentHorizontalPlane = limitMovingOnParentHorizontalPlane;
+  }
+
+  public boolean isCanOnlyMoveChildNodeItself() {
+    return canOnlyMoveChildNodeItself;
+  }
+
+  public void setCanOnlyMoveChildNodeItself(boolean canOnlyMoveChildNodeItself) {
+    this.canOnlyMoveChildNodeItself = canOnlyMoveChildNodeItself;
+    List<Node> children = getChildren();
+    for (int i = 0; i < children.size(); i++) {
+      Node node = children.get(i);
+      if(node instanceof BaseTransformableNode) {
+        BaseTransformableNode child = (BaseTransformableNode)node;
+        child.setLimitMovingOnParentHorizontalPlane(canOnlyMoveChildNodeItself);
+      }
+    }
   }
 }

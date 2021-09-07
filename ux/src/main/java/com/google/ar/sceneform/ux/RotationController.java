@@ -15,8 +15,11 @@
  */
 package com.google.ar.sceneform.ux;
 
+import androidx.annotation.Nullable;
+
 import com.google.ar.sceneform.math.Quaternion;
 import com.google.ar.sceneform.math.Vector3;
+import com.google.ar.sceneform.ux.TransformationSystem.OnNodeTransformationEventListener;
 
 /**
  * Manipulates the rotation of a {@link BaseTransformableNode} using a {@link
@@ -26,6 +29,9 @@ public class RotationController extends BaseTransformationController<TwistGestur
 
   // Rate that the node rotates in degrees per degree of twisting.
   private float rotationRateDegrees = 2.5f;
+
+  @Nullable
+  private OnNodeTransformationEventListener onNodeTransformationEventListener;
 
   public RotationController(
       BaseTransformableNode transformableNode, TwistGestureRecognizer gestureRecognizer) {
@@ -55,5 +61,18 @@ public class RotationController extends BaseTransformationController<TwistGestur
   }
 
   @Override
-  public void onEndTransformation(TwistGesture gesture) {}
+  public void onEndTransformation(TwistGesture gesture) {
+    if(onNodeTransformationEventListener!=null) {
+      onNodeTransformationEventListener.onRotationFinish(getTransformableNode());
+    }
+  }
+
+  @Nullable
+  public OnNodeTransformationEventListener getOnNodeTransformationEventListener() {
+    return onNodeTransformationEventListener;
+  }
+
+  public void setOnNodeTransformationEventListener(@Nullable OnNodeTransformationEventListener onNodeTransformationEventListener) {
+    this.onNodeTransformationEventListener = onNodeTransformationEventListener;
+  }
 }

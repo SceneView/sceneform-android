@@ -35,12 +35,15 @@ public class TransformableNode extends BaseTransformableNode {
     translationController =
         new TranslationController(this, transformationSystem.getDragRecognizer());
     addTransformationController(translationController);
+    translationController.setOnNodeTransformationEventListener(transformationSystem.getOnNodeTransformationEventListener());
 
     scaleController = new ScaleController(this, transformationSystem.getPinchRecognizer());
     addTransformationController(scaleController);
+    scaleController.setOnNodeTransformationEventListener(transformationSystem.getOnNodeTransformationEventListener());
 
     rotationController = new RotationController(this, transformationSystem.getTwistRecognizer());
     addTransformationController(rotationController);
+    rotationController.setOnNodeTransformationEventListener(transformationSystem.getOnNodeTransformationEventListener());
   }
 
   /** Returns the controller that translates this node using a drag gesture. */

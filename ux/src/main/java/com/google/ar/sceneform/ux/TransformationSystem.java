@@ -15,10 +15,13 @@
  */
 package com.google.ar.sceneform.ux;
 
-import androidx.annotation.Nullable;
 import android.util.DisplayMetrics;
 import android.view.MotionEvent;
+
+import androidx.annotation.Nullable;
+
 import com.google.ar.sceneform.HitTestResult;
+
 import java.util.ArrayList;
 
 /**
@@ -40,6 +43,18 @@ public class TransformationSystem {
   private SelectionVisualizer selectionVisualizer;
 
   @Nullable private BaseTransformableNode selectedNode;
+
+  /**
+   * listen the transformation events, notify the owner that a transformation finished event occurring.
+   * eg: translation finished event, scale finished event, rotation finished event.
+   */
+  public interface OnNodeTransformationEventListener {
+      void onTranslationFinish(BaseTransformableNode node);
+      void onScaleFinish(BaseTransformableNode node);
+      void onRotationFinish(BaseTransformableNode node);
+  }
+
+  @Nullable private OnNodeTransformationEventListener onNodeTransformationEventListener;
 
   @SuppressWarnings("initialization")
   public TransformationSystem(
@@ -142,8 +157,12 @@ public class TransformationSystem {
    * @return true if the node was successfully selected
    */
   public boolean selectNode(@Nullable BaseTransformableNode node) {
-    if (!deselectNode()) {
-      return false;
+    if(selectedNode==node) {
+      return true;
+    }else {
+      if (!deselectNode()) {
+        return false;
+      }
     }
 
     if (node != null) {
@@ -180,5 +199,14 @@ public class TransformationSystem {
     selectedNode = null;
 
     return true;
+  }
+
+  @Nullable
+  public OnNodeTransformationEventListener getOnNodeTransformationEventListener() {
+    return onNodeTransformationEventListener;
+  }
+
+  public void setOnNodeTransformationEventListener(@Nullable OnNodeTransformationEventListener onNodeTransformationEventListener) {
+    this.onNodeTransformationEventListener = onNodeTransformationEventListener;
   }
 }
