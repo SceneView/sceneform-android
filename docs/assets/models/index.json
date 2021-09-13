@@ -1,0 +1,27 @@
+[
+  {
+    "name": "Spoons",
+    "url": "Spoons.glb",
+    "scale": 4
+  },
+  {
+    "name": "MetalRoughSpheres",
+    "url": "MetalRoughSpheres.glb",
+    "scale": 0.1
+  },
+  {
+    "name": "Hair",
+    "url": "Hair.glb",
+    "scale": 1
+  },
+  {
+    "name": "Tiger",
+    "url": "https://storage.googleapis.com/ar-answers-in-search-models/static/Tiger/model.glb",
+    "scale": 0.75
+  },
+  {
+    "name": "Gumball",
+    "url": "Gumball.glb",
+    "scale": 0.5
+  }
+]
