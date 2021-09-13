@@ -22,6 +22,9 @@ import com.google.android.filament.Viewport;
 import com.google.android.filament.android.UiHelper;
 import com.google.ar.sceneform.utilities.AndroidPreconditions;
 import com.google.ar.sceneform.utilities.Preconditions;
+import com.gorisse.thomas.sceneform.environment.Environment;
+import com.gorisse.thomas.sceneform.filament.CameraKt;
+import com.gorisse.thomas.sceneform.filament.SceneKt;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -35,21 +38,6 @@ import java.util.List;
  * @hide Not a public facing API for version 1.0
  */
 public class Renderer implements UiHelper.RendererCallback {
-    // TODO : Remove if valid
-    //  We now use the default Filament Camera exposure
-    // Default camera settings are used everwhere that ARCore HDR Lighting (Deeplight) is disabled or
-    // unavailable.
-//    private static final float DEFAULT_CAMERA_APERATURE = 16.0f;// ARCore value 4.0f
-//    private static final float DEFAULT_CAMERA_SHUTTER_SPEED = 1.0f / 125.0f; // ARCore value 1.0f / 30.0f
-//    private static final float DEFAULT_CAMERA_ISO = 100.0f; // ARCore value 320.0f
-
-    // TODO : Remove if valid
-    //  We now use the default Filament Camera exposure
-    // HDR lighting camera settings are chosen to provide an exposure value of 1.0.  These are used
-    // when ARCore HDR Lighting is enabled in Sceneform.
-//    private static final float ARCORE_HDR_LIGHTING_CAMERA_APERATURE = 1.0f;
-//    private static final float ARCORE_HDR_LIGHTING_CAMERA_SHUTTER_SPEED = 1.2f;
-//    private static final float ARCORE_HDR_LIGHTING_CAMERA_ISO = 100.0f;
 
     private static final Color DEFAULT_CLEAR_COLOR = new Color(0.0f, 0.0f, 0.0f, 1.0f);
 
@@ -69,15 +57,15 @@ public class Renderer implements UiHelper.RendererCallback {
     private com.google.android.filament.View view;
     private com.google.android.filament.View emptyView;
     private com.google.android.filament.Renderer renderer;
+
     private Camera camera;
     private Scene scene;
+
+    @Entity
+    public Integer mainDirectionalLight = null;
+
     private boolean recreateSwapChain;
 
-    // TODO : Remove if valid
-    //  We now use the default Filament Camera exposure
-//    private float cameraAperature;
-//    private float cameraShutterSpeed;
-//    private float cameraIso;
     private UiHelper filamentHelper;
 
     @Nullable
@@ -381,12 +369,42 @@ public class Renderer implements UiHelper.RendererCallback {
         engine.destroyRenderer(renderer);
         engine.destroyView(view);
         engine.destroyView(emptyView);
+        CameraKt.destroy(camera);
 
         reclaimReleasedResources();
     }
 
     public Context getContext() {
         return getSurfaceView().getContext();
+    }
+
+    /**
+     * Retrieve the Filament camera used by the renderer
+     */
+    public Camera getCamera() {
+        return camera;
+    }
+
+    /**
+     * ### Defines the lighting environment and the skybox of the scene
+     */
+    public void setEnvironment(Environment environment) {
+        SceneKt.setEnvironment(scene, environment);
+    }
+
+    /**
+     * ### Defines the main directional light of the scene
+     * <p>
+     * Usually the Sun.
+     */
+    public void setMainDirectionalLight(@Entity Integer light) {
+        if (mainDirectionalLight != null) {
+            removeLight(mainDirectionalLight);
+        }
+        this.mainDirectionalLight = light;
+        if (light != null) {
+            addLight(light);
+        }
     }
 
     /**
@@ -620,35 +638,6 @@ public class Renderer implements UiHelper.RendererCallback {
         emptyView.setCamera(engine.createCamera());
         emptyView.setScene(engine.createScene());
     }
-
-    // TODO : Remove if valid
-    //  We now use the default Filament Camera exposure
-//    public void setUseHdrLightEstimate(boolean useHdrLightEstimate) {
-//        if (useHdrLightEstimate) {
-//            cameraAperature = ARCORE_HDR_LIGHTING_CAMERA_APERATURE;
-//            cameraShutterSpeed = ARCORE_HDR_LIGHTING_CAMERA_SHUTTER_SPEED;
-//            cameraIso = ARCORE_HDR_LIGHTING_CAMERA_ISO;
-//        } else {
-//            cameraAperature = DEFAULT_CAMERA_APERATURE;
-//            cameraShutterSpeed = DEFAULT_CAMERA_SHUTTER_SPEED;
-//            cameraIso = DEFAULT_CAMERA_ISO;
-//        }
-//        // Setup the Camera Exposure values.
-//        camera.setExposure(cameraAperature, cameraShutterSpeed, cameraIso);
-//    }
-
-    // TODO : Remove if valid
-    //  We now use the default Filament Camera exposure
-//    /**
-//     * Returns the exposure setting for renderering.
-//     *
-//     * @hide This is support deeplight API which is not stable yet.
-//     */
-//
-//    public float getExposure() {
-//        float e = (cameraAperature * cameraAperature) / cameraShutterSpeed * 100.0f / cameraIso;
-//        return 1.0f / (1.2f * e);
-//    }
 
     private void updateInstances() {
         final IEngine engine = EngineInstance.getEngine();

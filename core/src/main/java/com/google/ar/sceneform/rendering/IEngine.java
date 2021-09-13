@@ -65,8 +65,6 @@ public interface IEngine {
 
   Camera createCamera(@Entity int entity);
 
-  void destroyCamera(Camera camera);
-
   // Scene
 
   Scene createScene();

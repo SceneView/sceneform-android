@@ -7,7 +7,6 @@ import androidx.annotation.Nullable;
 import com.google.ar.sceneform.collision.Collider;
 import com.google.ar.sceneform.collision.CollisionSystem;
 import com.google.ar.sceneform.collision.Ray;
-import com.google.ar.sceneform.lights.EnvironmentLights;
 import com.google.ar.sceneform.rendering.Renderer;
 import com.google.ar.sceneform.utilities.Preconditions;
 
@@ -79,7 +78,6 @@ public class Scene extends NodeParent {
     @Nullable
     private final SceneView view;
     private Camera camera;
-    private EnvironmentLights environmentLights;
 
     // Systems.
     final CollisionSystem collisionSystem = new CollisionSystem();
@@ -95,7 +93,6 @@ public class Scene extends NodeParent {
         Preconditions.checkNotNull(view, "Parameter \"view\" was null.");
         this.view = view;
         camera = new Camera(this);
-        environmentLights = new EnvironmentLights(this, view.getContext().getAssets());
     }
 
     /**
@@ -120,23 +117,10 @@ public class Scene extends NodeParent {
         return camera;
     }
 
-
-    /**
-     * Get the environment that is used to render the scene.
-     * The environment handles a sunlight node, reflections and indirect lighting.
-     *
-     * @return the camera used to render the scene
-     */
-    public EnvironmentLights getEnvironmentLights() {
-        return environmentLights;
-    }
-
     public void destroy() {
         //TODO : Destroy the camera
 //        camera.destroy();
         camera = null;
-        environmentLights.destroy();
-        environmentLights = null;
     }
 
     /**

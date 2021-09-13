@@ -10,6 +10,7 @@ import android.view.WindowManager;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 
+import com.google.android.filament.Entity;
 import com.google.ar.core.AugmentedImage;
 import com.google.ar.core.Camera;
 import com.google.ar.core.CameraConfig.FacingDirection;
@@ -30,6 +31,12 @@ import com.google.ar.sceneform.rendering.Renderer;
 import com.google.ar.sceneform.rendering.ThreadPools;
 import com.google.ar.sceneform.utilities.AndroidPreconditions;
 import com.google.ar.sceneform.utilities.Preconditions;
+import com.gorisse.thomas.sceneform.ArSceneViewKt;
+import com.gorisse.thomas.sceneform.arcore.LightEstimateKt;
+import com.gorisse.thomas.sceneform.arcore.LightEstimationConfig;
+import com.gorisse.thomas.sceneform.environment.Environment;
+import com.gorisse.thomas.sceneform.filament.CameraKt;
+import com.gorisse.thomas.sceneform.filament.LightKt;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -37,6 +44,9 @@ import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicBoolean;
+
+import kotlin.Unit;
+import kotlin.jvm.functions.Function1;
 
 /**
  * A SurfaceView that integrates with ARCore and renders a scene.
@@ -54,6 +64,9 @@ public class ArSceneView extends SceneView {
     private Session session;
     @Nullable
     private Config sessionConfig;
+    public LightEstimationConfig lightEstimationConfig;
+
+    private boolean useEnvironmentalHDRReflections = true;
     private AtomicBoolean isProcessingFrame = new AtomicBoolean(false);
     @Nullable
     private Frame currentFrame;
@@ -63,6 +76,16 @@ public class ArSceneView extends SceneView {
     private Display display;
     private CameraStream cameraStream;
     private PlaneRenderer planeRenderer;
+    @Nullable
+    // Public until full moving to Kotlin
+    public Environment _estimatedEnvironment = null;
+    @Nullable
+    @Entity
+    // Public until full moving to Kotlin
+    public Integer _estimatedMainLight = null;
+    @Nullable
+    // Public until full moving to Kotlin
+    public Function1<Integer, Unit> _estimatedMainLightInfluence = null;
     @Nullable
     private OnSessionConfigChangeListener onSessionConfigChangeListener;
 
@@ -119,14 +142,14 @@ public class ArSceneView extends SceneView {
     /**
      * Setup the view with an AR Session. This method must be called once to supply the ARCore
      * session. The session is needed for any rendering to occur.
-     *
+     * <p>
      * Before calling this function, make sure to call the {@link Session#configure(Config)}
-     *
+     * <p>
      * If you only want to change the Session Config please call
      * {@link #setSessionConfig(Config, boolean)} and check that all your Session Config parameters
      * are taken in account by ARCore at runtime.
      * If it's not the case, you will have to create a new session and call this function.
-     *
+     * <p>
      * The session is expected to be configured with the update mode of LATEST_CAMERA_IMAGE.
      * Without this configuration, the updating of the ARCore session could block the UI Thread
      * causing poor UI experience.
@@ -138,7 +161,7 @@ public class ArSceneView extends SceneView {
         // Enforce api level 24
         AndroidPreconditions.checkMinAndroidApiLevel();
 
-        if(this.session != null) {
+        if (this.session != null) {
             destroySession();
         }
         this.session = session;
@@ -194,9 +217,14 @@ public class ArSceneView extends SceneView {
             // Set the correct Texture configuration on the camera stream
             cameraStream.checkIfDepthIsEnabled(session, config);
         }
-        if(getScene().getEnvironmentLights() != null) {
-            getScene().getEnvironmentLights().setSessionConfig(config);
+
+        if(lightEstimationConfig == null) {
+            this.lightEstimationConfig = new LightEstimationConfig(config.getLightEstimationMode());
+        } else {
+            this.lightEstimationConfig.setMode(config.getLightEstimationMode());
         }
+        ArSceneViewKt.setEstimatedEnvironment(this, null);
+        ArSceneViewKt.setEstimatedMainLightInfluence(this, null);
 
         if (getPlaneRenderer() != null) {
             // Disable the rendering of detected planes if no PlaneFindingMode
@@ -341,6 +369,16 @@ public class ArSceneView extends SceneView {
     @Override
     public void destroy() {
         super.destroy();
+
+        if (_estimatedEnvironment != null) {
+            _estimatedEnvironment.destroy();
+            _estimatedEnvironment = null;
+        }
+        if (_estimatedMainLight != null) {
+            LightKt.destroy(_estimatedMainLight);
+            _estimatedMainLight = null;
+        }
+
         destroySession();
     }
 
@@ -482,7 +520,20 @@ public class ArSceneView extends SceneView {
             }
 
             // Update the light estimate.
-            getScene().getEnvironmentLights().doFrame(currentFrame);
+            if (lightEstimationConfig.getMode() != Config.LightEstimationMode.DISABLED) {
+                ArSceneViewKt.setEstimatedEnvironment(this
+                        , LightEstimateKt.environmentEstimate(currentFrame, lightEstimationConfig,
+                                _environment,
+                                _estimatedEnvironment,
+                                CameraKt.getExposureFactor(getRenderer().getCamera())));
+                if (_mainDirectionalLight != null) {
+                    ArSceneViewKt.setEstimatedMainLightInfluence(this
+                            , LightEstimateKt.mainLightInfluenceEstimate(currentFrame,
+                                    _mainDirectionalLight, lightEstimationConfig,
+                                    CameraKt.getExposureFactor(getRenderer().getCamera())));
+                }
+            }
+
             try {
                 // Update the plane renderer.
                 if (planeRenderer.isEnabled()) {
