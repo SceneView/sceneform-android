@@ -1,4 +1,22 @@
-theme: jekyll-theme-tactile
+remote_theme : niklasbuschmann/contrast@v2.11
 plugins:
   - jekyll-sitemap
   - jekyll-assets
+
+description: "Sceneform is a 3D framework with a physically based renderer that's optimized for mobile devices and that makes it easy for you to build Augmented Reality (AR) apps without requiring OpenGL or Unity."
+
+show_sidebar: false
+
+navigation:                # accepts {file, title, url, icon, sidebaricon}
+  - {title: "Home", file: "index.md"}
+  - {title: "Github", url: "https://github.com/ThomasGorisse/sceneform-android-sdk"}
+  - {title: "Dependencies", url: "/#dependencies"}
+  - {title: "Basic usage", url: "/#basic-usage-simple-model-viewer"}
+  - {title: "Samples", url: "/#samples"}
+  - {title: "Emulator", url: "/#emulator"}
+  - {title: "Go further", url: "/#go-further"}
+  - {title: "Sponsor", url: "https://github.com/sponsors/ThomasGorisse"}
+  - {title: "Javadoc", url: "/javadoc/index.html"}
+
+external:
+  - {title: Github, icon: github, url: "https://github.com/ThomasGorisse/sceneform-android-sdk"}

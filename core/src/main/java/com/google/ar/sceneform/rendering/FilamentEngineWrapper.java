@@ -83,7 +83,7 @@ public class FilamentEngineWrapper implements IEngine {
 
   @Override
   public Camera createCamera() {
-    return engine.createCamera();
+    return engine.createCamera(engine.getEntityManager().create());
   }
 
   @Override
@@ -93,7 +93,7 @@ public class FilamentEngineWrapper implements IEngine {
 
   @Override
   public void destroyCamera(Camera camera) {
-    engine.destroyCamera(camera);
+    engine.destroyCameraComponent(camera.getEntity());
   }
 
   @Override

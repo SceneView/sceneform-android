@@ -137,7 +137,7 @@ public class RenderableInstance implements AnimatableModel {
             AssetLoader loader =
                     new AssetLoader(
                             engine,
-                            RenderableInternalFilamentAssetData.getMaterialProvider(),
+                            RenderableInternalFilamentAssetData.getUberShaderLoader(),
                             EntityManager.get());
 
             FilamentAsset createdAsset = renderableData.isGltfBinary ? loader.createAssetFromBinary(renderableData.gltfByteBuffer)
@@ -522,27 +522,32 @@ public class RenderableInstance implements AnimatableModel {
         attachFilamentAssetToRenderer();
     }
 
-    void detachFilamentAssetFromRenderer() {
-        FilamentAsset currentFilamentAsset = filamentAsset;
-        if (currentFilamentAsset != null) {
-            int[] entities = currentFilamentAsset.getEntities();
-            for (int entity : entities) {
-                Preconditions.checkNotNull(attachedRenderer).getFilamentScene().removeEntity(entity);
+    public void detachFromRenderer() {
+        if (attachedRenderer != null) {
+            FilamentAsset currentFilamentAsset = filamentAsset;
+            if (currentFilamentAsset != null) {
+                int[] entities = currentFilamentAsset.getEntities();
+                for (int entity : entities) {
+                    attachedRenderer.getFilamentScene().removeEntity(entity);
+                }
+                int root = currentFilamentAsset.getRoot();
+                attachedRenderer.getFilamentScene().removeEntity(root);
             }
-            int root = currentFilamentAsset.getRoot();
-            Preconditions.checkNotNull(attachedRenderer).getFilamentScene().removeEntity(root);
+            attachedRenderer.removeInstance(this);
+            renderable.detatchFromRenderer();
         }
     }
 
     /**
-     * @hide
+     * Detach and destroy the instance
      */
-    public void detachFromRenderer() {
-        Renderer rendererToDetach = attachedRenderer;
-        if (rendererToDetach != null) {
-            detachFilamentAssetFromRenderer();
-            rendererToDetach.removeInstance(this);
-            renderable.detatchFromRenderer();
+    public void destroy() {
+        detachFromRenderer();
+
+        if (renderable.getRenderableData() instanceof RenderableInternalFilamentAssetData) {
+            RenderableInternalFilamentAssetData renderableData =
+                    (RenderableInternalFilamentAssetData) renderable.getRenderableData();
+            renderableData.resourceLoader.evictResourceData();
         }
     }
 

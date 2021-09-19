@@ -1,16 +1,19 @@
 buildscript {
     ext {
-        kotlin_version = '1.4.32'
+        kotlin_version = '1.5.21'
     }
     repositories {
         mavenCentral()
         google()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:4.1.3'
+        classpath 'com.android.tools.build:gradle:7.0.1'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-        if (project.hasProperty('mavenCentralRepositoryUsername') && project.hasProperty('mavenCentralRepositoryPassword')) {
-            classpath 'com.vanniktech:gradle-maven-publish-plugin:0.14.2'
+        if (project.hasProperty('mavenCentralUsername') && project.hasProperty('mavenCentralPassword')) {
+            try {
+                classpath 'com.vanniktech:gradle-maven-publish-plugin:0.17.0'
+            } catch (Exception e) {
+            }
         }
     }
 }
@@ -23,5 +26,5 @@ allprojects {
 }
 
 task printProjectProperties {
-    project.properties.each {println "   $it"}
+    project.properties.each { println "   $it" }
 }

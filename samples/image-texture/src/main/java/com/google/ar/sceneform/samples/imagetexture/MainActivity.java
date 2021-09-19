@@ -7,25 +7,23 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.google.android.filament.ColorGrading;
 import com.google.ar.core.Anchor;
 import com.google.ar.core.HitResult;
 import com.google.ar.core.Plane;
 import com.google.ar.sceneform.AnchorNode;
-import com.google.ar.sceneform.ArSceneView;
 import com.google.ar.sceneform.Sceneform;
-import com.google.ar.sceneform.rendering.EngineInstance;
 import com.google.ar.sceneform.rendering.ModelRenderable;
 import com.google.ar.sceneform.rendering.Renderable;
 import com.google.ar.sceneform.rendering.RenderableInstance;
-import com.google.ar.sceneform.rendering.Renderer;
 import com.google.ar.sceneform.rendering.Texture;
 import com.google.ar.sceneform.ux.ArFragment;
+import com.google.ar.sceneform.ux.BaseArFragment;
 import com.google.ar.sceneform.ux.TransformableNode;
 
 import java.lang.ref.WeakReference;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements
+        BaseArFragment.OnTapArPlaneListener {
 
     private ArFragment arFragment;
     private Renderable model;
@@ -39,8 +37,7 @@ public class MainActivity extends AppCompatActivity {
         getSupportFragmentManager().addFragmentOnAttachListener((fragmentManager, fragment) -> {
             if (fragment.getId() == R.id.arFragment) {
                 arFragment = (ArFragment) fragment;
-                arFragment.setOnViewCreatedListener(this::onViewCreated);
-                arFragment.setOnTapArPlaneListener(this::onTapPlane);
+                arFragment.setOnTapArPlaneListener(MainActivity.this);
             }
         });
 
@@ -52,27 +49,12 @@ public class MainActivity extends AppCompatActivity {
             }
         }
 
-        loadModels();
-        loadTextures();
+        loadModel();
+        loadTexture();
     }
 
-    public void onViewCreated(ArFragment arFragment, ArSceneView arSceneView) {
-        // Currently, the tone-mapping should be changed to FILMIC
-        // because with other tone-mapping operators except LINEAR
-        // the inverseTonemapSRGB function in the materials can produce incorrect results.
-        // The LINEAR tone-mapping cannot be used together with the inverseTonemapSRGB function.
-        Renderer renderer = arSceneView.getRenderer();
 
-        if (renderer != null) {
-            renderer.getFilamentView().setColorGrading(
-                    new ColorGrading.Builder()
-                            .toneMapping(ColorGrading.ToneMapping.FILMIC)
-                            .build(EngineInstance.getEngine().getFilamentEngine())
-            );
-        }
-    }
-
-    public void loadModels() {
+    public void loadModel() {
         WeakReference<MainActivity> weakActivity = new WeakReference<>(this);
         ModelRenderable.builder()
                 .setSource(this, Uri.parse("models/cube.glb"))
@@ -91,7 +73,7 @@ public class MainActivity extends AppCompatActivity {
                         });
     }
 
-    public void loadTextures() {
+    public void loadTexture() {
         WeakReference<MainActivity> weakActivity = new WeakReference<>(this);
         Texture.builder()
                 .setSampler(Texture.Sampler.builder()
@@ -116,6 +98,7 @@ public class MainActivity extends AppCompatActivity {
                         });
     }
 
+    @Override
     public void onTapPlane(HitResult hitResult, Plane plane, MotionEvent motionEvent) {
         if (model == null || texture == null) {
             Toast.makeText(this, "Loading...", Toast.LENGTH_SHORT).show();
@@ -131,7 +114,8 @@ public class MainActivity extends AppCompatActivity {
         TransformableNode modelNode = new TransformableNode(arFragment.getTransformationSystem());
         modelNode.setParent(anchorNode);
         RenderableInstance modelInstance = modelNode.setRenderable(this.model);
-        modelInstance.getMaterial().setBaseColorTexture(texture);
+        modelInstance.getMaterial().setInt("baseColorIndex", 0);
+        modelInstance.getMaterial().setTexture("baseColorMap", texture);
 
         modelNode.select();
     }

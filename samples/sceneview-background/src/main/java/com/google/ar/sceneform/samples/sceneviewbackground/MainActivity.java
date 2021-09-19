@@ -13,6 +13,11 @@ import com.google.ar.sceneform.math.Quaternion;
 import com.google.ar.sceneform.math.Vector3;
 import com.google.ar.sceneform.rendering.ModelRenderable;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+
 public class MainActivity extends AppCompatActivity {
 
     private SceneView backgroundSceneView;
@@ -37,12 +42,8 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
         try {
             backgroundSceneView.resume();
-        } catch (CameraNotAvailableException e) {
-            e.printStackTrace();
-        }
-        try {
             transparentSceneView.resume();
-        } catch (CameraNotAvailableException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }
@@ -55,32 +56,61 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void loadModels() {
-        ModelRenderable.builder()
+        CompletableFuture<ModelRenderable> dragon = ModelRenderable
+                .builder()
                 .setSource(this
-                        , Uri.parse("models/cube.glb"))
+                        , Uri.parse("models/dragon.glb"))
                 .setIsFilamentGltf(true)
-                .build()
-                .thenAccept(model -> {
-                    Node modelNode1 = new Node();
-                    modelNode1.setRenderable(model);
-                    modelNode1.setLocalScale(new Vector3(0.3f, 0.3f, 0.3f));
-                    modelNode1.setLocalRotation(Quaternion.multiply(
-                            Quaternion.axisAngle(new Vector3(1f, 0f, 0f), 45),
-                            Quaternion.axisAngle(new Vector3(0f, 1f, 0f), 75)));
-                    modelNode1.setLocalPosition(new Vector3(0f, 0f, -1.0f));
-                    backgroundSceneView.getScene().addChild(modelNode1);
+                .setAsyncLoadEnabled(true)
+                .build();
 
-                    Node modelNode2 = new Node();
-                    modelNode2.setRenderable(model);
-                    modelNode2.setLocalScale(new Vector3(0.3f, 0.3f, 0.3f));
-                    modelNode2.setLocalRotation(Quaternion.axisAngle(new Vector3(0f, 1f, 0f), 135));
-                    modelNode2.setLocalPosition(new Vector3(0f, 0f, -1.0f));
-                    transparentSceneView.getScene().addChild(modelNode2);
-                })
-                .exceptionally(
-                        throwable -> {
-                            Toast.makeText(this, "Unable to load model", Toast.LENGTH_LONG).show();
-                            return null;
-                        });
+        CompletableFuture<ModelRenderable> backdrop = ModelRenderable
+                .builder()
+                .setSource(this
+                        , Uri.parse("models/backdrop.glb"))
+                .setIsFilamentGltf(true)
+                .setAsyncLoadEnabled(true)
+                .build();
+
+
+        CompletableFuture.allOf(dragon, backdrop)
+                .handle((ok, ex) -> {
+                    try {
+                        Node modelNode1 = new Node();
+                        modelNode1.setRenderable(dragon.get());
+                        modelNode1.setLocalScale(new Vector3(0.3f, 0.3f, 0.3f));
+                        modelNode1.setLocalRotation(Quaternion.multiply(
+                                Quaternion.axisAngle(new Vector3(1f, 0f, 0f), 45),
+                                Quaternion.axisAngle(new Vector3(0f, 1f, 0f), 75)));
+                        modelNode1.setLocalPosition(new Vector3(0f, 0f, -1.0f));
+                        backgroundSceneView.getScene().addChild(modelNode1);
+
+                        Node modelNode2 = new Node();
+                        modelNode2.setRenderable(backdrop.get());
+                        modelNode2.setLocalScale(new Vector3(0.3f, 0.3f, 0.3f));
+                        modelNode2.setLocalRotation(Quaternion.multiply(
+                                Quaternion.axisAngle(new Vector3(1f, 0f, 0f), 45),
+                                Quaternion.axisAngle(new Vector3(0f, 1f, 0f), 75)));
+                        modelNode2.setLocalPosition(new Vector3(0f, 0f, -1.0f));
+                        backgroundSceneView.getScene().addChild(modelNode2);
+
+                        Node modelNode3 = new Node();
+                        modelNode3.setRenderable(dragon.get());
+                        modelNode3.setLocalScale(new Vector3(0.3f, 0.3f, 0.3f));
+                        modelNode3.setLocalRotation(Quaternion.axisAngle(new Vector3(0f, 1f, 0f), 35));
+                        modelNode3.setLocalPosition(new Vector3(0f, 0f, -1.0f));
+                        transparentSceneView.getScene().addChild(modelNode3);
+
+                        Node modelNode4 = new Node();
+                        modelNode4.setRenderable(backdrop.get());
+                        modelNode4.setLocalScale(new Vector3(0.3f, 0.3f, 0.3f));
+                        modelNode4.setLocalRotation(Quaternion.axisAngle(new Vector3(0f, 1f, 0f), 35));
+                        modelNode4.setLocalPosition(new Vector3(0f, 0f, -1.0f));
+                        transparentSceneView.getScene().addChild(modelNode4);
+                    } catch (InterruptedException | ExecutionException ignore) {
+
+                    }
+                    return null;
+                });
     }
 }

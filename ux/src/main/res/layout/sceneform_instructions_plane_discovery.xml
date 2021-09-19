@@ -1,0 +1,16 @@
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/handMotionLayout"
+    android:clipChildren="false">
+
+  <com.google.ar.sceneform.ux.HandMotionView
+      android:id="@+id/handMotionView"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:foregroundGravity="center"
+      android:src="@drawable/sceneform_hand_phone"
+      android:scaleType="center"/>
+
+</FrameLayout>

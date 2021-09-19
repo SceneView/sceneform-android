@@ -8,19 +8,25 @@ import android.view.Display;
 import android.view.WindowManager;
 
 import androidx.annotation.IntRange;
+import androidx.annotation.IntRange;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 
 import com.google.ar.core.Anchor;
+import com.google.ar.core.AugmentedImage;
+import com.google.ar.core.Camera;
 import com.google.ar.core.CameraConfig.FacingDirection;
 import com.google.ar.core.Config;
 import com.google.ar.core.Config.LightEstimationMode;
 import com.google.ar.core.Frame;
 import com.google.ar.core.LightEstimate;
+import com.google.ar.core.Plane;
 import com.google.ar.core.Pose;
 import com.google.ar.core.Session;
+import com.google.ar.core.Trackable;
 import com.google.ar.core.TrackingState;
 import com.google.ar.core.exceptions.CameraNotAvailableException;
+import com.google.ar.core.exceptions.DeadlineExceededException;
 import com.google.ar.core.exceptions.FatalException;
 import com.google.ar.core.exceptions.NotYetAvailableException;
 import com.google.ar.sceneform.math.Vector3;
@@ -32,12 +38,14 @@ import com.google.ar.sceneform.rendering.PlaneRenderer;
 import com.google.ar.sceneform.rendering.Renderer;
 import com.google.ar.sceneform.rendering.ThreadPools;
 import com.google.ar.sceneform.utilities.AndroidPreconditions;
-import com.google.ar.sceneform.utilities.ArCoreVersion;
 import com.google.ar.sceneform.utilities.Preconditions;
 
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 
 /**
@@ -64,14 +72,16 @@ public class ArSceneView extends SceneView {
     @Nullable
     private Session session;
     @Nullable
-    private Frame currentFrame;
+    private Config sessionConfig;
+    private AtomicBoolean isProcessingFrame = new AtomicBoolean(false);
     @Nullable
-    private Config cachedConfig;
-    private int minArCoreVersionCode;
+    private Frame currentFrame;
+    private Long currentFrameTimestamp = 0L;
+    private Collection<Trackable> allTrackables = new ArrayList<>();
+    private Collection<Trackable> updatedTrackables = new ArrayList<>();
     private Display display;
     private CameraStream cameraStream;
     private PlaneRenderer planeRenderer;
-    private Image depthImage;
     private boolean lightEstimationEnabled = true;
     private boolean isLightDirectionUpdateEnabled = true;
     @Nullable
@@ -85,68 +95,84 @@ public class ArSceneView extends SceneView {
     private float[] lastValidEnvironmentalHdrMainLightDirection;
     @Nullable
     private float[] lastValidEnvironmentalHdrMainLightIntensity;
+    @Nullable
+    private OnSessionConfigChangeListener onSessionConfigChangeListener;
 
     /**
      * Constructs a ArSceneView object and binds it to an Android Context.
      *
-     * <p>In order to have rendering work correctly, {@link #setupSession(Session)} must be called.
+     * <p>In order to have rendering work correctly, {@link #setSession(Session)} must be called.
      *
      * @param context the Android Context to use
      * @see #ArSceneView(Context, AttributeSet)
      */
-    @SuppressWarnings("initialization") // Suppress @UnderInitialization warning.
     public ArSceneView(Context context) {
-        // SceneView will initialize the scene, renderer, and camera.
         super(context);
-        Renderer renderer = Preconditions.checkNotNull(getRenderer());
-        renderer.enablePerformanceMode();
-        initializeAr();
     }
 
     /**
      * Constructs a ArSceneView object and binds it to an Android Context.
      *
-     * <p>In order to have rendering work correctly, {@link #setupSession(Session)} must be called.
+     * <p>In order to have rendering work correctly, {@link #setSession(Session)} must be called.
      *
      * @param context the Android Context to use
      * @param attrs   the Android AttributeSet to associate with
-     * @see #setupSession(Session)
+     * @see #setSession(Session)
      */
-    @SuppressWarnings("initialization") // Suppress @UnderInitialization warning.
     public ArSceneView(Context context, AttributeSet attrs) {
-        // SceneView will initialize the scene, renderer, and camera.
         super(context, attrs);
+    }
+
+    @Override
+    protected void initialize() {
+        // SceneView will initialize the scene, renderer, and camera.
+        super.initialize();
+
         Renderer renderer = Preconditions.checkNotNull(getRenderer());
         renderer.enablePerformanceMode();
         initializeAr();
     }
 
-    private static boolean loadUnifiedJni() {
-        return false;
+
+    /**
+     * Returns the ARCore Session used by this view.
+     */
+    @Nullable
+    public Session getSession() {
+        return session;
     }
 
-    private static native void nativeReportEngineType(
-            Session session, String engineType, String engineVersion);
+    /**
+     * Define the session used by this Fragment and so the ArSceneView.
+     *
+     * @param session the new session
+     */
 
     /**
      * Setup the view with an AR Session. This method must be called once to supply the ARCore
      * session. The session is needed for any rendering to occur.
      *
-     * <p>The session is expected to be configured with the update mode of LATEST_CAMERA_IMAGE.
+     * Before calling this function, make sure to call the {@link Session#configure(Config)}
+     *
+     * If you only want to change the Session Config please call
+     * {@link #setSessionConfig(Config, boolean)} and check that all your Session Config parameters
+     * are taken in account by ARCore at runtime.
+     * If it's not the case, you will have to create a new session and call this function.
+     *
+     * The session is expected to be configured with the update mode of LATEST_CAMERA_IMAGE.
      * Without this configuration, the updating of the ARCore session could block the UI Thread
      * causing poor UI experience.
      *
      * @param session the ARCore session to use for this view
      * @see #ArSceneView(Context, AttributeSet)
      */
-    public void setupSession(Session session) {
-        if (this.session != null) {
-            Log.w(TAG, "The session has already been setup, cannot set it up again.");
-            return;
-        }
+    public void setSession(Session session) {
         // Enforce api level 24
         AndroidPreconditions.checkMinAndroidApiLevel();
 
+        if(this.session != null) {
+            destroySession();
+        }
         this.session = session;
 
         Renderer renderer = Preconditions.checkNotNull(getRenderer());
@@ -157,20 +183,49 @@ public class ArSceneView extends SceneView {
         }
 
         // Feature config, therefore facing direction, can only be configured once per session.
-        initializeFacingDirection(session);
-
-        // Set the correct Texture configuration on the camera stream
-        cameraStream.checkIfDepthIsEnabled(session);
+        if (session.getCameraConfig().getFacingDirection() == FacingDirection.FRONT) {
+            renderer.setFrontFaceWindingInverted(true);
+        }
 
         // Session needs access to a texture id for updating the camera stream.
         // Filament and the Main thread each have their own gl context that share resources for this.
         session.setCameraTextureName(cameraTextureId);
+
+        // Set max frames per seconds here.
+        int fpsBound = session.getCameraConfig().getFpsRange().getUpper();
+        setMaxFramesPerSeconds(fpsBound);
+
+        setSessionConfig(session.getConfig(), false);
     }
 
-    private void initializeFacingDirection(Session session) {
-        if (session.getCameraConfig().getFacingDirection() == FacingDirection.FRONT) {
-//            Renderer renderer = Preconditions.checkNotNull(getRenderer());
-//            renderer.setFrontFaceWindingInverted(true);
+    /**
+     * Define the session config used by this View.
+     * <p>
+     * Please check that all your Session Config parameters are taken in account by ARCore at
+     * runtime.
+     * If it's not the case, you will have to create a new session and call
+     * {@link #setSession(Session)}.
+     *
+     * @param config           the new config to apply
+     * @param configureSession false if you already called the {@link Session#configure(Config)}
+     */
+    public void setSessionConfig(Config config, boolean configureSession) {
+        this.sessionConfig = config;
+        if (getSession() != null) {
+            if (configureSession) {
+                getSession().configure(config);
+            }
+
+            // Set the correct Texture configuration on the camera stream
+            cameraStream.checkIfDepthIsEnabled(session, config);
+        }
+        if (getPlaneRenderer() != null) {
+            // Disable the rendering of detected planes if no PlaneFindingMode
+            getPlaneRenderer().setEnabled(config.getPlaneFindingMode() != Config.PlaneFindingMode.DISABLED);
+        }
+
+        if (onSessionConfigChangeListener != null) {
+            onSessionConfigChangeListener.onSessionConfigChange(config);
         }
     }
 
@@ -179,12 +234,22 @@ public class ArSceneView extends SceneView {
      *
      * <p>This must be called from onResume().
      *
-     * @throws CameraNotAvailableException if the camera can not be opened
+     * @return true if the ARSession has been initialized.
+     * false if there where a CameraNotAvailableException
      */
     @Override
-    public void resume() throws CameraNotAvailableException {
+    public void resume() throws Exception {
         resumeSession();
-        resumeScene();
+        super.resume();
+    }
+
+    /**
+     * Resumes the session without starting the scene.
+     */
+    protected void resumeSession() throws CameraNotAvailableException {
+        if (this.session != null) {
+            this.session.resume();
+        }
     }
 
     /**
@@ -220,32 +285,13 @@ public class ArSceneView extends SceneView {
                     if (arSceneView == null) {
                         return;
                     }
-                    arSceneView.resumeScene();
+                    try {
+                        arSceneView.resumeScene();
+                    } catch (IllegalStateException e) {
+                        throw new RuntimeException(e);
+                    }
                 },
                 ThreadPools.getMainExecutor());
-    }
-
-    /**
-     * Resumes the session without starting the scene.
-     */
-    private void resumeSession() throws CameraNotAvailableException {
-        Session session = this.session;
-        if (session != null) {
-            reportEngineType();
-            session.resume();
-        }
-    }
-
-    /**
-     * Resumes the scene without starting the session
-     */
-    private void resumeScene() {
-        try {
-            super.resume();
-        } catch (CameraNotAvailableException ex) {
-            // This exception should not be possible from here
-            throw new IllegalStateException(ex);
-        }
     }
 
     /**
@@ -255,8 +301,17 @@ public class ArSceneView extends SceneView {
      */
     @Override
     public void pause() {
-        pauseScene();
+        super.pause();
         pauseSession();
+    }
+
+    /**
+     * Pause the session without touching the scene
+     */
+    protected void pauseSession() {
+        if (session != null) {
+            session.pause();
+        }
     }
 
     /**
@@ -300,23 +355,25 @@ public class ArSceneView extends SceneView {
     }
 
     /**
-     * Pause the session without touching the scene
+     * Required to exit Sceneform.
+     *
+     * <p>Typically called from onDestroy().
      */
-    private void pauseSession() {
-        if (session != null) {
-            session.pause();
-        }
+    @Override
+    public void destroy() {
+        super.destroy();
+        destroySession();
     }
 
     /**
-     * Pause the scene without touching the session
+     * Destroy the session without touching the scene
      */
-    private void pauseScene() {
-        super.pause();
-        if (depthImage != null) {
-            depthImage.close();
-            depthImage = null;
+    public void destroySession() {
+        if (session != null) {
+            session.pause();
+            session.close();
         }
+        session = null;
     }
 
     /**
@@ -359,14 +416,6 @@ public class ArSceneView extends SceneView {
     }
 
     /**
-     * Returns the ARCore Session used by this view.
-     */
-    @Nullable
-    public Session getSession() {
-        return session;
-    }
-
-    /**
      * Returns the most recent ARCore Frame if it is available. The frame is updated at the beginning
      * of each drawing frame. Callers of this method should not retain a reference to the return
      * value, since it will be invalid to use the ARCore frame starting with the next frame.
@@ -378,17 +427,17 @@ public class ArSceneView extends SceneView {
     }
 
     /**
-     * Returns PlaneRenderer, used to control plane visualization.
-     */
-    public PlaneRenderer getPlaneRenderer() {
-        return planeRenderer;
-    }
-
-    /**
      * Returns the CameraStream, used to control if the occlusion should be enabled or disabled.
      */
     public CameraStream getCameraStream() {
         return cameraStream;
+    }
+
+    /**
+     * Returns PlaneRenderer, used to control plane visualization.
+     */
+    public PlaneRenderer getPlaneRenderer() {
+        return planeRenderer;
     }
 
     /**
@@ -402,95 +451,102 @@ public class ArSceneView extends SceneView {
     @SuppressWarnings("AndroidApiChecker")
     @Override
     protected boolean onBeginFrame(long frameTimeNanos) {
+        if (isProcessingFrame.get())
+            return false;
+
+        isProcessingFrame.set(true);
+
         // No session, no drawing.
-        Session session = this.session;
-        if (session == null) {
+        if (session == null || !pauseResumeTask.isDone()) {
+            isProcessingFrame.set(false);
             return false;
         }
-
-        if (!pauseResumeTask.isDone()) {
-            return false;
-        }
-
-        ensureUpdateMode();
 
         // Before doing anything update the Frame from ARCore.
-        boolean updated = true;
+        boolean arFrameUpdated = true;
         try {
             Frame frame = session.update();
             // No frame, no drawing.
             if (frame == null) {
+                isProcessingFrame.set(false);
                 return false;
             }
 
-            // Setup Camera Stream if needed.
-            if (!cameraStream.isTextureInitialized()) {
-                cameraStream.initializeTexture(frame);
-            }
-
-            // Recalculate camera Uvs if necessary.
-            if (shouldRecalculateCameraUvs(frame)) {
-                cameraStream.recalculateCameraUvs(frame);
-            }
-
-            if (currentFrame != null && currentFrame.getTimestamp() == frame.getTimestamp()) {
-                updated = false;
+            if (currentFrameTimestamp == frame.getTimestamp()) {
+                arFrameUpdated = false;
             }
 
             currentFrame = frame;
-        } catch (CameraNotAvailableException e) {
+            currentFrameTimestamp = frame.getTimestamp();
+        } catch (CameraNotAvailableException | DeadlineExceededException | FatalException e) {
             Log.w(TAG, "Exception updating ARCore session", e);
+            isProcessingFrame.set(false);
             return false;
         }
 
         // No camera, no drawing.
-        com.google.ar.core.Camera currentArCamera = currentFrame.getCamera();
+        Camera currentArCamera = currentFrame.getCamera();
         if (currentArCamera == null) {
             getScene().setUseHdrLightEstimate(false);
+            isProcessingFrame.set(false);
             return false;
         }
 
+        // Setup Camera Stream if needed.
+        if (!cameraStream.isTextureInitialized()) {
+            cameraStream.initializeTexture(currentFrame);
+        }
+
+        // Recalculate camera Uvs if necessary.
+        if (currentFrame.hasDisplayGeometryChanged()) {
+            cameraStream.recalculateCameraUvs(currentFrame);
+        }
+
         // If ARCore session has changed, update listeners.
-        if (updated) {
+        if (arFrameUpdated) {
+            // Update Trackables
+            allTrackables = session.getAllTrackables(Trackable.class);
+            if (currentFrame != null) {
+                updatedTrackables = currentFrame.getUpdatedTrackables(Trackable.class);
+            }
+
             // At the start of the frame, update the tracked pose of the camera
             // to use in any calculations during the frame.
             getScene().getCamera().updateTrackedPose(currentArCamera);
 
-            Frame frame = currentFrame;
-            if (frame != null) {
-                if (cameraStream.getDepthOcclusionMode() == CameraStream.DepthOcclusionMode.DEPTH_OCCLUSION_ENABLED) {
-                    if (cameraStream.getDepthMode() == CameraStream.DepthMode.DEPTH) {
-                        try (Image depthImage = currentFrame.acquireDepthImage()) {
-                            cameraStream.recalculateOcclusion(depthImage);
-                        } catch (NotYetAvailableException e) {
-                        }
-                    } else if (cameraStream.getDepthMode() == CameraStream.DepthMode.RAW_DEPTH) {
-                        try (Image depthImage = currentFrame.acquireRawDepthImage()) {
-                            cameraStream.recalculateOcclusion(depthImage);
-                        } catch (NotYetAvailableException e) {
-                        }
+            if (cameraStream.getDepthOcclusionMode() == CameraStream.DepthOcclusionMode.DEPTH_OCCLUSION_ENABLED) {
+                if (cameraStream.getDepthMode() == CameraStream.DepthMode.DEPTH) {
+                    try (Image depthImage = currentFrame.acquireDepthImage()) {
+                        cameraStream.recalculateOcclusion(depthImage);
+                    } catch (NotYetAvailableException | DeadlineExceededException ignored) {
+                    }
+                } else if (cameraStream.getDepthMode() == CameraStream.DepthMode.RAW_DEPTH) {
+                    try (Image depthImage = currentFrame.acquireRawDepthImage()) {
+                        cameraStream.recalculateOcclusion(depthImage);
+                    } catch (NotYetAvailableException | DeadlineExceededException ignored) {
                     }
                 }
+            }
 
-                // Update the light estimate.
-                updateLightEstimate(frame);
+            // Update the light estimate.
+            updateLightEstimate(currentFrame);
+            try {
                 // Update the plane renderer.
                 if (planeRenderer.isEnabled()) {
-                    planeRenderer.update(frame, getWidth(), getHeight());
+                    planeRenderer.update(currentFrame, getUpdatedPlanes(),
+                            getWidth(), getHeight());
                 }
+            } catch (DeadlineExceededException ignored) {
             }
         }
 
-        return updated;
+        isProcessingFrame.set(false);
+        return arFrameUpdated;
     }
 
     @Override
     public void doFrame(long frameTimeNanos) {
         super.doFrame(frameTimeNanos);
-    }
-
-    private boolean shouldRecalculateCameraUvs(Frame frame) {
-        return frame.hasDisplayGeometryChanged();
     }
 
     /**
@@ -550,10 +606,10 @@ public class ArSceneView extends SceneView {
      */
 
     public boolean isEnvironmentalHdrLightingAvailable() {
-        if (cachedConfig == null) {
+        if (sessionConfig == null) {
             return false;
         }
-        return (cachedConfig.getLightEstimationMode() == LightEstimationMode.ENVIRONMENTAL_HDR);
+        return (sessionConfig.getLightEstimationMode() == LightEstimationMode.ENVIRONMENTAL_HDR);
     }
 
     /**
@@ -677,13 +733,12 @@ public class ArSceneView extends SceneView {
             onNextHdrLightingEstimate = null;
         }
 
-        getScene()
-                .setEnvironmentalHdrLightEstimate(
-                        lastValidEnvironmentalHdrAmbientSphericalHarmonics,
-                        currentLightDirection,
-                        mainLightColor,
-                        mainLightIntensityScalar,
-                        cubeMap);
+        getScene().setEnvironmentalHdrLightEstimate(
+                lastValidEnvironmentalHdrAmbientSphericalHarmonics,
+                currentLightDirection,
+                mainLightColor,
+                mainLightIntensityScalar,
+                cubeMap);
         for (Image cubeMapImage : cubeMap) {
             cubeMapImage.close();
         }
@@ -709,21 +764,15 @@ public class ArSceneView extends SceneView {
     }
 
     private void initializeAr() {
-        minArCoreVersionCode = ArCoreVersion.getMinArCoreVersionCode(getContext());
         display = getContext().getSystemService(WindowManager.class).getDefaultDisplay();
 
-        initializePlaneRenderer();
-        initializeCameraStream();
-    }
-
-    private void initializePlaneRenderer() {
         Renderer renderer = Preconditions.checkNotNull(getRenderer());
+
+        // Initialize Plane Renderer
         planeRenderer = new PlaneRenderer(renderer);
-    }
 
-    private void initializeCameraStream() {
+        // Initialize Camera Stream
         cameraTextureId = GLHelper.createCameraTexture();
-        Renderer renderer = Preconditions.checkNotNull(getRenderer());
         cameraStream = new CameraStream(cameraTextureId, renderer);
     }
 
@@ -731,31 +780,136 @@ public class ArSceneView extends SceneView {
         this.cameraStream.setRenderPriority(priority);
     }
 
-    private void ensureUpdateMode() {
-        if (session == null) {
-            return;
-        }
+    //
+    // TODO : When Kotlining it, move all those trackables parts to Trackables.kt as an ArSceneView extension.
+    //
 
-        // Check the update mode.
-        if (minArCoreVersionCode >= ArCoreVersion.VERSION_CODE_1_3) {
-            if (cachedConfig == null) {
-                cachedConfig = session.getConfig();
-            } else {
-                session.getConfig(cachedConfig);
-            }
-
-            Config.UpdateMode updateMode = cachedConfig.getUpdateMode();
-            if (updateMode != Config.UpdateMode.LATEST_CAMERA_IMAGE) {
-                throw new RuntimeException(
-                        "Invalid ARCore UpdateMode "
-                                + updateMode
-                                + ", Sceneform requires that the ARCore session is configured to the "
-                                + "UpdateMode LATEST_CAMERA_IMAGE.");
-            }
-        }
+    /**
+     * Retrieve if the view is currently tracking a plane.
+     *
+     * @return true if the current frame is tracking at least one plane.
+     */
+    public boolean isTrackingPlane() {
+        return getUpdatedPlanes(TrackingState.TRACKING).size() > 0;
     }
 
-    private void reportEngineType() {
-        return;
+    /**
+     * Retrieve if the view has already tracked a plane.
+     *
+     * @return true if the current frame has tracked at least one plane.
+     */
+    public boolean hasTrackedPlane() {
+        return getAllPlanes(TrackingState.TRACKING, TrackingState.PAUSED).size() > 0;
+    }
+
+    /**
+     * Retrieve the view session tracked planes.
+     */
+    public Collection<Plane> getAllPlanes() {
+        return getAllPlanes((TrackingState[]) null);
+    }
+
+    /**
+     * Retrieve the view session tracked planes with the specified tracking states.
+     *
+     * @param trackingStates the trackable tracking states or null for no states filter
+     */
+    public Collection<Plane> getAllPlanes(@Nullable TrackingState... trackingStates) {
+        return Trackables.getPlanes(allTrackables, trackingStates);
+    }
+
+    /**
+     * Retrieve the view last frame tracked planes.
+     */
+    public Collection<Plane> getUpdatedPlanes() {
+        return getUpdatedPlanes((TrackingState[]) null);
+    }
+
+    /**
+     * Retrieve the view last frame tracked planes with the specified tracking states.
+     *
+     * @param trackingStates the trackable tracking states or null for no states filter
+     */
+    public Collection<Plane> getUpdatedPlanes(@Nullable TrackingState... trackingStates) {
+        return Trackables.getPlanes(updatedTrackables, trackingStates);
+    }
+
+    /**
+     * Retrieve if the view is currently tracking an Augmented Image.
+     *
+     * @return true if the current frame is fully tracking at least one Augmented.
+     */
+    public boolean isTrackingAugmentedImage() {
+        return getUpdatedAugmentedImages(TrackingState.TRACKING, AugmentedImage.TrackingMethod.FULL_TRACKING).size() > 0;
+    }
+
+    /**
+     * Retrieve if the view has already tracked a Augmented Image.
+     *
+     * @return true if the current frame has tracked at least one Augmented Image.
+     */
+    public boolean hasTrackedAugmentedImage() {
+        return getAllAugmentedImages(TrackingState.TRACKING, AugmentedImage.TrackingMethod.FULL_TRACKING).size() > 0
+                && getAllAugmentedImages(TrackingState.PAUSED, AugmentedImage.TrackingMethod.FULL_TRACKING).size() > 0;
+    }
+
+    /**
+     * Retrieve the view session tracked Augmented Images.
+     */
+    public Collection<AugmentedImage> getAllAugmentedImages() {
+        return getAllAugmentedImages(null, null);
+    }
+
+    /**
+     * Retrieve the view session tracked Augmented Images with the specified tracking state and method.
+     *
+     * @param trackingState  the trackable tracking state or null for no states filter
+     * @param trackingMethod the trackable tracking method or null for no tracking method filter
+     */
+    public Collection<AugmentedImage> getAllAugmentedImages(@Nullable TrackingState trackingState
+            , @Nullable AugmentedImage.TrackingMethod trackingMethod) {
+        return Trackables.getAugmentedImages(allTrackables, trackingState, trackingMethod);
+    }
+
+    /**
+     * Retrieve the view last frame tracked Augmented Images.
+     */
+    public Collection<AugmentedImage> getUpdatedAugmentedImages() {
+        return getUpdatedAugmentedImages(null, null);
+    }
+
+    /**
+     * Retrieve the view last frame tracked Augmented Images with the specified tracking state and method.
+     *
+     * @param trackingState  the trackable tracking state or null for no states filter
+     * @param trackingMethod the trackable tracking method or null for no tracking method filter
+     */
+    public Collection<AugmentedImage> getUpdatedAugmentedImages(@Nullable TrackingState trackingState
+            , @Nullable AugmentedImage.TrackingMethod trackingMethod) {
+        return Trackables.getAugmentedImages(updatedTrackables, trackingState, trackingMethod);
+    }
+
+    /**
+     * Registers a callback to be invoked when the ARCore Session is to configured. The callback will
+     * only be invoked once after the Session default config has been applied and before it is
+     * configured on the Session.
+     *
+     * @param listener the {@link OnSessionConfigChangeListener} to attach.
+     */
+    public void setOnSessionConfigChangeListener(@Nullable OnSessionConfigChangeListener listener) {
+        this.onSessionConfigChangeListener = listener;
+    }
+
+    /**
+     * Called when the ARCore Session configuration has changed.
+     */
+    public interface OnSessionConfigChangeListener {
+        /**
+         * The callback will only be invoked every time a new session or session config is defined.
+         *
+         * @param config The ARCore Session Config.
+         * @see #setOnSessionConfigChangeListener(OnSessionConfigChangeListener)
+         */
+        void onSessionConfigChange(Config config);
     }
 }

@@ -26,10 +26,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.google.ar.core.Anchor;
-import com.google.ar.core.Config;
 import com.google.ar.core.HitResult;
 import com.google.ar.core.Plane;
-import com.google.ar.core.Session;
 import com.google.ar.core.exceptions.UnavailableApkTooOldException;
 import com.google.ar.core.exceptions.UnavailableArcoreNotInstalledException;
 import com.google.ar.core.exceptions.UnavailableDeviceNotCompatibleException;
@@ -41,9 +39,6 @@ import com.google.ar.sceneform.rendering.ModelRenderable;
 import com.google.ar.sceneform.rendering.Renderable;
 import com.google.ar.sceneform.rendering.RenderableInstance;
 
-import java.util.Collections;
-import java.util.Set;
-
 /**
  * Implements AR Required ArFragment. Does not require additional permissions and uses the default
  * configuration for ARCore.
@@ -51,7 +46,10 @@ import java.util.Set;
 public class ArFragment extends BaseArFragment {
     private static final String TAG = "StandardArFragment";
 
+    @Nullable
     private OnViewCreatedListener onViewCreatedListener;
+    @Nullable
+    private OnArUnavailableListener onArUnavailableListener;
     private Renderable onTapRenderable;
 
     /**
@@ -86,37 +84,25 @@ public class ArFragment extends BaseArFragment {
     }
 
     @Override
-    public String[] getAdditionalPermissions() {
-        return new String[0];
-    }
-
-    @Override
-    protected void handleSessionException(UnavailableException sessionException) {
-
-        String message;
-        if (sessionException instanceof UnavailableArcoreNotInstalledException) {
-            message = "Please install ARCore";
-        } else if (sessionException instanceof UnavailableApkTooOldException) {
-            message = "Please update ARCore";
-        } else if (sessionException instanceof UnavailableSdkTooOldException) {
-            message = "Please update this app";
-        } else if (sessionException instanceof UnavailableDeviceNotCompatibleException) {
-            message = "This device does not support AR";
+    protected void onArUnavailableException(UnavailableException sessionException) {
+        if (onArUnavailableListener != null) {
+            onArUnavailableListener.onArUnavailableException(sessionException);
         } else {
-            message = "Failed to create AR session";
+            String message;
+            if (sessionException instanceof UnavailableArcoreNotInstalledException) {
+                message = getString(R.string.sceneform_unavailable_arcore_not_installed);
+            } else if (sessionException instanceof UnavailableApkTooOldException) {
+                message = getString(R.string.sceneform_unavailable_apk_too_old);
+            } else if (sessionException instanceof UnavailableSdkTooOldException) {
+                message = getString(R.string.sceneform_unavailable_sdk_too_old);
+            } else if (sessionException instanceof UnavailableDeviceNotCompatibleException) {
+                message = getString(R.string.sceneform_unavailable_device_not_compatible);
+            } else {
+                message = getString(R.string.sceneform_failed_to_create_ar_session);
+            }
+            Log.e(TAG, "Error: " + message, sessionException);
+            Toast.makeText(requireActivity(), message, Toast.LENGTH_LONG).show();
         }
-        Log.e(TAG, "Error: " + message, sessionException);
-        Toast.makeText(requireActivity(), message, Toast.LENGTH_LONG).show();
-    }
-
-    @Override
-    protected Config getSessionConfiguration(Session session) {
-        return new Config(session);
-    }
-
-    @Override
-    protected Set<Session.Feature> getSessionFeatures() {
-        return Collections.emptySet();
     }
 
     /**
@@ -125,6 +111,16 @@ public class ArFragment extends BaseArFragment {
      */
     public void setOnViewCreatedListener(OnViewCreatedListener onViewCreatedListener) {
         this.onViewCreatedListener = onViewCreatedListener;
+    }
+
+    /**
+     * Registers a callback to be invoked when the ARCore Session cannot be initialized because
+     * ARCore is not available on the device.
+     *
+     * @param onArUnavailableListener the {@link OnArUnavailableListener} to attach.
+     */
+    public void setOnArUnavailableListener(@Nullable OnArUnavailableListener onArUnavailableListener) {
+        this.onArUnavailableListener = onArUnavailableListener;
     }
 
     /**
@@ -219,5 +215,24 @@ public class ArFragment extends BaseArFragment {
          * @param arSceneView the created ARSceneView ready to be configured.
          */
         void onViewCreated(ArFragment arFragment, ArSceneView arSceneView);
+    }
+
+    /**
+     * Invoked when the ARCore Session cannot be initialized because ARCore is not available on
+     * the device.
+     */
+    public interface OnArUnavailableListener {
+        /**
+         * The callback will only be invoked once after a Session initialization exception.
+         *
+         * @param exception The thrown exception. One of UnavailableApkTooOldException,
+         *                  UnavailableArcoreNotInstalledException,
+         *                  UnavailableDeviceNotCompatibleException,
+         *                  UnavailableSdkTooOldException,
+         *                  UnavailableUserDeclinedInstallationException
+         * @see UnavailableException
+         * @see #setOnArUnavailableListener(OnArUnavailableListener)
+         */
+        void onArUnavailableException(UnavailableException exception);
     }
 }

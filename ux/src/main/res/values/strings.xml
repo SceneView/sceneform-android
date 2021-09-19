@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="sceneform_unavailable_arcore_not_installed">Please install ARCore</string>
+    <string name="sceneform_unavailable_apk_too_old">Please update ARCore</string>
+    <string name="sceneform_unavailable_sdk_too_old">Please update this app</string>
+    <string name="sceneform_unavailable_device_not_compatible">This device does not support AR</string>
+    <string name="sceneform_failed_to_create_ar_session">Failed to create AR session</string>
+    <string name="sceneform_camera_permission_required">Camera permission required</string>
+    <string name="sceneform_add_camera_permission_via_settings">Add camera permission via Settings?</string>
+</resources>
