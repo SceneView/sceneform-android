@@ -465,6 +465,10 @@ public class ArSceneView extends SceneView {
         // Before doing anything update the Frame from ARCore.
         boolean arFrameUpdated = true;
         try {
+            // TODO: Understand why the camera texture name should be set not in the setSession method
+            //  when using the front facing camera and whether it can be set once
+            session.setCameraTextureName(cameraTextureId);
+
             Frame frame = session.update();
             // No frame, no drawing.
             if (frame == null) {

@@ -1,24 +1,22 @@
 package com.google.ar.sceneform.samples.augmentedfaces;
 
+import android.net.Uri;
+import android.os.Bundle;
+import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
-import android.net.Uri;
-import android.os.Bundle;
-import android.widget.Toast;
-
-import com.google.android.filament.ColorGrading;
 import com.google.ar.core.AugmentedFace;
 import com.google.ar.core.Frame;
 import com.google.ar.sceneform.ArSceneView;
 import com.google.ar.sceneform.FrameTime;
 import com.google.ar.sceneform.Sceneform;
-import com.google.ar.sceneform.rendering.EngineInstance;
 import com.google.ar.sceneform.rendering.ModelRenderable;
+import com.google.ar.sceneform.rendering.Renderable;
 import com.google.ar.sceneform.rendering.RenderableInstance;
-import com.google.ar.sceneform.rendering.Renderer;
 import com.google.ar.sceneform.rendering.Texture;
 import com.google.ar.sceneform.ux.ArFragment;
 import com.google.ar.sceneform.ux.AugmentedFaceNode;
@@ -33,7 +31,7 @@ import java.util.concurrent.CompletableFuture;
 
 public class MainActivity extends AppCompatActivity {
 
-    private Set<CompletableFuture> loaders = new HashSet<>();
+    private final Set<CompletableFuture<?>> loaders = new HashSet<>();
 
     private FaceArFragment arFragment;
     private ArSceneView arSceneView;
@@ -73,31 +71,9 @@ public class MainActivity extends AppCompatActivity {
     public void onViewCreated(ArFragment arFragment, ArSceneView arSceneView) {
         this.arSceneView = arSceneView;
 
-        // Currently, the tone-mapping should be changed to FILMIC
-        // because with other tone-mapping operators except LINEAR
-        // the inverseTonemapSRGB function in the materials can produce incorrect results.
-        // The LINEAR tone-mapping cannot be used together with the inverseTonemapSRGB function.
-        Renderer renderer = arSceneView.getRenderer();
-        if (renderer != null) {
-            renderer.getFilamentView().setColorGrading(
-                    new ColorGrading.Builder()
-                            .toneMapping(ColorGrading.ToneMapping.FILMIC)
-                            .build(EngineInstance.getEngine().getFilamentEngine())
-            );
-        }
-
-        //TODO : Check that
         // This is important to make sure that the camera stream renders first so that
         // the face mesh occlusion works correctly.
-//        arSceneView.setCameraStreamRenderPriority(Renderable.RENDER_PRIORITY_FIRST);
-
-        // Hide the moving hand tutorial
-        arFragment.getPlaneDiscoveryController().hide();
-
-        // Hide plane indicating dots
-        arSceneView.getPlaneRenderer().setVisible(false);
-        // Disable the rendering of detected planes.
-        arSceneView.getPlaneRenderer().setEnabled(false);
+        arSceneView.setCameraStreamRenderPriority(Renderable.RENDER_PRIORITY_FIRST);
 
         // Check for face detections
         arSceneView.getScene().addOnUpdateListener(this::onUpdate);
@@ -116,30 +92,26 @@ public class MainActivity extends AppCompatActivity {
 
     private void loadModels() {
         loaders.add(ModelRenderable.builder()
-//                .setSource(this, Uri.parse("models/canonical_face_transparent.glb"))
-                //.setSource(this, Uri.parse("models/fox_face.glb"))
                 .setSource(this, Uri.parse("models/fox.glb"))
                 .setIsFilamentGltf(true)
                 .build()
                 .thenAccept(model -> faceModel = model)
-                .exceptionally(
-                        throwable -> {
-                            Toast.makeText(this, "Unable to load renderable", Toast.LENGTH_LONG).show();
-                            return null;
-                        }));
+                .exceptionally(throwable -> {
+                    Toast.makeText(this, "Unable to load renderable", Toast.LENGTH_LONG).show();
+                    return null;
+                }));
     }
 
     private void loadTextures() {
         loaders.add(Texture.builder()
-                .setSource(this, Uri.parse("textures/fox_face.png"))
+                .setSource(this, Uri.parse("textures/freckles.png"))
                 .setUsage(Texture.Usage.COLOR_MAP)
                 .build()
                 .thenAccept(texture -> faceTexture = texture)
-                .exceptionally(
-                        throwable -> {
-                            Toast.makeText(this, "Unable to load texture", Toast.LENGTH_LONG).show();
-                            return null;
-                        }));
+                .exceptionally(throwable -> {
+                    Toast.makeText(this, "Unable to load texture", Toast.LENGTH_LONG).show();
+                    return null;
+                }));
     }
 
     private void onUpdate(FrameTime frameTime) {
@@ -152,28 +124,34 @@ public class MainActivity extends AppCompatActivity {
         // Get a list of AugmentedFace which are updated on this frame.
         Collection<AugmentedFace> augmentedFaces = frame.getUpdatedTrackables(AugmentedFace.class);
 
-        //TODO: Check the difference with getAllTrackables.
-        // See: https://stackoverflow.com/questions/49241526/what-is-the-difference-between-session-getalltrackables-and-frame-getupdatedtrac
-//          Collection<AugmentedFace> faceList = arSceneView.getSession().getAllTrackables(AugmentedFace.class);
+        // TODO: Check the difference with getAllTrackables.
+        //  See: https://stackoverflow.com/questions/49241526/what-is-the-difference-between-session-getalltrackables-and-frame-getupdatedtrac
+        //  Collection<AugmentedFace> augmentedFaces = arSceneView.getSession().getAllTrackables(AugmentedFace.class);
 
         // Make new AugmentedFaceNodes for any new faces.
         for (AugmentedFace augmentedFace : new ArrayList<>(augmentedFaces)) {
             AugmentedFaceNode existingFaceNode = facesNodes.get(augmentedFace);
+
             switch (augmentedFace.getTrackingState()) {
                 case TRACKING:
                     if (existingFaceNode == null) {
                         AugmentedFaceNode faceNode = new AugmentedFaceNode(augmentedFace);
+
                         RenderableInstance modelInstance = faceNode.setFaceRegionsRenderable(faceModel);
                         modelInstance.setShadowCaster(false);
                         modelInstance.setShadowReceiver(true);
-//                        modelInstance.getMaterial().setBaseColorTexture(faceTexture);
+
+                        faceNode.setFaceMeshTexture(faceTexture);
+
                         arSceneView.getScene().addChild(faceNode);
 
                         facesNodes.put(augmentedFace, faceNode);
                     }
                     break;
                 case STOPPED:
-                    arSceneView.getScene().removeChild(existingFaceNode);
+                    if (existingFaceNode != null) {
+                        arSceneView.getScene().removeChild(existingFaceNode);
+                    }
                     facesNodes.remove(augmentedFace);
                     break;
             }

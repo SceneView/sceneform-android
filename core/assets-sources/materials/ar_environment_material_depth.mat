@@ -2,6 +2,7 @@ material {
     name : depth,
     shadingModel : unlit,
     blending : opaque,
+    culling : none,
     vertexDomain : device,
     parameters : [
         {

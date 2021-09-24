@@ -55,6 +55,7 @@ import com.google.ar.sceneform.Scene;
 import com.google.ar.sceneform.rendering.ModelRenderable;
 
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
 
 /**
@@ -466,18 +467,6 @@ public abstract class BaseArFragment extends Fragment
 
         } else {
             requestDangerousPermissions();
-        }
-    }
-
-    protected void onSessionInitialization(Session session) {
-        if (this.onSessionInitializationListener != null) {
-            this.onSessionInitializationListener.onSessionInitialization(session);
-        }
-    }
-
-    protected void onSessionConfiguration(Session session, Config config) {
-        if (this.onSessionConfigurationListener != null) {
-            this.onSessionConfigurationListener.onSessionConfiguration(session, config);
         }
     }
 

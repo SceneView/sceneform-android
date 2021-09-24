@@ -1,19 +1,21 @@
 material {
-    "name" : "Face Mesh",
+    name : "Face Mesh",
 
-    "parameters" : [
+    parameters : [
         {
-           "type" : "sampler2d",
-           "name" : "texture"
+           type : sampler2d,
+           name : texture
         }
     ],
-    "requires" : [
-        "position",
-        "uv0"
+
+    requires : [
+        uv0
     ],
-    "shadingModel" : "unlit",
-    "blending" : "transparent",
+
+    shadingModel : unlit,
+    blending : transparent
 }
+
 fragment {
     void material(inout MaterialInputs material) {
         prepareMaterial(material);

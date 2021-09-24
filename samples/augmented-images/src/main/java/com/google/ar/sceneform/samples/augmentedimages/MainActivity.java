@@ -122,27 +122,6 @@ public class MainActivity extends AppCompatActivity implements
         arFragment.setOnAugmentedImageUpdateListener(this::onAugmentedImageTrackingUpdate);
     }
 
-    @Override
-    public void onViewCreated(ArFragment arFragment, ArSceneView arSceneView) {
-        // Currently, the tone-mapping should be changed to FILMIC
-        // because with other tone-mapping operators except LINEAR
-        // the inverseTonemapSRGB function in the materials can produce incorrect results.
-        // The LINEAR tone-mapping cannot be used together with the inverseTonemapSRGB function.
-        Renderer renderer = arSceneView.getRenderer();
-
-        if (renderer != null) {
-            renderer.getFilamentView().setColorGrading(
-                    new ColorGrading.Builder()
-                            .toneMapping(ColorGrading.ToneMapping.FILMIC)
-                            .build(EngineInstance.getEngine().getFilamentEngine())
-            );
-        }
-
-        // Hide plane indicating dots
-        arSceneView.getPlaneRenderer().setVisible(false);
-        // Disable the rendering of detected planes.
-        arSceneView.getPlaneRenderer().setEnabled(false);
-    }
 
     @Override
     protected void onDestroy() {

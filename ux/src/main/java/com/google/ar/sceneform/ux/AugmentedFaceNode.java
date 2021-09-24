@@ -242,20 +242,19 @@ public class AugmentedFaceNode extends Node {
                 });
 
         // Face mesh occluder material
-        /*Material.builder()
+        Material.builder()
                 .setSource(context, R.raw.sceneform_face_mesh_occluder_material)
                 .build()
-                .handle(
-                        (material, throwable) -> {
-                            if (throwable != null) {
-                                Log.e(TAG, "Unable to load face mesh occluder material.", throwable);
-                                return false;
-                            }
+                .handle((material, throwable) -> {
+                    if (throwable != null) {
+                        Log.e(TAG, "Unable to load face mesh occluder material.", throwable);
+                        return false;
+                    }
 
-                            faceMeshOccluderMaterial = material;
-                            updateSubmeshes();
-                            return true;
-                        });*/
+                    faceMeshOccluderMaterial = material;
+                    updateSubmeshes();
+                    return true;
+                });
     }
 
     @Override
