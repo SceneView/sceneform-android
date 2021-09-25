@@ -69,6 +69,7 @@ public class ArSceneView extends SceneView {
     // threads however.
     private final SequentialTask pauseResumeTask = new SequentialTask();
     private int cameraTextureId;
+    private boolean hasSetTextureNames = false;
     @Nullable
     private Session session;
     @Nullable
@@ -465,9 +466,13 @@ public class ArSceneView extends SceneView {
         // Before doing anything update the Frame from ARCore.
         boolean arFrameUpdated = true;
         try {
-            // TODO: Understand why the camera texture name should be set not in the setSession method
-            //  when using the front facing camera and whether it can be set once
-            session.setCameraTextureName(cameraTextureId);
+            // Texture names should only be set once on a GL thread unless they change.
+            // This is done during onDrawFrame rather than onSurfaceCreated since the session is
+            // not guaranteed to have been initialized during the execution of onSurfaceCreated.
+            if (!hasSetTextureNames) {
+                session.setCameraTextureName(cameraTextureId);
+                hasSetTextureNames = true;
+            }
 
             Frame frame = session.update();
             // No frame, no drawing.
