@@ -8,23 +8,33 @@ import com.google.android.filament.Skybox
 import com.google.android.filament.Texture
 import com.google.android.filament.utils.HDRLoader
 import com.google.android.filament.utils.IBLPrefilterContext
-import com.gorisse.thomas.sceneform.filament.Filament
-import com.gorisse.thomas.sceneform.filament.build
-import com.gorisse.thomas.sceneform.filament.use
+import com.gorisse.thomas.sceneform.Filament
+import com.gorisse.thomas.sceneform.light.build
+import com.gorisse.thomas.sceneform.model.destroy
+import com.gorisse.thomas.sceneform.model.use
 import com.gorisse.thomas.sceneform.util.fileBuffer
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.nio.Buffer
 
-class HDREnvironment(
-    val reflections: Texture? = null,
-    val irradiance: FloatArray? = null,
-    val intensity: Float? = null,
-    val environment: Texture? = null
+const val defaultSpecularFilter = true
+
+open class HDREnvironment(
+    cubemap: Texture? = null,
+    irradiance: FloatArray? = null,
+    intensity: Float? = null,
+    skyboxEnvironment: Texture? = null,
+    specularFilter: Boolean = defaultSpecularFilter
 ) : Environment(
     indirectLight = IndirectLight.Builder().apply {
-        reflections?.let {
-            reflections(it)
+        cubemap?.let {
+            reflections(
+                if (specularFilter) {
+                    Filament.iblPrefilter.specularFilter(it)
+                } else {
+                    it
+                }
+            )
         }
         irradiance?.let {
             irradiance(3, it)
@@ -34,18 +44,35 @@ class HDREnvironment(
         }
     }.build(),
     sphericalHarmonics = irradiance,
-    skybox = environment?.let {
+    skybox = skyboxEnvironment?.let {
         Skybox.Builder().apply {
             environment(it)
         }.build()
     }
 ) {
 
-    companion object {
-        @JvmStatic
-        val defaultIblFilter = { cubemap: Texture ->
-            Filament.iblPrefilter.specularFilter(cubemap)
+    var cubemap: Texture? = cubemap
+        internal set
+    var intensity: Float? = intensity
+        private set
+    var skyboxEnvironment: Texture? = skyboxEnvironment
+        private set
+
+    var sharedCubemap = false
+
+    /**
+     * ### Destroys the EnvironmentLights and frees all its associated resources.
+     */
+    override fun destroy() {
+        super.destroy()
+
+        if(!sharedCubemap) {
+            cubemap?.destroy()
+            cubemap = null
         }
+        intensity = null
+        skyboxEnvironment?.destroy()
+        skyboxEnvironment = null
     }
 }
 
@@ -64,13 +91,13 @@ class HDREnvironment(
 suspend fun HDRLoader.loadEnvironment(
     context: Context,
     hdrFileLocation: String,
-    iblFilter: ((Texture) -> Texture)? = HDREnvironment.defaultIblFilter
+    specularFilter: Boolean = defaultSpecularFilter
 ): HDREnvironment? {
     var environment: Environment? = null
     return try {
         context.fileBuffer(hdrFileLocation)?.let { buffer ->
             withContext(Dispatchers.Main) {
-                createEnvironment(buffer, iblFilter)?.also { environment = it }
+                createEnvironment(buffer, specularFilter)?.also { environment = it }
             }
         }
     } finally {
@@ -92,7 +119,7 @@ suspend fun HDRLoader.loadEnvironment(
 fun HDRLoader.loadEnvironmentAsync(
     context: Context,
     hdrFileLocation: String,
-    iblFilter: ((Texture) -> Texture)? = HDREnvironment.defaultIblFilter,
+    specularFilter: Boolean = defaultSpecularFilter,
     coroutineScope: LifecycleCoroutineScope,
     result: (HDREnvironment?) -> Unit
 ) = coroutineScope.launchWhenCreated {
@@ -100,7 +127,7 @@ fun HDRLoader.loadEnvironmentAsync(
         HDRLoader.loadEnvironment(
             context,
             hdrFileLocation,
-            iblFilter
+            specularFilter
         )
     )
 }
@@ -121,12 +148,11 @@ fun HDRLoader.loadEnvironmentAsync(
 @JvmOverloads
 fun HDRLoader.createEnvironment(
     hdrBuffer: Buffer,
-    iblFilter: ((Texture) -> Texture)? = HDREnvironment.defaultIblFilter
+    specularFilter: Boolean = defaultSpecularFilter
 ) = createTexture(Filament.engine, hdrBuffer)?.use { hdrTexture ->
     Filament.iblPrefilter.equirectangularToCubemap(hdrTexture)
 }?.let { cubemap ->
-    val reflections = iblFilter?.invoke(cubemap)
-    HDREnvironment(reflections = reflections, environment = cubemap)
+    HDREnvironment(cubemap = cubemap, skyboxEnvironment = cubemap, specularFilter = specularFilter)
 }
 
 /**

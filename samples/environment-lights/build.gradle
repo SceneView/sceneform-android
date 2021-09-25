@@ -6,16 +6,16 @@ plugins {
 }
 
 android {
-    compileSdkVersion 31
+    compileSdkVersion 30
     buildFeatures {
         dataBinding true
     }
     defaultConfig {
-        applicationId "com.gorisse.thomas.ar.environmentlights"
+        applicationId "com.google.ar.sceneform.samples.environmentlights"
 
         // Sceneform requires minSdkVersion >= 24.
         minSdkVersion 24
-        targetSdkVersion 31
+        targetSdkVersion 30
         versionCode 2
         versionName "1.0.1"
     }

@@ -3,7 +3,7 @@ package com.gorisse.thomas.sceneform
 import com.google.android.filament.utils.*
 import com.google.ar.sceneform.SceneView
 import com.gorisse.thomas.sceneform.environment.Environment
-import com.gorisse.thomas.sceneform.filament.Light
+import com.gorisse.thomas.sceneform.light.Light
 
 /**
  * ### Defines the lighting environment and the skybox of the scene
@@ -36,11 +36,10 @@ var SceneView.environment: Environment?
  *
  * Usually the Sun.
  */
-var SceneView.mainDirectionalLight: Light?
-    get() = _mainDirectionalLight
+var SceneView.mainLight: Light?
+    get() = _mainLight
     set(value) {
-        _mainDirectionalLight?.let { scene.renderer?.removeLight(it) }
-//        _mainLight?.destroy()
+        _mainLight?.let { scene.renderer?.removeLight(it) }
         value?.let { scene.renderer?.addLight(value) }
-        _mainDirectionalLight = value
+        _mainLight = value
     }

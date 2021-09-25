@@ -6,10 +6,10 @@
 
         <variable
             name="activity"
-            type="com.gorisse.thomas.ar.environmentlights.MainActivity" />
+            type="com.google.ar.sceneform.samples.environmentlights.MainActivity" />
     </data>
 
-    <com.gorisse.thomas.ar.environmentlights.FitsSystemWindowsConstraintLayout
+    <com.google.ar.sceneform.samples.environmentlights.FitsSystemWindowsConstraintLayout
         android:id="@+id/rootLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -42,194 +42,74 @@
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:animateLayoutChanges="true"
             android:background="#66000000"
             android:fitsSystemWindows="true"
             android:orientation="vertical"
+            android:padding="16dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent">
 
-            <ImageButton
-                style="@style/Widget.AppCompat.Button.Borderless"
-                android:layout_width="match_parent"
-                android:layout_height="32dp"
-                android:onClick="@{activity.toggleParametersVisibility}"
-                android:src="@drawable/arrow_down" />
-
-            <LinearLayout
-                android:id="@+id/parametersLayout"
+            <TextView
+                android:id="@+id/estimationModeText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:padding="16dp">
+                android:text="Estimation Mode:" />
 
-                <LinearLayout
-                    android:layout_width="match_parent"
+            <HorizontalScrollView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp">
+
+                <com.google.android.material.chip.ChipGroup
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal">
+                    app:singleLine="true"
+                    app:singleSelection="true">
 
-                    <TextView
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/environmentalHdrMode"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Environment:" />
+                        android:checkable="true"
+                        android:checked="true"
+                        android:onCheckedChanged="@{activity.onEstimationModeChanged}"
+                        android:text="Environmental Hdr" />
 
-                    <Spinner
-                        android:id="@+id/environments"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="8dp"
-                        android:layout_weight="1"
-                        android:onItemSelected="@{activity.onEnvironmentSelected}" />
-
-                    <ProgressBar
-                        android:id="@+id/environmentLoading"
-                        style="?android:attr/progressBarStyleSmall"
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/environmentalHdrNoReflections"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="8dp"
-                        android:visibility="gone" />
+                        android:checkable="true"
+                        android:onCheckedChanged="@{activity.onEstimationModeChanged}"
+                        android:text="Environmental Hdr no reflections" />
 
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal">
-
-                    <TextView
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/environmentalHdrNoSpecularFilter"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Model:" />
+                        android:checkable="true"
+                        android:onCheckedChanged="@{activity.onEstimationModeChanged}"
+                        android:text="Environmental Hdr no specular filter" />
 
-                    <Spinner
-                        android:id="@+id/models"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="8dp"
-                        android:layout_weight="1"
-                        android:onItemSelected="@{activity.onModelSelected}" />
-
-                    <ProgressBar
-                        android:id="@+id/modelLoading"
-                        style="?android:attr/progressBarStyleSmall"
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/ambientIntensityMode"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="8dp"
-                        android:visibility="gone" />
+                        android:checkable="true"
+                        android:onCheckedChanged="@{activity.onEstimationModeChanged}"
+                        android:text="Ambient Intensity" />
 
-                </LinearLayout>
-
-                <TextView
-                    android:id="@+id/indirectLightIntensityText"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:text="@{`Indirect Light (estimate/base): ` + activity.estimatedIndirectLightIntensity.intValue() + `/` + activity.indirectLightIntensity.intValue() + ` lux`}" />
-
-                <SeekBar
-                    android:id="@+id/indirectLightIntensity"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:onProgressChanged="@{activity.onProgressChanged}"
-                    android:progress="@{activity.indirectLightIntensity.intValue()}"
-                    android:secondaryProgress="@{activity.estimatedIndirectLightIntensity.intValue()}"
-                    android:secondaryProgressTint="#FFFF0000" />
-
-                <TextView
-                    android:id="@+id/mainLightIntensityText"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@{`Main light (estimate/base): ` + activity.estimatedMainLightIntensity.intValue() + `/` + activity.mainLightIntensity.intValue() + ` lux`}" />
-
-                <SeekBar
-                    android:id="@+id/mainLightIntensity"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:onProgressChanged="@{activity.onProgressChanged}"
-                    android:progress="@{activity.mainLightIntensity.intValue()}"
-                    android:secondaryProgress="@{activity.estimatedMainLightIntensity.intValue()}"
-                    android:secondaryProgressTint="#FFFF0000" />
-
-                <TextView
-                    android:id="@+id/estimationModeText"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:text="Estimation Mode" />
-
-                <HorizontalScrollView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-
-                    <com.google.android.material.chip.ChipGroup
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/disabledMode"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        app:singleLine="true"
-                        app:singleSelection="true">
+                        android:checkable="true"
+                        android:onCheckedChanged="@{activity.onEstimationModeChanged}"
+                        android:text="Disabled" />
 
-                        <com.google.android.material.chip.Chip
-                            android:id="@+id/environmentalHdrMode"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:checkable="true"
-                            android:checked="true"
-                            android:onCheckedChanged="@{activity.onEstimationModeChanged}"
-                            android:text="Environmental Hdr" />
-
-                        <com.google.android.material.chip.Chip
-                            android:id="@+id/environmentalHdrWithoutReflections"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:checkable="true"
-                            android:onCheckedChanged="@{activity.onEstimationModeChanged}"
-                            android:text="Environmental Hdr without reflections" />
-
-                        <com.google.android.material.chip.Chip
-                            android:id="@+id/environmentalHdrWithoutSpecular"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:checkable="true"
-                            android:onCheckedChanged="@{activity.onEstimationModeChanged}"
-                            android:text="Environmental Hdr without specular" />
-
-                        <com.google.android.material.chip.Chip
-                            android:id="@+id/ambientIntensityMode"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:checkable="true"
-                            android:onCheckedChanged="@{activity.onEstimationModeChanged}"
-                            android:text="Ambient Intensity" />
-
-                        <com.google.android.material.chip.Chip
-                            android:id="@+id/disabledMode"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:checkable="true"
-                            android:onCheckedChanged="@{activity.onEstimationModeChanged}"
-                            android:text="Disabled" />
-
-                    </com.google.android.material.chip.ChipGroup>
-                </HorizontalScrollView>
-
-                <com.google.android.material.switchmaterial.SwitchMaterial
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:onCheckedChanged="@{activity.onReflectionSkyboxChanged}"
-                    android:text="Reflections Skybox" />
-
-                <com.google.android.material.button.MaterialButton
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:onClick="@{activity.takeScreenshot}"
-                    android:text="Take Screenshot"
-                    android:textColor="@android:color/white" />
-            </LinearLayout>
+                </com.google.android.material.chip.ChipGroup>
+            </HorizontalScrollView>
         </LinearLayout>
-    </com.gorisse.thomas.ar.environmentlights.FitsSystemWindowsConstraintLayout>
+    </com.google.ar.sceneform.samples.environmentlights.FitsSystemWindowsConstraintLayout>
 </layout>

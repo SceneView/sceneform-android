@@ -4,7 +4,8 @@ import com.google.android.filament.IndirectLight
 import com.google.android.filament.Skybox
 import com.google.android.filament.utils.HDRLoader
 import com.google.android.filament.utils.KTXLoader
-import com.gorisse.thomas.sceneform.filament.destroy
+import com.gorisse.thomas.sceneform.Filament
+import com.gorisse.thomas.sceneform.light.destroy
 import java.io.Closeable
 
 /**
@@ -46,17 +47,27 @@ const val defaultIndirectLightIntensity = 30_000.0f
  * @see [HDRLoader.loadEnvironment]
  */
 open class Environment(
-    val indirectLight: IndirectLight? = null,
-    val sphericalHarmonics: FloatArray? = null,
-    val skybox: Skybox? = null
+    sphericalHarmonics: FloatArray? = null,
+    indirectLight: IndirectLight? = null,
+    skybox: Skybox? = null
 ) : Closeable {
+
+    var indirectLight: IndirectLight? = indirectLight
+        private set
+    var sphericalHarmonics: FloatArray? = sphericalHarmonics
+        private set
+    var skybox: Skybox? = skybox
+        private set
 
     /**
      * ### Destroys the EnvironmentLights and frees all its associated resources.
      */
     open fun destroy() {
         indirectLight?.destroy()
+        indirectLight = null
+        sphericalHarmonics = null
         skybox?.destroy()
+        skybox = null
     }
 
     override fun close() = destroy()
@@ -95,4 +106,16 @@ open class Environment(
                 }
             }
     }
+}
+
+/**
+ * @see Skybox.Builder.build
+ */
+fun Skybox.Builder.build(): Skybox = build(Filament.engine)
+
+/**
+ * Destroys a Skybox and frees all its associated resources.
+ */
+fun Skybox.destroy() {
+    Filament.engine.destroySkybox(this)
 }

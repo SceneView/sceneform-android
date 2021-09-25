@@ -5,6 +5,11 @@
     "scale": 4
   },
   {
+    "name": "ClearCoat",
+    "url": "ClearCoat.glb",
+    "scale": 0.05
+  },
+  {
     "name": "Metal Rough Spheres",
     "url": "MetalRoughSpheres.glb",
     "scale": 0.1
@@ -20,8 +25,33 @@
     "scale": 0.75
   },
   {
+    "name": "ClearCoat",
+    "url": "ClearCoat.glb",
+    "scale": 0.05
+  },
+  {
     "name": "Gumball",
     "url": "Gumball.glb",
+    "scale": 0.5
+  },
+  {
+    "name": "MaterialSuite",
+    "url": "MaterialSuite.glb",
+    "scale": 1
+  },
+  {
+    "name": "Game Boy",
+    "url": "GameBoy.glb",
+    "scale": 1.5
+  },
+  {
+    "name": "Damaged Helmet",
+    "url": "DamagedHelmet.glb",
+    "scale": 0.5
+  },
+  {
+    "name": "Fiat Punto",
+    "url": "FiatPunto.glb",
     "scale": 0.5
   }
 ]

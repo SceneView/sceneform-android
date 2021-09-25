@@ -10,7 +10,6 @@ import android.view.WindowManager;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 
-import com.google.android.filament.Entity;
 import com.google.ar.core.AugmentedImage;
 import com.google.ar.core.Camera;
 import com.google.ar.core.CameraConfig.FacingDirection;
@@ -32,11 +31,10 @@ import com.google.ar.sceneform.rendering.ThreadPools;
 import com.google.ar.sceneform.utilities.AndroidPreconditions;
 import com.google.ar.sceneform.utilities.Preconditions;
 import com.gorisse.thomas.sceneform.ArSceneViewKt;
-import com.gorisse.thomas.sceneform.arcore.LightEstimateKt;
-import com.gorisse.thomas.sceneform.arcore.LightEstimationConfig;
-import com.gorisse.thomas.sceneform.environment.Environment;
-import com.gorisse.thomas.sceneform.filament.CameraKt;
-import com.gorisse.thomas.sceneform.filament.LightKt;
+import com.gorisse.thomas.sceneform.light.EnvironmentLightsEstimate;
+import com.gorisse.thomas.sceneform.light.LightEstimationConfig;
+import com.gorisse.thomas.sceneform.light.LightEstimationKt;
+import com.gorisse.thomas.sceneform.scene.CameraKt;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -44,9 +42,6 @@ import java.util.Collection;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 import java.util.concurrent.atomic.AtomicBoolean;
-
-import kotlin.Unit;
-import kotlin.jvm.functions.Function1;
 
 /**
  * A SurfaceView that integrates with ARCore and renders a scene.
@@ -62,11 +57,15 @@ public class ArSceneView extends SceneView {
     private int cameraTextureId;
     @Nullable
     private Session session;
-    @Nullable
-    private Config sessionConfig;
-    public LightEstimationConfig lightEstimationConfig;
 
-    private boolean useEnvironmentalHDRReflections = true;
+    /**
+     * Don't use it. Public until full moving to Kotlin.
+     *
+     * @see ArSceneViewKt#setEstimatedEnvironmentLights(ArSceneView, EnvironmentLightsEstimate)
+     * @see ArSceneViewKt#getEstimatedEnvironmentLights(ArSceneView)
+     */
+    public LightEstimationConfig _lightEstimationConfig = new LightEstimationConfig();
+
     private AtomicBoolean isProcessingFrame = new AtomicBoolean(false);
     @Nullable
     private Frame currentFrame;
@@ -77,15 +76,12 @@ public class ArSceneView extends SceneView {
     private CameraStream cameraStream;
     private PlaneRenderer planeRenderer;
     @Nullable
-    // Public until full moving to Kotlin
-    public Environment _estimatedEnvironment = null;
-    @Nullable
-    @Entity
-    // Public until full moving to Kotlin
-    public Integer _estimatedMainLight = null;
-    @Nullable
-    // Public until full moving to Kotlin
-    public Function1<Integer, Unit> _estimatedMainLightInfluence = null;
+    /**
+     * Don't use it. Public until full moving to Kotlin.
+     * @see ArSceneViewKt#setEstimatedEnvironmentLights(ArSceneView, EnvironmentLightsEstimate)
+     * @see ArSceneViewKt#getEstimatedEnvironmentLights(ArSceneView, EnvironmentLightsEstimate)
+     */
+    public EnvironmentLightsEstimate _estimatedEnvironmentLights = null;
     @Nullable
     private OnSessionConfigChangeListener onSessionConfigChangeListener;
 
@@ -208,23 +204,13 @@ public class ArSceneView extends SceneView {
      * @param configureSession false if you already called the {@link Session#configure(Config)}
      */
     public void setSessionConfig(Config config, boolean configureSession) {
-        this.sessionConfig = config;
         if (getSession() != null) {
             if (configureSession) {
                 getSession().configure(config);
             }
-
             // Set the correct Texture configuration on the camera stream
             cameraStream.checkIfDepthIsEnabled(session, config);
         }
-
-        if(lightEstimationConfig == null) {
-            this.lightEstimationConfig = new LightEstimationConfig(config.getLightEstimationMode());
-        } else {
-            this.lightEstimationConfig.setMode(config.getLightEstimationMode());
-        }
-        ArSceneViewKt.setEstimatedEnvironment(this, null);
-        ArSceneViewKt.setEstimatedMainLightInfluence(this, null);
 
         if (getPlaneRenderer() != null) {
             // Disable the rendering of detected planes if no PlaneFindingMode
@@ -370,13 +356,9 @@ public class ArSceneView extends SceneView {
     public void destroy() {
         super.destroy();
 
-        if (_estimatedEnvironment != null) {
-            _estimatedEnvironment.destroy();
-            _estimatedEnvironment = null;
-        }
-        if (_estimatedMainLight != null) {
-            LightKt.destroy(_estimatedMainLight);
-            _estimatedMainLight = null;
+        if (_estimatedEnvironmentLights != null) {
+            _estimatedEnvironmentLights.destroy();
+            _estimatedEnvironmentLights = null;
         }
 
         destroySession();
@@ -520,18 +502,14 @@ public class ArSceneView extends SceneView {
             }
 
             // Update the light estimate.
-            if (lightEstimationConfig.getMode() != Config.LightEstimationMode.DISABLED) {
-                ArSceneViewKt.setEstimatedEnvironment(this
-                        , LightEstimateKt.environmentEstimate(currentFrame, lightEstimationConfig,
-                                _environment,
-                                _estimatedEnvironment,
-                                CameraKt.getExposureFactor(getRenderer().getCamera())));
-                if (_mainDirectionalLight != null) {
-                    ArSceneViewKt.setEstimatedMainLightInfluence(this
-                            , LightEstimateKt.mainLightInfluenceEstimate(currentFrame,
-                                    _mainDirectionalLight, lightEstimationConfig,
-                                    CameraKt.getExposureFactor(getRenderer().getCamera())));
-                }
+            if (_lightEstimationConfig.getMode() != Config.LightEstimationMode.DISABLED) {
+                EnvironmentLightsEstimate environmentLightsEstimate = LightEstimationKt.environmentLightsEstimate(currentFrame,
+                        _lightEstimationConfig,
+                        _estimatedEnvironmentLights,
+                        _environment,
+                        _mainLight,
+                        CameraKt.getExposureFactor(getRenderer().getCamera()));
+                ArSceneViewKt.setEstimatedEnvironmentLights(this, environmentLightsEstimate);
             }
 
             try {

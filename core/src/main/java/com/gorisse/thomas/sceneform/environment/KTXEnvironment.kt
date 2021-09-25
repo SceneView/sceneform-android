@@ -5,7 +5,7 @@ import androidx.lifecycle.LifecycleCoroutineScope
 import com.google.android.filament.IndirectLight
 import com.google.android.filament.Skybox
 import com.google.android.filament.utils.KTXLoader
-import com.gorisse.thomas.sceneform.filament.Filament
+import com.gorisse.thomas.sceneform.Filament
 import com.gorisse.thomas.sceneform.util.fileBuffer
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext

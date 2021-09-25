@@ -29,7 +29,7 @@ import com.google.ar.sceneform.utilities.Preconditions;
 import com.gorisse.thomas.sceneform.SceneViewKt;
 import com.gorisse.thomas.sceneform.environment.Environment;
 import com.gorisse.thomas.sceneform.environment.KTXEnvironmentKt;
-import com.gorisse.thomas.sceneform.filament.LightKt;
+import com.gorisse.thomas.sceneform.light.LightKt;
 import com.gorisse.thomas.sceneform.util.ResourceLoaderKt;
 
 import java.io.IOException;
@@ -63,7 +63,7 @@ public class SceneView extends SurfaceView implements Choreographer.FrameCallbac
     public Environment _environment = null;
     @Entity
     // Public until full moving to Kotlin
-    public Integer _mainDirectionalLight;
+    public Integer _mainLight;
 
     private boolean isInitialized = false;
 
@@ -258,9 +258,9 @@ public class SceneView extends SurfaceView implements Choreographer.FrameCallbac
             _environment.destroy();
             _environment = null;
         }
-        if (_mainDirectionalLight != null) {
-            LightKt.destroy(_mainDirectionalLight);
-            _mainDirectionalLight = null;
+        if (_mainLight != null) {
+            LightKt.destroy(_mainLight);
+            _mainLight = null;
         }
     }
 
@@ -377,11 +377,11 @@ public class SceneView extends SurfaceView implements Choreographer.FrameCallbac
             scene = new Scene(this);
             renderer.setCameraProvider(scene.getCamera());
 
-            _mainDirectionalLight = LightKt.build(
-                    new LightManager.Builder(LightManager.Type.DIRECTIONAL)
-                            .intensity(LightKt.defaultDirectionalLightIntensity)
+            _mainLight = LightKt.build(
+                    new LightManager.Builder(LightManager.Type.SUN)
+                            .intensity(LightKt.defaultMainLightIntensity)
                             .castShadows(true));
-            renderer.setMainDirectionalLight(_mainDirectionalLight);
+            renderer.setMainLight(_mainLight);
 
             // Change the ToneMapper to FILMIC to avoid some over saturated
             // colors, for example material orange 500.

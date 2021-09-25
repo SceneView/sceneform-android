@@ -23,8 +23,8 @@ import com.google.android.filament.android.UiHelper;
 import com.google.ar.sceneform.utilities.AndroidPreconditions;
 import com.google.ar.sceneform.utilities.Preconditions;
 import com.gorisse.thomas.sceneform.environment.Environment;
-import com.gorisse.thomas.sceneform.filament.CameraKt;
-import com.gorisse.thomas.sceneform.filament.SceneKt;
+import com.gorisse.thomas.sceneform.scene.CameraKt;
+import com.gorisse.thomas.sceneform.scene.SceneKt;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -61,8 +61,10 @@ public class Renderer implements UiHelper.RendererCallback {
     private Camera camera;
     private Scene scene;
 
+    public Environment environment = null;
+
     @Entity
-    public Integer mainDirectionalLight = null;
+    public Integer mainLight = null;
 
     private boolean recreateSwapChain;
 
@@ -385,11 +387,29 @@ public class Renderer implements UiHelper.RendererCallback {
         return camera;
     }
 
+
+    /**
+     * ### Get the lighting environment and the skybox of the scene
+     */
+    public Environment getEnvironment() {
+        return environment;
+    }
+
     /**
      * ### Defines the lighting environment and the skybox of the scene
      */
     public void setEnvironment(Environment environment) {
+        this.environment = environment;
         SceneKt.setEnvironment(scene, environment);
+    }
+
+    /**
+     * ### Get the main directional light of the scene
+     * <p>
+     * Usually the Sun.
+     */
+    public @Entity Integer getMainLight() {
+        return mainLight;
     }
 
     /**
@@ -397,11 +417,11 @@ public class Renderer implements UiHelper.RendererCallback {
      * <p>
      * Usually the Sun.
      */
-    public void setMainDirectionalLight(@Entity Integer light) {
-        if (mainDirectionalLight != null) {
-            removeLight(mainDirectionalLight);
+    public void setMainLight(@Entity Integer light) {
+        if (mainLight != null) {
+            removeLight(mainLight);
         }
-        this.mainDirectionalLight = light;
+        this.mainLight = light;
         if (light != null) {
             addLight(light);
         }
