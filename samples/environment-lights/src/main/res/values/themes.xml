@@ -1,0 +1,17 @@
+<resources>
+
+    <style name="AppTheme" parent="Theme.MaterialComponents.NoActionBar">
+        <item name="colorPrimary">#FF4b8eff</item>
+        <item name="colorPrimaryDark">@android:color/transparent</item>
+        <item name="colorAccent">#FF4b8eff</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:windowTranslucentNavigation">true</item>
+        <!-- Text -->
+        <item name="android:textColor">@android:color/white</item>
+    </style>
+
+    <style name="AppTheme.Toolbar" parent="ThemeOverlay.AppCompat.Dark.ActionBar">
+        <item name="android:background">@android:color/transparent</item>
+        <item name="android:textColor">@android:color/white</item>
+    </style>
+</resources>

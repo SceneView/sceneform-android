@@ -1,0 +1,15 @@
+[
+  {
+    "name": "Small empty house (KTX)",
+    "ktxIblUrl": "small_empty_house_2k_ibl.ktx",
+    "ktxSkyboxUrl": null
+  },
+  {
+    "name": "Evening Meadow (HDR)",
+    "hdrUrl": "evening_meadow_2k.hdr"
+  },
+  {
+    "name": "Flower Road (HDR)",
+    "hdrUrl": "flower_road_2k.hdr"
+  }
+]

@@ -59,6 +59,13 @@ public class LoadHelper {
     return TextUtils.isEmpty(scheme) || Objects.equals(ContentResolver.SCHEME_FILE, scheme);
   }
 
+
+  /** True if the Uri is an Android resource, false if any other uri. */
+  public static Boolean isContentResource(Uri sourceUri) {
+    Preconditions.checkNotNull(sourceUri, "Parameter \"sourceUri\" was null.");
+    return TextUtils.equals(ContentResolver.SCHEME_CONTENT, sourceUri.getScheme());
+  }
+
   /**
    * Normalizes Uri's based on a reference Uri. This function is for convenience only since the Uri
    * class can do this as well.
@@ -118,6 +125,8 @@ public class LoadHelper {
       // Note: Prefer creating InputStreams directly from resources.
       // By converting to URIs first, we can't load library resources from a dynamic module.
       return androidResourceUriToInputStreamCreator(context, sourceUri);
+    } else if (isContentResource(sourceUri)) {
+      return contentUriToInputStreamCreator(context, sourceUri);
     } else if (isGltfDataUri(sourceUri)) {
       return dataUriInputStreamCreator(sourceUri);
     }
@@ -249,6 +258,19 @@ public class LoadHelper {
               + sourceUri
               + "'. Resource will not be loaded");
     }
+  }
+
+
+  /**
+   * Creates an inputStream to read from android content uri
+   *
+   * @throws IllegalArgumentException for content that can't be loaded.
+   */
+  // TODO: incompatible types in return.
+  @SuppressWarnings("nullness:return.type.incompatible")
+  private static Callable<InputStream> contentUriToInputStreamCreator(
+          Context context, Uri sourceUri) {
+      return () -> context.getContentResolver().openInputStream(sourceUri);
   }
 
   /**

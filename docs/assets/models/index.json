@@ -1,0 +1,57 @@
+[
+  {
+    "name": "Spoons",
+    "url": "Spoons.glb",
+    "scale": 4
+  },
+  {
+    "name": "ClearCoat",
+    "url": "ClearCoat.glb",
+    "scale": 0.05
+  },
+  {
+    "name": "Metal Rough Spheres",
+    "url": "MetalRoughSpheres.glb",
+    "scale": 0.1
+  },
+  {
+    "name": "Hair",
+    "url": "Hair.glb",
+    "scale": 1
+  },
+  {
+    "name": "Tiger",
+    "url": "https://storage.googleapis.com/ar-answers-in-search-models/static/Tiger/model.glb",
+    "scale": 0.75
+  },
+  {
+    "name": "ClearCoat",
+    "url": "ClearCoat.glb",
+    "scale": 0.05
+  },
+  {
+    "name": "Gumball",
+    "url": "Gumball.glb",
+    "scale": 0.5
+  },
+  {
+    "name": "MaterialSuite",
+    "url": "MaterialSuite.glb",
+    "scale": 1
+  },
+  {
+    "name": "Game Boy",
+    "url": "GameBoy.glb",
+    "scale": 1.5
+  },
+  {
+    "name": "Damaged Helmet",
+    "url": "DamagedHelmet.glb",
+    "scale": 0.5
+  },
+  {
+    "name": "Fiat Punto",
+    "url": "FiatPunto.glb",
+    "scale": 0.5
+  }
+]

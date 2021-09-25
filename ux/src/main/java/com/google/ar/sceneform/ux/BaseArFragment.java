@@ -53,6 +53,8 @@ import com.google.ar.sceneform.FrameTime;
 import com.google.ar.sceneform.HitTestResult;
 import com.google.ar.sceneform.Scene;
 import com.google.ar.sceneform.rendering.ModelRenderable;
+import com.gorisse.thomas.sceneform.ArSceneViewKt;
+import com.gorisse.thomas.sceneform.light.LightEstimationConfig;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -488,6 +490,11 @@ public abstract class BaseArFragment extends Fragment
      */
     protected Config onCreateSessionConfig(Session session) {
         Config config = new Config(session);
+        LightEstimationConfig lightEstimationConfig = getArSceneView() != null ?
+                ArSceneViewKt.getLightEstimationConfig(getArSceneView()):null;
+        if(lightEstimationConfig != null) {
+            config.setLightEstimationMode(lightEstimationConfig.getMode());
+        }
         config.setDepthMode(Config.DepthMode.DISABLED);
         config.setPlaneFindingMode(Config.PlaneFindingMode.HORIZONTAL_AND_VERTICAL);
         config.setFocusMode(Config.FocusMode.AUTO);

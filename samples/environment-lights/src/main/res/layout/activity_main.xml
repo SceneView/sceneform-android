@@ -1,0 +1,115 @@
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <variable
+            name="activity"
+            type="com.google.ar.sceneform.samples.environmentlights.MainActivity" />
+    </data>
+
+    <com.google.ar.sceneform.samples.environmentlights.FitsSystemWindowsConstraintLayout
+        android:id="@+id/rootLayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:animateLayoutChanges="true"
+        android:fitsSystemWindows="false"
+        tools:context=".MainActivity">
+
+        <androidx.fragment.app.FragmentContainerView
+            android:id="@+id/arFragment"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:fitsSystemWindows="false"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="0dp"
+            android:layout_height="?actionBarSize"
+            android:fitsSystemWindows="true"
+            android:minHeight="?attr/actionBarSize"
+            android:popupTheme="@style/ThemeOverlay.MaterialComponents.ActionBar"
+            android:theme="@style/AppTheme.Toolbar"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:background="#66000000"
+            android:fitsSystemWindows="true"
+            android:orientation="vertical"
+            android:padding="16dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent">
+
+            <TextView
+                android:id="@+id/estimationModeText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Estimation Mode:" />
+
+            <HorizontalScrollView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp">
+
+                <com.google.android.material.chip.ChipGroup
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:singleLine="true"
+                    app:singleSelection="true">
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/environmentalHdrMode"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checkable="true"
+                        android:checked="true"
+                        android:onCheckedChanged="@{activity.onEstimationModeChanged}"
+                        android:text="Environmental Hdr" />
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/environmentalHdrNoReflections"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checkable="true"
+                        android:onCheckedChanged="@{activity.onEstimationModeChanged}"
+                        android:text="Environmental Hdr no reflections" />
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/environmentalHdrNoSpecularFilter"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checkable="true"
+                        android:onCheckedChanged="@{activity.onEstimationModeChanged}"
+                        android:text="Environmental Hdr no specular filter" />
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/ambientIntensityMode"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checkable="true"
+                        android:onCheckedChanged="@{activity.onEstimationModeChanged}"
+                        android:text="Ambient Intensity" />
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/disabledMode"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checkable="true"
+                        android:onCheckedChanged="@{activity.onEstimationModeChanged}"
+                        android:text="Disabled" />
+
+                </com.google.android.material.chip.ChipGroup>
+            </HorizontalScrollView>
+        </LinearLayout>
+    </com.google.ar.sceneform.samples.environmentlights.FitsSystemWindowsConstraintLayout>
+</layout>

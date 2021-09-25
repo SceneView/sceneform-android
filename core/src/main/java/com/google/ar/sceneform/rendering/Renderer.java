@@ -14,14 +14,17 @@ import com.google.android.filament.Camera;
 import com.google.android.filament.Entity;
 import com.google.android.filament.IndirectLight;
 import com.google.android.filament.Scene;
+import com.google.android.filament.Skybox;
 import com.google.android.filament.SwapChain;
 import com.google.android.filament.TransformManager;
 import com.google.android.filament.View.DynamicResolutionOptions;
 import com.google.android.filament.Viewport;
 import com.google.android.filament.android.UiHelper;
 import com.google.ar.sceneform.utilities.AndroidPreconditions;
-import com.google.ar.sceneform.utilities.EnvironmentalHdrParameters;
 import com.google.ar.sceneform.utilities.Preconditions;
+import com.gorisse.thomas.sceneform.environment.Environment;
+import com.gorisse.thomas.sceneform.scene.CameraKt;
+import com.gorisse.thomas.sceneform.scene.SceneKt;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -35,17 +38,6 @@ import java.util.List;
  * @hide Not a public facing API for version 1.0
  */
 public class Renderer implements UiHelper.RendererCallback {
-    // Default camera settings are used everwhere that ARCore HDR Lighting (Deeplight) is disabled or
-    // unavailable.
-    private static final float DEFAULT_CAMERA_APERATURE = 4.0f;
-    private static final float DEFAULT_CAMERA_SHUTTER_SPEED = 1.0f / 30.0f;
-    private static final float DEFAULT_CAMERA_ISO = 320.0f;
-
-    // HDR lighting camera settings are chosen to provide an exposure value of 1.0.  These are used
-    // when ARCore HDR Lighting is enabled in Sceneform.
-    private static final float ARCORE_HDR_LIGHTING_CAMERA_APERATURE = 1.0f;
-    private static final float ARCORE_HDR_LIGHTING_CAMERA_SHUTTER_SPEED = 1.2f;
-    private static final float ARCORE_HDR_LIGHTING_CAMERA_ISO = 100.0f;
 
     private static final Color DEFAULT_CLEAR_COLOR = new Color(0.0f, 0.0f, 0.0f, 1.0f);
 
@@ -57,24 +49,31 @@ public class Renderer implements UiHelper.RendererCallback {
     private final ArrayList<LightInstance> lightInstances = new ArrayList<>();
     private final double[] cameraProjectionMatrix = new double[16];
     private final List<Mirror> mirrors = new ArrayList<>();
-    @Nullable private CameraProvider cameraProvider;
+    @Nullable
+    private CameraProvider cameraProvider;
     private Surface surface;
-    @Nullable private SwapChain swapChain;
+    @Nullable
+    private SwapChain swapChain;
     private com.google.android.filament.View view;
     private com.google.android.filament.View emptyView;
     private com.google.android.filament.Renderer renderer;
+
     private Camera camera;
     private Scene scene;
-    private IndirectLight indirectLight;
+
+    public Environment environment = null;
+
+    @Entity
+    public Integer mainLight = null;
+
     private boolean recreateSwapChain;
-    private float cameraAperature;
-    private float cameraShutterSpeed;
-    private float cameraIso;
+
     private UiHelper filamentHelper;
-    private EnvironmentalHdrParameters environmentalHdrParameters =
-            EnvironmentalHdrParameters.makeDefault();
-    @Nullable private Runnable onFrameRenderDebugCallback = null;
-    @Nullable private PreRenderCallback preRenderCallback;
+
+    @Nullable
+    private Runnable onFrameRenderDebugCallback = null;
+    @Nullable
+    private PreRenderCallback preRenderCallback;
 
     /**
      * @hide
@@ -286,20 +285,20 @@ public class Renderer implements UiHelper.RendererCallback {
     }
 
     private void renderToMirror(com.google.android.filament.View currentView) {
-      synchronized (mirrors) {
-        for (Mirror mirror : mirrors) {
-          if (mirror.swapChain != null) {
-            renderer.copyFrame(
-                    mirror.swapChain,
-                    getLetterboxViewport(currentView.getViewport(), mirror.viewport),
-                    currentView.getViewport(),
-                    com.google.android.filament.Renderer.MIRROR_FRAME_FLAG_COMMIT
-                            | com.google.android.filament.Renderer
-                            .MIRROR_FRAME_FLAG_SET_PRESENTATION_TIME
-                            | com.google.android.filament.Renderer.MIRROR_FRAME_FLAG_CLEAR);
-          }
+        synchronized (mirrors) {
+            for (Mirror mirror : mirrors) {
+                if (mirror.swapChain != null) {
+                    renderer.copyFrame(
+                            mirror.swapChain,
+                            getLetterboxViewport(currentView.getViewport(), mirror.viewport),
+                            currentView.getViewport(),
+                            com.google.android.filament.Renderer.MIRROR_FRAME_FLAG_COMMIT
+                                    | com.google.android.filament.Renderer
+                                    .MIRROR_FRAME_FLAG_SET_PRESENTATION_TIME
+                                    | com.google.android.filament.Renderer.MIRROR_FRAME_FLAG_CLEAR);
+                }
+            }
         }
-      }
     }
 
     /**
@@ -310,11 +309,8 @@ public class Renderer implements UiHelper.RendererCallback {
         updateMirrorConfig();
 
         @Nullable SwapChain swapChainLocal = swapChain;
-        if(swapChainLocal == null)
+        if (swapChainLocal == null)
             return;
-        /*if (swapChainLocal == null) {
-            throw new AssertionError("Internal Error: Failed to get swap chain");
-        }*/
 
         // Render the scene, unless the renderer wants to skip the frame.
         // This means you are sending frames too quickly to the GPU
@@ -372,12 +368,10 @@ public class Renderer implements UiHelper.RendererCallback {
         filamentHelper.detach(); // call this before destroying the Engine (it could call back)
 
         final IEngine engine = EngineInstance.getEngine();
-        if (indirectLight != null) {
-            engine.destroyIndirectLight(indirectLight);
-        }
         engine.destroyRenderer(renderer);
         engine.destroyView(view);
         engine.destroyView(emptyView);
+        CameraKt.destroy(camera);
 
         reclaimReleasedResources();
     }
@@ -387,28 +381,70 @@ public class Renderer implements UiHelper.RendererCallback {
     }
 
     /**
-     * Set the Light Probe used for reflections and indirect light.
-     *
-     * @hide the scene level API is publicly exposed, this is used by the Scene internally.
+     * Retrieve the Filament camera used by the renderer
      */
-    public void setLightProbe(LightProbe lightProbe) {
-        if (lightProbe == null) {
-            throw new AssertionError("Passed in an invalid light probe.");
+    public Camera getCamera() {
+        return camera;
+    }
+
+
+    /**
+     * ### Get the lighting environment and the skybox of the scene
+     */
+    public Environment getEnvironment() {
+        return environment;
+    }
+
+    /**
+     * ### Defines the lighting environment and the skybox of the scene
+     */
+    public void setEnvironment(Environment environment) {
+        this.environment = environment;
+        SceneKt.setEnvironment(scene, environment);
+    }
+
+    /**
+     * ### Get the main directional light of the scene
+     * <p>
+     * Usually the Sun.
+     */
+    public @Entity Integer getMainLight() {
+        return mainLight;
+    }
+
+    /**
+     * ### Defines the main directional light of the scene
+     * <p>
+     * Usually the Sun.
+     */
+    public void setMainLight(@Entity Integer light) {
+        if (mainLight != null) {
+            removeLight(mainLight);
         }
-        final IndirectLight latestIndirectLight = lightProbe.buildIndirectLight();
-        if (latestIndirectLight != null) {
-            scene.setIndirectLight(latestIndirectLight);
-            if (indirectLight != null && indirectLight != latestIndirectLight) {
-                final IEngine engine = EngineInstance.getEngine();
-                engine.destroyIndirectLight(indirectLight);
-            }
-            indirectLight = latestIndirectLight;
+        this.mainLight = light;
+        if (light != null) {
+            addLight(light);
         }
     }
 
     /**
-     * @hide
+     * Sets the environment light used for reflections and indirect light.
+     *
+     * @param indirectLight the IndirectLight to use when rendering the Scene or null to unset.
      */
+    public void setIndirectLight(IndirectLight indirectLight) {
+        scene.setIndirectLight(indirectLight);
+    }
+
+    /**
+     * Sets the Skybox. The Skybox is drawn last and covers all pixels not touched by geometry.
+     *
+     * @param skybox – the Skybox to use to fill untouched pixels, or null to unset the Skybox.
+     */
+    public void setSkybox(Skybox skybox) {
+        scene.setSkybox(skybox);
+    }
+
     public void setDesiredSize(int width, int height) {
         int minor = Math.min(width, height);
         int major = Math.max(width, height);
@@ -525,25 +561,6 @@ public class Renderer implements UiHelper.RendererCallback {
         return;
     }
 
-
-    /**
-     * Getter to help convert between filament and Environmental HDR.
-     *
-     * @hide This may be removed in the future
-     */
-    public EnvironmentalHdrParameters getEnvironmentalHdrParameters() {
-        return environmentalHdrParameters;
-    }
-
-    /**
-     * Setter to help convert between filament and Environmental HDR.
-     *
-     * @hide This may be removed in the future
-     */
-    public void setEnvironmentalHdrParameters(EnvironmentalHdrParameters environmentalHdrParameters) {
-        this.environmentalHdrParameters = environmentalHdrParameters;
-    }
-
     /**
      * @hide UiHelper.RendererCallback implementation
      */
@@ -553,12 +570,27 @@ public class Renderer implements UiHelper.RendererCallback {
         emptyView.setViewport(new Viewport(0, 0, width, height));
     }
 
+    public void addEntity(@Entity int entity) {
+        scene.addEntity(entity);
+    }
+
+    public void removeEntity(@Entity int entity) {
+        scene.removeEntity(entity);
+    }
+
+    public void addLight(@Entity int entity) {
+        addEntity(entity);
+    }
+
+    public void removeLight(@Entity int entity) {
+        removeEntity(entity);
+    }
+
     /**
      * @hide
      */
     void addLight(LightInstance instance) {
-        @Entity int entity = instance.getEntity();
-        scene.addEntity(entity);
+        addEntity(instance.getEntity());
         lightInstances.add(instance);
     }
 
@@ -566,8 +598,7 @@ public class Renderer implements UiHelper.RendererCallback {
      * @hide
      */
     void removeLight(LightInstance instance) {
-        @Entity int entity = instance.getEntity();
-        scene.remove(entity);
+        removeEntity(instance.getEntity());
         lightInstances.remove(instance);
     }
 
@@ -576,17 +607,11 @@ public class Renderer implements UiHelper.RendererCallback {
         return;
     }
 
-
-    private void removeModelInstanceInternal(RenderableInstance instance) {
-        return;
-    }
-
-
     /**
      * @hide
      */
     void addInstance(RenderableInstance instance) {
-        scene.addEntity(instance.getRenderedEntity());
+        addEntity(instance.getRenderedEntity());
         addModelInstanceInternal(instance);
         renderableInstances.add(instance);
     }
@@ -595,8 +620,7 @@ public class Renderer implements UiHelper.RendererCallback {
      * @hide
      */
     void removeInstance(RenderableInstance instance) {
-        removeModelInstanceInternal(instance);
-        scene.remove(instance.getRenderedEntity());
+        removeEntity(instance.getRenderedEntity());
         renderableInstances.remove(instance);
     }
 
@@ -624,7 +648,6 @@ public class Renderer implements UiHelper.RendererCallback {
         view = engine.createView();
         emptyView = engine.createView();
         camera = engine.createCamera();
-        setUseHdrLightEstimate(false);
 
         setDefaultClearColor();
         view.setCamera(camera);
@@ -634,31 +657,6 @@ public class Renderer implements UiHelper.RendererCallback {
 
         emptyView.setCamera(engine.createCamera());
         emptyView.setScene(engine.createScene());
-    }
-
-    public void setUseHdrLightEstimate(boolean useHdrLightEstimate) {
-        if (useHdrLightEstimate) {
-            cameraAperature = ARCORE_HDR_LIGHTING_CAMERA_APERATURE;
-            cameraShutterSpeed = ARCORE_HDR_LIGHTING_CAMERA_SHUTTER_SPEED;
-            cameraIso = ARCORE_HDR_LIGHTING_CAMERA_ISO;
-        } else {
-            cameraAperature = DEFAULT_CAMERA_APERATURE;
-            cameraShutterSpeed = DEFAULT_CAMERA_SHUTTER_SPEED;
-            cameraIso = DEFAULT_CAMERA_ISO;
-        }
-        // Setup the Camera Exposure values.
-        camera.setExposure(cameraAperature, cameraShutterSpeed, cameraIso);
-    }
-
-    /**
-     * Returns the exposure setting for renderering.
-     *
-     * @hide This is support deeplight API which is not stable yet.
-     */
-
-    public float getExposure() {
-        float e = (cameraAperature * cameraAperature) / cameraShutterSpeed * 100.0f / cameraIso;
-        return 1.0f / (1.2f * e);
     }
 
     private void updateInstances() {
@@ -693,8 +691,10 @@ public class Renderer implements UiHelper.RendererCallback {
     }
 
     private static class Mirror {
-        @Nullable SwapChain swapChain;
-        @Nullable Surface surface;
+        @Nullable
+        SwapChain swapChain;
+        @Nullable
+        Surface surface;
         Viewport viewport;
     }
 }

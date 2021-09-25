@@ -92,11 +92,6 @@ public class FilamentEngineWrapper implements IEngine {
   }
 
   @Override
-  public void destroyCamera(Camera camera) {
-    engine.destroyCameraComponent(camera.getEntity());
-  }
-
-  @Override
   public Scene createScene() {
     return engine.createScene();
   }
