@@ -2,6 +2,7 @@ material {
     name : flat,
     shadingModel : unlit,
     blending : opaque,
+    culling : none,
     parameters : [
         {
             type : samplerExternal,

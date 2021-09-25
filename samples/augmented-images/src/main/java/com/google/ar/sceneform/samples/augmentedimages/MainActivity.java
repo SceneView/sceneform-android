@@ -88,7 +88,6 @@ public class MainActivity extends AppCompatActivity implements
         loadMatrixMaterial();
     }
 
-
     @Override
     public void onAttachFragment(@NonNull FragmentManager fragmentManager, @NonNull Fragment fragment) {
         if (fragment.getId() == R.id.arFragment) {

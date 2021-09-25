@@ -82,7 +82,7 @@ public class MainActivity extends AppCompatActivity implements
                         .setWrapMode(Texture.Sampler.WrapMode.REPEAT)
                         .build())
                 .setSource(this, Uri.parse("textures/parquet.jpg"))
-                .setUsage(Texture.Usage.COLOR)
+                .setUsage(Texture.Usage.COLOR_MAP)
                 .build()
                 .thenAccept(
                         texture -> {

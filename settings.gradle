@@ -2,7 +2,7 @@ include ':core', ':ux', ':sceneform',
         // Samples
         ':sample-gltf', ':sample-sceneview-background',':sample-image-texture',
         ':sample-video-texture', ':sample-augmented-images',':sample-depth',
-        ':sample-environment-lights'
+        ':sample-environment-lights', ':sample-augmented-images'
 
 project(':sample-gltf').projectDir = new File('samples/gltf')
 project(':sample-sceneview-background').projectDir = new File('samples/sceneview-background')
@@ -11,3 +11,4 @@ project(':sample-video-texture').projectDir = new File('samples/video-texture')
 project(':sample-augmented-images').projectDir = new File('samples/augmented-images')
 project(':sample-depth').projectDir = new File(rootDir, 'samples/depth')
 project(':sample-environment-lights').projectDir = new File(rootDir, 'samples/environment-lights')
+project(':sample-augmented-images').projectDir = new File('samples/augmented-images')
