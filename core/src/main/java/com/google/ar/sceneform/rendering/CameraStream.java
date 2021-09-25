@@ -69,7 +69,7 @@ public class CameraStream {
     private final FloatBuffer cameraUvCoords;
     private final FloatBuffer transformedCameraUvCoords;
     private final IEngine engine;
-    private int cameraStreamRenderable = UNINITIALIZED_FILAMENT_RENDERABLE;
+    public int cameraStreamRenderable = UNINITIALIZED_FILAMENT_RENDERABLE;
 
     /**
      * By default the depthMode is set to {@link DepthMode#NO_DEPTH}

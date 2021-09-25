@@ -905,9 +905,7 @@ public class Node extends NodeParent implements TransformProvider {
         }
 
         if (renderableInstance != null) {
-            if (active) {
-                renderableInstance.detachFromRenderer();
-            }
+            renderableInstance.destroy();
             renderableInstance = null;
         }
 

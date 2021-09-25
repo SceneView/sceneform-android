@@ -7,6 +7,7 @@ import com.google.android.filament.Filament;
 import com.google.android.filament.gltfio.Gltfio;
 
 
+import com.google.android.filament.utils.Utils;
 import com.google.ar.sceneform.utilities.Preconditions;
 
 /**
@@ -125,6 +126,8 @@ public class EngineInstance {
           }
         }
       }
+
+      Utils.INSTANCE.init();
 
       engine = new FilamentEngineWrapper(createFilamentEngine());
 

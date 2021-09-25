@@ -15,23 +15,37 @@ import android.view.SurfaceView;
 import androidx.annotation.Nullable;
 
 import com.google.android.filament.ColorGrading;
+import com.google.android.filament.Entity;
+import com.google.android.filament.LightManager;
 import com.google.android.filament.ToneMapper;
 import com.google.android.filament.View;
+import com.google.android.filament.utils.KTXLoader;
 import com.google.ar.sceneform.rendering.Color;
 import com.google.ar.sceneform.rendering.EngineInstance;
 import com.google.ar.sceneform.rendering.Renderer;
 import com.google.ar.sceneform.utilities.AndroidPreconditions;
 import com.google.ar.sceneform.utilities.MovingAverageMillisecondsTracker;
 import com.google.ar.sceneform.utilities.Preconditions;
+import com.gorisse.thomas.sceneform.SceneViewKt;
+import com.gorisse.thomas.sceneform.environment.Environment;
+import com.gorisse.thomas.sceneform.environment.KTXEnvironmentKt;
+import com.gorisse.thomas.sceneform.light.LightKt;
+import com.gorisse.thomas.sceneform.util.ResourceLoaderKt;
 
+import java.io.IOException;
+import java.nio.ByteBuffer;
 import java.util.concurrent.TimeUnit;
 
+import kotlin.jvm.functions.Function1;
 
 /**
  * A Sceneform SurfaceView that manages rendering and interaction with the scene.
  */
 public class SceneView extends SurfaceView implements Choreographer.FrameCallback {
     private static final String TAG = SceneView.class.getSimpleName();
+
+    public static final String DEFAULT_IBL_LOCATION = "environments/default_environment_ibl.ktx";
+    public static final String DEFAULT_SKYBOX_LOCATION = "environments/default_environment_skybox.ktx";
 
     private static final int DEFAULT_MAX_FRAMES_PER_SECONDS = 60;
     private FrameRate frameRate = FrameRate.FULL;
@@ -44,6 +58,12 @@ public class SceneView extends SurfaceView implements Choreographer.FrameCallbac
 
     private Scene scene;
     private volatile boolean debugEnabled = false;
+
+    // Public until full moving to Kotlin
+    public Environment _environment = null;
+    @Entity
+    // Public until full moving to Kotlin
+    public Integer _mainLight;
 
     private boolean isInitialized = false;
 
@@ -231,6 +251,17 @@ public class SceneView extends SurfaceView implements Choreographer.FrameCallbac
         if (renderer != null) {
             renderer.onPause();
         }
+        if (scene != null) {
+            scene.destroy();
+        }
+        if (_environment != null) {
+            _environment.destroy();
+            _environment = null;
+        }
+        if (_mainLight != null) {
+            LightKt.destroy(_mainLight);
+            _mainLight = null;
+        }
     }
 
     /**
@@ -346,6 +377,12 @@ public class SceneView extends SurfaceView implements Choreographer.FrameCallbac
             scene = new Scene(this);
             renderer.setCameraProvider(scene.getCamera());
 
+            _mainLight = LightKt.build(
+                    new LightManager.Builder(LightManager.Type.SUN)
+                            .intensity(LightKt.defaultMainLightIntensity)
+                            .castShadows(true));
+            renderer.setMainLight(_mainLight);
+
             // Change the ToneMapper to FILMIC to avoid some over saturated
             // colors, for example material orange 500.
             renderer.getFilamentView().setColorGrading(
@@ -355,6 +392,28 @@ public class SceneView extends SurfaceView implements Choreographer.FrameCallbac
                             .build(EngineInstance.getEngine().getFilamentEngine())
             );
         }
+
+        // TODO: We load the environment synchronously until SceneView is Kotlined
+//        ViewKt.doOnAttach(this, view -> {
+//            LifecycleCoroutineScope lifecycleScope = LifecycleOwnerKt.getLifecycleScope(
+//                    androidx.lifecycle.ViewKt.findViewTreeLifecycleOwner(SceneView.this));
+//
+//            KTXEnvironmentKt.loadEnvironmentAsync(KTXLoader.INSTANCE, getContext(),
+//                    DEFAULT_IBL_LOCATION, null, lifecycleScope, environment -> {
+//                        SceneViewKt.setEnvironment(SceneView.this, environment);
+//                        return null;
+//                    });
+//            return null;
+//        });
+        try {
+            SceneViewKt.setEnvironment(SceneView.this,
+                    ResourceLoaderKt.useBuffer(getContext().getAssets().open(DEFAULT_IBL_LOCATION),
+                            (Function1<ByteBuffer, Environment>) buffer ->
+                                    KTXEnvironmentKt.createEnvironment(KTXLoader.INSTANCE, buffer)));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
         isInitialized = true;
     }
 

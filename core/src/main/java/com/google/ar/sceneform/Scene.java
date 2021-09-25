@@ -1,21 +1,13 @@
 package com.google.ar.sceneform;
 
-import android.media.Image;
-import android.util.Log;
 import android.view.MotionEvent;
 
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 
 import com.google.ar.sceneform.collision.Collider;
 import com.google.ar.sceneform.collision.CollisionSystem;
 import com.google.ar.sceneform.collision.Ray;
-import com.google.ar.sceneform.rendering.Color;
-import com.google.ar.sceneform.rendering.LightProbe;
 import com.google.ar.sceneform.rendering.Renderer;
-import com.google.ar.sceneform.utilities.AndroidPreconditions;
-import com.google.ar.sceneform.utilities.EnvironmentalHdrParameters;
-import com.google.ar.sceneform.utilities.LoadHelper;
 import com.google.ar.sceneform.utilities.Preconditions;
 
 import java.util.ArrayList;
@@ -82,43 +74,16 @@ public class Scene extends NodeParent {
     }
 
     private static final String TAG = Scene.class.getSimpleName();
-    private static final String DEFAULT_LIGHTPROBE_ASSET_NAME = "small_empty_house_2k";
-    private static final String DEFAULT_LIGHTPROBE_RESOURCE_NAME = "sceneform_default_light_probe";
-    private static final float DEFAULT_EXPOSURE = 1.0f;
-    public static final EnvironmentalHdrParameters DEFAULT_HDR_PARAMETERS =
-            EnvironmentalHdrParameters.makeDefault();
 
-    private final Camera camera;
-    @Nullable
-    private final Sun sunlightNode;
     @Nullable
     private final SceneView view;
-    @Nullable
-    private LightProbe lightProbe;
-    private boolean lightProbeSet = false;
-    private boolean isUnderTesting = false;
+    private Camera camera;
 
     // Systems.
     final CollisionSystem collisionSystem = new CollisionSystem();
     private final TouchEventSystem touchEventSystem = new TouchEventSystem();
 
     private final ArrayList<OnUpdateListener> onUpdateListeners = new ArrayList<>();
-
-    @SuppressWarnings("VisibleForTestingUsed")
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    Scene() {
-        view = null;
-        lightProbe = null;
-        camera = new Camera(true);
-        if (!AndroidPreconditions.isMinAndroidApiLevel()) {
-            // Enforce min api level 24
-            sunlightNode = null;
-        } else {
-            sunlightNode = new Sun();
-        }
-
-        isUnderTesting = true;
-    }
 
     /**
      * Create a scene with the given context.
@@ -128,15 +93,6 @@ public class Scene extends NodeParent {
         Preconditions.checkNotNull(view, "Parameter \"view\" was null.");
         this.view = view;
         camera = new Camera(this);
-        if (!AndroidPreconditions.isMinAndroidApiLevel()) {
-            // Enforce min api level 24
-            sunlightNode = null;
-            return;
-        }
-        sunlightNode = new Sun(this);
-
-        // Setup the default lighting for the scene, if it exists.
-        setupLightProbe(view);
     }
 
     /**
@@ -161,48 +117,10 @@ public class Scene extends NodeParent {
         return camera;
     }
 
-    /**
-     * Get the default sunlight node.
-     *
-     * @return the sunlight node used to light the scene
-     */
-    @Nullable
-    public Node getSunlight() {
-        return sunlightNode;
-    }
-
-    /**
-     * Get the Light Probe that defines the lighting environment for the scene.
-     *
-     * @return the light probe used for reflections and indirect lighting.
-     * @hide for 1.0 as we don't yet have tools support
-     */
-    public LightProbe getLightProbe() {
-        // the lightProbe field cannot be marked for the purposes of unit testing.
-        // Add this check for static analysis go/nullness.
-        if (lightProbe == null) {
-            throw new IllegalStateException("Scene's lightProbe must not be null.");
-        }
-        return lightProbe;
-    }
-
-    /**
-     * Set a new Light Probe for the scene, this affects reflections and indirect lighting.
-     *
-     * @param lightProbe the fully loaded LightProbe to be used as the lighting environment.
-     * @hide for 1.0 as we don't yet have tools support
-     */
-    public void setLightProbe(LightProbe lightProbe) {
-        Preconditions.checkNotNull(lightProbe, "Parameter \"lightProbe\" was null.");
-        this.lightProbe = lightProbe;
-        this.lightProbeSet = true;
-
-        // the view field cannot be marked for the purposes of unit testing.
-        // Add this check for static analysis go/nullness.
-        if (view == null) {
-            throw new IllegalStateException("Scene's view must not be null.");
-        }
-        Preconditions.checkNotNull(view.getRenderer()).setLightProbe(lightProbe);
+    public void destroy() {
+        //TODO : Destroy the camera
+//        camera.destroy();
+        camera = null;
     }
 
     /**
@@ -417,95 +335,16 @@ public class Scene extends NodeParent {
     }
 
     /**
-     * Returns true if this Scene was created by a test.
+     * Returns the renderer used for this scene, or null if the renderer is not setup.
      */
-    boolean isUnderTesting() {
-        return isUnderTesting;
-    }
-
-    /**
-     * Sets whether the Scene should expect to use an Hdr light estimate, so that Filament light
-     * settings can be adjusted appropriately.
-     *
-     * @hide intended for use by other Sceneform packages which update Hdr lighting every frame.
-     */
-
-    public void setUseHdrLightEstimate(boolean useHdrLightEstimate) {
-        if (view != null) {
-            Renderer renderer = Preconditions.checkNotNull(view.getRenderer());
-            renderer.setUseHdrLightEstimate(useHdrLightEstimate);
-        }
-    }
-
-    /**
-     * Sets the current Hdr Light Estimate state to apply to the Filament scene.
-     *
-     * @hide intended for use by other Sceneform packages which update Hdr lighting every frame.
-     */
-    // incompatible types in argument.
-    @SuppressWarnings("nullness:argument.type.incompatible")
-
-    public void setEnvironmentalHdrLightEstimate(
-            @Nullable float[] sphericalHarmonics,
-            @Nullable float[] direction,
-            Color colorCorrection,
-            float relativeIntensity,
-            @Nullable Image[] cubeMap) {
-        float exposure;
-        EnvironmentalHdrParameters hdrParameters;
-        if (view == null) {
-            exposure = DEFAULT_EXPOSURE;
-            hdrParameters = DEFAULT_HDR_PARAMETERS;
-        } else {
-            Renderer renderer = Preconditions.checkNotNull(view.getRenderer());
-            exposure = renderer.getExposure();
-            hdrParameters = renderer.getEnvironmentalHdrParameters();
-        }
-
-        if (lightProbe != null) {
-            if (sphericalHarmonics != null) {
-                lightProbe.setEnvironmentalHdrSphericalHarmonics(
-                        sphericalHarmonics, exposure, hdrParameters);
-            }
-            if (cubeMap != null) {
-                lightProbe.setCubeMap(cubeMap);
-            }
-            setLightProbe(lightProbe);
-        }
-        if (sunlightNode != null && direction != null) {
-            sunlightNode.setEnvironmentalHdrLightEstimate(
-                    direction, colorCorrection, relativeIntensity, exposure, hdrParameters);
-        }
-    }
-
-    /**
-     * Sets light estimate to modulate the scene lighting and intensity. The rendered lights will use
-     * a combination of these values and the color and intensity of the lights. A value of a white
-     * colorCorrection and pixelIntensity of 1 mean that no changes are made to the light settings.
-     *
-     * <p>This is used by AR Sceneform scenes internally to adjust lighting based on values from
-     * ARCore. An AR scene will call this automatically, possibly overriding other settings. In most
-     * cases, you should not need to call this explicitly.
-     *
-     * @param colorCorrection modulates the lighting color of the scene.
-     * @param pixelIntensity  modulates the lighting intensity of the scene.
-     */
-    public void setLightEstimate(Color colorCorrection, float pixelIntensity) {
-        if (lightProbe != null) {
-            lightProbe.setLightEstimate(colorCorrection, pixelIntensity);
-            // TODO: The following call is not public (@hide). When public, ensure that it is
-            // not possible to forget to call setLightProbe after changing the light estimate of a light
-            // probe.
-            setLightProbe(lightProbe);
-        }
-        if (sunlightNode != null) {
-            sunlightNode.setLightEstimate(colorCorrection, pixelIntensity);
-        }
+    @Nullable
+    public Renderer getRenderer() {
+        return view != null ? view.getRenderer() : null;
     }
 
     void onTouchEvent(MotionEvent motionEvent) {
         Preconditions.checkNotNull(motionEvent, "Parameter \"motionEvent\" was null.");
-        
+
         HitTestResult hitTestResult = hitTest(motionEvent, true);
         touchEventSystem.onTouchEvent(hitTestResult, motionEvent);
     }
@@ -516,44 +355,5 @@ public class Scene extends NodeParent {
         }
 
         callOnHierarchy(node -> node.dispatchUpdate(frameTime));
-    }
-
-    @SuppressWarnings({"AndroidApiChecker", "FutureReturnValueIgnored"})
-    private void setupLightProbe(SceneView view) {
-        Preconditions.checkNotNull(view, "Parameter \"view\" was null.");
-
-        int defaultLightProbeId =
-                LoadHelper.rawResourceNameToIdentifier(view.getContext(), DEFAULT_LIGHTPROBE_RESOURCE_NAME);
-
-        if (defaultLightProbeId == LoadHelper.INVALID_RESOURCE_IDENTIFIER) {
-            // TODO: Better log message.
-            Log.w(
-                    TAG,
-                    "Unable to find the default Light Probe."
-                            + " The scene will not be lit unless a light probe is set.");
-            return;
-        }
-
-        try {
-            LightProbe.builder()
-                    .setSource(view.getContext(), defaultLightProbeId)
-                    .setAssetName(DEFAULT_LIGHTPROBE_ASSET_NAME)
-                    .build()
-                    .thenAccept(
-                            result -> {
-                                // Set when setLightProbe is called so that we don't override the user setting.
-                                if (!lightProbeSet) {
-                                    setLightProbe(result);
-                                }
-                            })
-                    .exceptionally(
-                            throwable -> {
-                                Log.e(TAG, "Failed to create the default Light Probe: ", throwable);
-                                return null;
-                            });
-        } catch (Exception ex) {
-            throw new IllegalStateException(
-                    "Failed to create the default Light Probe: " + ex.getLocalizedMessage());
-        }
     }
 }
