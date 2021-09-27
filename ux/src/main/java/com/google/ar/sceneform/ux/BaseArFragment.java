@@ -36,6 +36,7 @@ import androidx.fragment.app.FragmentActivity;
 import com.google.ar.core.ArCoreApk;
 import com.google.ar.core.AugmentedImage;
 import com.google.ar.core.AugmentedImageDatabase;
+import com.google.ar.core.CameraConfig;
 import com.google.ar.core.Config;
 import com.google.ar.core.Frame;
 import com.google.ar.core.HitResult;
@@ -454,6 +455,10 @@ public abstract class BaseArFragment extends Fragment
                 if (this.onSessionConfigurationListener != null) {
                     this.onSessionConfigurationListener.onSessionConfiguration(session, config);
                 }
+                if (session.getCameraConfig().getFacingDirection() == CameraConfig.FacingDirection.FRONT
+                        && config.getLightEstimationMode() == Config.LightEstimationMode.ENVIRONMENTAL_HDR) {
+                    config.setLightEstimationMode(Config.LightEstimationMode.DISABLED);
+                }
                 session.configure(config);
                 setSession(session);
                 return;
@@ -491,8 +496,8 @@ public abstract class BaseArFragment extends Fragment
     protected Config onCreateSessionConfig(Session session) {
         Config config = new Config(session);
         LightEstimationConfig lightEstimationConfig = getArSceneView() != null ?
-                ArSceneViewKt.getLightEstimationConfig(getArSceneView()):null;
-        if(lightEstimationConfig != null) {
+                ArSceneViewKt.getLightEstimationConfig(getArSceneView()) : null;
+        if (lightEstimationConfig != null) {
             config.setLightEstimationMode(lightEstimationConfig.getMode());
         }
         config.setDepthMode(Config.DepthMode.DISABLED);

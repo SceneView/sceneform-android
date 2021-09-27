@@ -1,5 +1,6 @@
 package com.gorisse.thomas.sceneform
 
+import com.google.ar.core.Config
 import com.google.ar.sceneform.ArSceneView
 import com.gorisse.thomas.sceneform.light.*
 
@@ -30,13 +31,20 @@ import com.gorisse.thomas.sceneform.light.*
  * @see LightEstimationConfig.SPECTACULAR
  * @see LightEstimationConfig.AMBIENT_INTENSITY
  */
-var ArSceneView.lightEstimationConfig: LightEstimationConfig get() = _lightEstimationConfig
+var ArSceneView.lightEstimationConfig: LightEstimationConfig
+    get() = _lightEstimationConfig ?: LightEstimationConfig().also {
+        _lightEstimationConfig = it
+    }
     set(value) {
-        if(_lightEstimationConfig != value) {
-            if(value.mode != sessionConfig?.lightEstimationMode) {
-               setSessionConfig(sessionConfig?.apply {
-                   lightEstimationMode = value.mode
-               }, true)
+        if (_lightEstimationConfig != value) {
+            if (sessionConfig != null && value.mode != sessionConfig?.lightEstimationMode) {
+                setSessionConfig(sessionConfig?.apply {
+                    lightEstimationMode = value.mode
+                }, true)
+            }
+            mainLight?.intensity = when (value.mode) {
+                Config.LightEstimationMode.DISABLED -> defaultMainLightIntensity
+                else -> sunnyDayMainLightIntensity
             }
             estimatedEnvironmentLights = null
             _lightEstimationConfig = value
@@ -54,18 +62,18 @@ var ArSceneView.estimatedEnvironmentLights: EnvironmentLightsEstimate?
     get() = _estimatedEnvironmentLights
     internal set(value) {
         val environment = value?.environment ?: environment
-        if(renderer?.getEnvironment() != environment) {
-            if(_estimatedEnvironmentLights?.environment != environment) {
+        if (renderer?.getEnvironment() != environment) {
+            if (_estimatedEnvironmentLights?.environment != environment) {
                 _estimatedEnvironmentLights?.environment?.destroy()
             }
             renderer?.setEnvironment(environment)
         }
         val mainLight = value?.mainLight ?: mainLight
-        if(renderer?.getMainLight() != mainLight) {
-            if(_estimatedEnvironmentLights?.mainLight != mainLight) {
+        if (renderer?.getMainLight() != mainLight) {
+            if (_estimatedEnvironmentLights?.mainLight != mainLight) {
                 _estimatedEnvironmentLights?.mainLight?.destroy()
             }
             renderer?.setMainLight(mainLight)
         }
-        _estimatedEnvironmentLights= value
+        _estimatedEnvironmentLights = value
     }

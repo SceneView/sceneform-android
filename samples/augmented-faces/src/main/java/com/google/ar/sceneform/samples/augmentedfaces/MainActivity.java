@@ -20,7 +20,7 @@ import com.google.ar.sceneform.rendering.RenderableInstance;
 import com.google.ar.sceneform.rendering.Texture;
 import com.google.ar.sceneform.ux.ArFragment;
 import com.google.ar.sceneform.ux.AugmentedFaceNode;
-import com.google.ar.sceneform.ux.FaceArFragment;
+import com.google.ar.sceneform.ux.ArFrontFacingFragment;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -33,7 +33,7 @@ public class MainActivity extends AppCompatActivity {
 
     private final Set<CompletableFuture<?>> loaders = new HashSet<>();
 
-    private FaceArFragment arFragment;
+    private ArFrontFacingFragment arFragment;
     private ArSceneView arSceneView;
 
     private Texture faceTexture;
@@ -52,7 +52,7 @@ public class MainActivity extends AppCompatActivity {
         if (savedInstanceState == null) {
             if (Sceneform.isSupported(this)) {
                 getSupportFragmentManager().beginTransaction()
-                        .add(R.id.arFragment, FaceArFragment.class, null)
+                        .add(R.id.arFragment, ArFrontFacingFragment.class, null)
                         .commit();
             }
         }
@@ -63,7 +63,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void onAttachFragment(@NonNull FragmentManager fragmentManager, @NonNull Fragment fragment) {
         if (fragment.getId() == R.id.arFragment) {
-            arFragment = (FaceArFragment) fragment;
+            arFragment = (ArFrontFacingFragment) fragment;
             arFragment.setOnViewCreatedListener(this::onViewCreated);
         }
     }

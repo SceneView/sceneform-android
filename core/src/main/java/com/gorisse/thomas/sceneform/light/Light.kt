@@ -6,9 +6,13 @@ import com.google.android.filament.LightManager
 import com.gorisse.thomas.sceneform.*
 
 /**
- * Default sun directional light intensity.
+ * Default directional light intensity.
  */
-const val defaultMainLightIntensity = 100_000.0f
+const val defaultMainLightIntensity = 5_000.0f
+/**
+ * Default sunny day sun directional light intensity
+ */
+const val sunnyDayMainLightIntensity = 100_000.0f
 
 typealias Light = Int
 typealias LightInstance = Int

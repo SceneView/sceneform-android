@@ -107,6 +107,7 @@ data class LightEstimationConfig @JvmOverloads constructor(
          *
          * The reflected environment will the one given by ARCore
          */
+        @JvmField
         val REALISTIC = LightEstimationConfig(
             mode = Config.LightEstimationMode.ENVIRONMENTAL_HDR,
             environmentalHdrSpecularFilter = true
@@ -122,6 +123,7 @@ data class LightEstimationConfig @JvmOverloads constructor(
          *
          * The reflected environment will the one given by ARCore
          */
+        @JvmField
         val SPECTACULAR = LightEstimationConfig(
             mode = Config.LightEstimationMode.ENVIRONMENTAL_HDR,
             environmentalHdrSpecularFilter = false
@@ -133,8 +135,20 @@ data class LightEstimationConfig @JvmOverloads constructor(
          * The reflected environment will the default one or the one defined by
          * [com.google.ar.sceneform.SceneView.environment]
          */
+        @JvmField
         val AMBIENT_INTENSITY =
             LightEstimationConfig(mode = Config.LightEstimationMode.AMBIENT_INTENSITY)
+
+
+        /**
+         * ### Use this mode if you only want to disable all ARCore light estimation lights
+         *
+         * The reflected environment will the default one or the one defined by
+         * [com.google.ar.sceneform.SceneView.environment]
+         */
+        @JvmField
+        val DISABLED =
+            LightEstimationConfig(mode = Config.LightEstimationMode.DISABLED)
     }
 }
 

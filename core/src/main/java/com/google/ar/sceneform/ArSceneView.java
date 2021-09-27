@@ -8,7 +8,6 @@ import android.view.Display;
 import android.view.WindowManager;
 
 import androidx.annotation.IntRange;
-import androidx.annotation.IntRange;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 
@@ -67,7 +66,7 @@ public class ArSceneView extends SceneView {
      * @see ArSceneViewKt#setEstimatedEnvironmentLights(ArSceneView, EnvironmentLightsEstimate)
      * @see ArSceneViewKt#getEstimatedEnvironmentLights(ArSceneView)
      */
-    public LightEstimationConfig _lightEstimationConfig = new LightEstimationConfig();
+    public LightEstimationConfig _lightEstimationConfig;
 
     private AtomicBoolean isProcessingFrame = new AtomicBoolean(false);
     @Nullable
@@ -185,6 +184,13 @@ public class ArSceneView extends SceneView {
         int fpsBound = session.getCameraConfig().getFpsRange().getUpper();
         setMaxFramesPerSeconds(fpsBound);
 
+        // Light estimation is not usable with front camera
+        if (session.getCameraConfig().getFacingDirection() == FacingDirection.FRONT
+                && ArSceneViewKt.getLightEstimationConfig(this).getMode()
+                != Config.LightEstimationMode.DISABLED) {
+            ArSceneViewKt.setLightEstimationConfig(this, LightEstimationConfig.DISABLED);
+        }
+
         setSessionConfig(session.getConfig(), false);
     }
 
@@ -192,7 +198,7 @@ public class ArSceneView extends SceneView {
      * The session config used by this View.
      */
     public Config getSessionConfig() {
-        return session.getConfig();
+        return session != null ? session.getConfig() : null;
     }
 
     /**
