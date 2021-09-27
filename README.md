@@ -8,9 +8,21 @@ Sceneform Maintained SDK for Android
 #### Maintained and continued by [Nikita Zaytsev](https://github.com/grassydragon), [Vojta Maiwald](https://github.com/VojtaMaiwald), [Brigido Rodriguez](https://github.com/imbrig), [Fvito](https://github.com/fvito), [Marius Kajczuga](https://github.com/Venthorus), [Robert Gregat](https://github.com/RGregat) and [Thomas Gorisse](https://github.com/ThomasGorisse)
 
 
-#### If you are using this repo and like it, please consider helping contributors by clicking on this button:
-[![Sponsor](https://user-images.githubusercontent.com/6597529/124039823-f4197c00-da03-11eb-9e65-175d506a00d2.png)](https://github.com/sponsors/ThomasGorisse)
+---
 
+## We need sponsoring to continue...
+After one year of days and nights working on Scenform Maintained, we didn't get even $1 sponsoring.
+
+### Sceneform Maintained is not only a quick library for helping developers but a complete AR SDK.
+
+After a quick look at the Play Store, we can see that they are a lot of paying users (billions for some) apps that are using this SDK.
+I'm not looking forward to earn a living with Sceneform Maintained but every work that make you earn money should also be remunerated/redistributed to this repository contributors.
+
+### So my personnal decision for now is to keep the new features (Instant placement, depth points, objects detection, environment skybox,..) private and spend my time on personal remunerative apps until I get a descent sponsoring.
+
+Note that this is only my personal choice but other contributors can still make PR.
+
+---
 
 
 ### Sceneform is a 3D framework with a physically based renderer that's optimized for mobile devices and that makes it easy for you to build Augmented Reality (AR) apps without requiring OpenGL or Unity.
