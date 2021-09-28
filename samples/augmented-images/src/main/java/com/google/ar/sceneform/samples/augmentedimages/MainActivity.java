@@ -122,7 +122,6 @@ public class MainActivity extends AppCompatActivity implements
         arFragment.setOnAugmentedImageUpdateListener(this::onAugmentedImageTrackingUpdate);
     }
 
-
     @Override
     protected void onDestroy() {
         super.onDestroy();
@@ -195,8 +194,9 @@ public class MainActivity extends AppCompatActivity implements
 
     public void onAugmentedImageTrackingUpdate(AugmentedImage augmentedImage) {
         // If there are both images already detected, for better CPU usage we do not need scan for them
-        if (matrixDetected && rabbitDetected)
+        if (matrixDetected && rabbitDetected) {
             return;
+        }
 
         if (augmentedImage.getTrackingState() == TrackingState.TRACKING
                 && augmentedImage.getTrackingMethod() == AugmentedImage.TrackingMethod.FULL_TRACKING) {

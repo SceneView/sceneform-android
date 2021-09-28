@@ -10,20 +10,16 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
 import com.google.ar.core.AugmentedFace;
-import com.google.ar.core.Frame;
 import com.google.ar.sceneform.ArSceneView;
-import com.google.ar.sceneform.FrameTime;
 import com.google.ar.sceneform.Sceneform;
 import com.google.ar.sceneform.rendering.ModelRenderable;
 import com.google.ar.sceneform.rendering.Renderable;
 import com.google.ar.sceneform.rendering.RenderableInstance;
 import com.google.ar.sceneform.rendering.Texture;
 import com.google.ar.sceneform.ux.ArFragment;
-import com.google.ar.sceneform.ux.AugmentedFaceNode;
 import com.google.ar.sceneform.ux.ArFrontFacingFragment;
+import com.google.ar.sceneform.ux.AugmentedFaceNode;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
@@ -76,7 +72,7 @@ public class MainActivity extends AppCompatActivity {
         arSceneView.setCameraStreamRenderPriority(Renderable.RENDER_PRIORITY_FIRST);
 
         // Check for face detections
-        arSceneView.getScene().addOnUpdateListener(this::onUpdate);
+        arFragment.setOnAugmentedFaceUpdateListener(this::onAugmentedFaceTrackingUpdate);
     }
 
     @Override
@@ -114,47 +110,35 @@ public class MainActivity extends AppCompatActivity {
                 }));
     }
 
-    private void onUpdate(FrameTime frameTime) {
+    public void onAugmentedFaceTrackingUpdate(AugmentedFace augmentedFace) {
         if (faceModel == null || faceTexture == null) {
             return;
         }
 
-        Frame frame = arFragment.getArSceneView().getArFrame();
+        AugmentedFaceNode existingFaceNode = facesNodes.get(augmentedFace);
 
-        // Get a list of AugmentedFace which are updated on this frame.
-        Collection<AugmentedFace> augmentedFaces = frame.getUpdatedTrackables(AugmentedFace.class);
+        switch (augmentedFace.getTrackingState()) {
+            case TRACKING:
+                if (existingFaceNode == null) {
+                    AugmentedFaceNode faceNode = new AugmentedFaceNode(augmentedFace);
 
-        // TODO: Check the difference with getAllTrackables.
-        //  See: https://stackoverflow.com/questions/49241526/what-is-the-difference-between-session-getalltrackables-and-frame-getupdatedtrac
-        //  Collection<AugmentedFace> augmentedFaces = arSceneView.getSession().getAllTrackables(AugmentedFace.class);
+                    RenderableInstance modelInstance = faceNode.setFaceRegionsRenderable(faceModel);
+                    modelInstance.setShadowCaster(false);
+                    modelInstance.setShadowReceiver(true);
 
-        // Make new AugmentedFaceNodes for any new faces.
-        for (AugmentedFace augmentedFace : new ArrayList<>(augmentedFaces)) {
-            AugmentedFaceNode existingFaceNode = facesNodes.get(augmentedFace);
+                    faceNode.setFaceMeshTexture(faceTexture);
 
-            switch (augmentedFace.getTrackingState()) {
-                case TRACKING:
-                    if (existingFaceNode == null) {
-                        AugmentedFaceNode faceNode = new AugmentedFaceNode(augmentedFace);
+                    arSceneView.getScene().addChild(faceNode);
 
-                        RenderableInstance modelInstance = faceNode.setFaceRegionsRenderable(faceModel);
-                        modelInstance.setShadowCaster(false);
-                        modelInstance.setShadowReceiver(true);
-
-                        faceNode.setFaceMeshTexture(faceTexture);
-
-                        arSceneView.getScene().addChild(faceNode);
-
-                        facesNodes.put(augmentedFace, faceNode);
-                    }
-                    break;
-                case STOPPED:
-                    if (existingFaceNode != null) {
-                        arSceneView.getScene().removeChild(existingFaceNode);
-                    }
-                    facesNodes.remove(augmentedFace);
-                    break;
-            }
+                    facesNodes.put(augmentedFace, faceNode);
+                }
+                break;
+            case STOPPED:
+                if (existingFaceNode != null) {
+                    arSceneView.getScene().removeChild(existingFaceNode);
+                }
+                facesNodes.remove(augmentedFace);
+                break;
         }
     }
 }

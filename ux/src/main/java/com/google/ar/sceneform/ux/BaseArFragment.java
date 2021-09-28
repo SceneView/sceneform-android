@@ -34,6 +34,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentActivity;
 
 import com.google.ar.core.ArCoreApk;
+import com.google.ar.core.AugmentedFace;
 import com.google.ar.core.AugmentedImage;
 import com.google.ar.core.AugmentedImageDatabase;
 import com.google.ar.core.CameraConfig;
@@ -90,6 +91,8 @@ public abstract class BaseArFragment extends Fragment
     private OnTapArPlaneListener onTapArPlaneListener;
     @Nullable
     private OnAugmentedImageUpdateListener onAugmentedImageUpdateListener;
+    @Nullable
+    private OnAugmentedFaceUpdateListener onAugmentedFaceUpdateListener;
 
     /**
      * Gets the ArSceneView for this fragment.
@@ -153,12 +156,24 @@ public abstract class BaseArFragment extends Fragment
      * is updated.
      * The callback will be invoked on each AugmentedImage update.
      *
-     * @param onAugmentedImageUpdateListener the {@link OnAugmentedImageUpdateListener} to attach
+     * @param listener the {@link OnAugmentedImageUpdateListener} to attach
      * @see AugmentedImage#getTrackingState()
      * @see AugmentedImage#getTrackingMethod()
      */
-    public void setOnAugmentedImageUpdateListener(@Nullable OnAugmentedImageUpdateListener onAugmentedImageUpdateListener) {
-        this.onAugmentedImageUpdateListener = onAugmentedImageUpdateListener;
+    public void setOnAugmentedImageUpdateListener(@Nullable OnAugmentedImageUpdateListener listener) {
+        this.onAugmentedImageUpdateListener = listener;
+    }
+
+    /**
+     * Called when an ARCore AugmentedFace TrackingState is updated.
+     * Registers a callback to be invoked when an ARCore AugmentedFace TrackingState is updated.
+     * The callback will be invoked on each AugmentedFace update.
+     *
+     * @param listener the {@link OnAugmentedFaceUpdateListener} to attach
+     * @see AugmentedFace#getTrackingState()
+     */
+    public void setOnAugmentedFaceUpdateListener(@Nullable OnAugmentedFaceUpdateListener listener) {
+        this.onAugmentedFaceUpdateListener = listener;
     }
 
     @Override
@@ -658,8 +673,16 @@ public abstract class BaseArFragment extends Fragment
             }
         }
 
-        for (AugmentedImage augmentedImage : getArSceneView().getUpdatedAugmentedImages()) {
-            onAugmentedImageUpdateListener.onAugmentedImageTrackingUpdate(augmentedImage);
+        if(onAugmentedImageUpdateListener != null) {
+            for (AugmentedImage augmentedImage : getArSceneView().getUpdatedAugmentedImages()) {
+                onAugmentedImageUpdateListener.onAugmentedImageTrackingUpdate(augmentedImage);
+            }
+        }
+
+        if(onAugmentedFaceUpdateListener != null) {
+            for (AugmentedFace augmentedFace : getArSceneView().getUpdatedAugmentedFaces()) {
+                onAugmentedFaceUpdateListener.onAugmentedFaceTrackingUpdate(augmentedFace);
+            }
         }
     }
 
@@ -730,5 +753,21 @@ public abstract class BaseArFragment extends Fragment
          * @see AugmentedImage#getTrackingMethod()
          */
         void onAugmentedImageTrackingUpdate(AugmentedImage augmentedImage);
+    }
+
+
+    /**
+     * Invoked when an ARCore AugmentedFace state updates.
+     */
+    public interface OnAugmentedFaceUpdateListener {
+        /**
+         * Called when an ARCore AugmentedFace TrackingState is updated.
+         * The callback will be invoked on each AugmentedFace update.
+         *
+         * @param augmentedFace The ARCore AugmentedFace.
+         * @see #setOnAugmentedFaceUpdateListener(OnAugmentedFaceUpdateListener)
+         * @see AugmentedFace#getTrackingState()
+         */
+        void onAugmentedFaceTrackingUpdate(AugmentedFace augmentedFace);
     }
 }

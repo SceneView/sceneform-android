@@ -187,7 +187,6 @@ public class AugmentedFaceNode extends Node {
         updateSubmeshes();
     }
 
-
     public RenderableInstance setFaceRegionsRenderable(ModelRenderable renderable) {
         RenderableInstance renderableInstance = faceRegionNode.setRenderable(renderable);
         updateSubmeshes();

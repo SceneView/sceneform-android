@@ -11,6 +11,7 @@ import androidx.annotation.IntRange;
 import androidx.annotation.Nullable;
 import androidx.annotation.UiThread;
 
+import com.google.ar.core.AugmentedFace;
 import com.google.ar.core.AugmentedImage;
 import com.google.ar.core.Camera;
 import com.google.ar.core.CameraConfig.FacingDirection;
@@ -672,6 +673,56 @@ public class ArSceneView extends SceneView {
     public Collection<AugmentedImage> getUpdatedAugmentedImages(@Nullable TrackingState trackingState
             , @Nullable AugmentedImage.TrackingMethod trackingMethod) {
         return Trackables.getAugmentedImages(updatedTrackables, trackingState, trackingMethod);
+    }
+
+    /**
+     * Retrieve if the view is currently tracking an Augmented Face.
+     *
+     * @return true if the current frame is fully tracking at least one Augmented.
+     */
+    public boolean isTrackingAugmentedFaces() {
+        return getUpdatedAugmentedFaces(TrackingState.TRACKING).size() > 0;
+    }
+
+    /**
+     * Retrieve if the view has already tracked a Augmented Face.
+     *
+     * @return true if the current frame has tracked at least one Augmented Image.
+     */
+    public boolean hasTrackedAugmentedFaces() {
+        return getAllAugmentedFaces(TrackingState.TRACKING).size() > 0;
+    }
+
+    /**
+     * Retrieve the view session tracked Augmented Images.
+     */
+    public Collection<AugmentedFace> getAllAugmentedFaces() {
+        return getAllAugmentedFaces(null);
+    }
+
+    /**
+     * Retrieve the view session tracked Augmented Faces with the specified tracking state.
+     *
+     * @param trackingState  the trackable tracking state or null for no states filter
+     */
+    public Collection<AugmentedFace> getAllAugmentedFaces(@Nullable TrackingState trackingState) {
+        return Trackables.getAugmentedFaces(allTrackables, trackingState);
+    }
+
+    /**
+     * Retrieve the view last frame tracked Augmented Faces.
+     */
+    public Collection<AugmentedFace> getUpdatedAugmentedFaces() {
+        return getUpdatedAugmentedFaces(null);
+    }
+
+    /**
+     * Retrieve the view last frame tracked Augmented Faces with the specified tracking state.
+     *
+     * @param trackingState  the trackable tracking state or null for no states filter
+     */
+    public Collection<AugmentedFace> getUpdatedAugmentedFaces(@Nullable TrackingState trackingState) {
+        return Trackables.getAugmentedFaces(updatedTrackables, trackingState);
     }
 
     /**

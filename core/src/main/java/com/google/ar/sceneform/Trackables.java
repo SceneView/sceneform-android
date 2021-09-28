@@ -2,6 +2,7 @@ package com.google.ar.sceneform;
 
 import androidx.annotation.Nullable;
 
+import com.google.ar.core.AugmentedFace;
 import com.google.ar.core.AugmentedImage;
 import com.google.ar.core.Frame;
 import com.google.ar.core.Plane;
@@ -96,6 +97,46 @@ public class Trackables {
             , @Nullable TrackingState trackingState, @Nullable AugmentedImage.TrackingMethod trackingMethod) {
         return filterTrackables(trackables, AugmentedImage.class, trackingState)
                 .filter(augmentedImage -> trackingMethod == null || augmentedImage.getTrackingMethod() == trackingMethod);
+    }
+
+    /**
+     * Retrieve a filtered collection containing Augmented Faces
+     *
+     * @param trackables the all or updated trackables retrieved from
+     *                   {@link com.google.ar.core.Session#getAllTrackables(Class)}
+     *                   or {@link Frame#getUpdatedTrackables(Class)} depending on your needs.
+     */
+    public static <T extends Trackable> Collection<AugmentedFace> getAugmentedFaces(Collection<T> trackables) {
+        return getAugmentedFaces(trackables, null);
+    }
+
+    /**
+     * Retrieve a filtered collection containing the Augmented Faces with the specified
+     * TrackingState and TrackingMethod
+     *
+     * @param trackables     the all or updated trackables retrieved from
+     *                       {@link com.google.ar.core.Session#getAllTrackables(Class)}
+     *                       or {@link Frame#getUpdatedTrackables(Class)} depending on your needs.
+     * @param trackingState  the trackable tracking state or null for no states filter
+     */
+    public static <T extends Trackable> Collection<AugmentedFace> getAugmentedFaces(Collection<T> trackables
+            , @Nullable TrackingState trackingState) {
+        return filterAugmentedFaces(trackables.stream(), trackingState)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * Retrieve a filtered stream containing the Augmented Faces with the specified
+     * TrackingState and TrackingMethod
+     *
+     * @param trackables     the all or updated trackables retrieved from
+     *                       {@link com.google.ar.core.Session#getAllTrackables(Class)}
+     *                       or {@link Frame#getUpdatedTrackables(Class)} depending on your needs.
+     * @param trackingState  the trackable tracking state or null for no states filter
+     */
+    public static <T extends Trackable> Stream<AugmentedFace> filterAugmentedFaces(Stream<T> trackables
+            , @Nullable TrackingState trackingState) {
+        return filterTrackables(trackables, AugmentedFace.class, trackingState);
     }
 
     /**
