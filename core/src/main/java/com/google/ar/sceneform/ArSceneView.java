@@ -179,7 +179,8 @@ public class ArSceneView extends SceneView {
 
         // Session needs access to a texture id for updating the camera stream.
         // Filament and the Main thread each have their own gl context that share resources for this.
-        session.setCameraTextureName(cameraTextureId);
+        // Reset the hasSetTextureNames variable so that the texture name is set during the first call to onBeginFrame.
+        hasSetTextureNames = false;
 
         // Set max frames per seconds here.
         int fpsBound = session.getCameraConfig().getFpsRange().getUpper();
@@ -450,8 +451,8 @@ public class ArSceneView extends SceneView {
         boolean arFrameUpdated = true;
         try {
             // Texture names should only be set once on a GL thread unless they change.
-            // This is done during onDrawFrame rather than onSurfaceCreated since the session is
-            // not guaranteed to have been initialized during the execution of onSurfaceCreated.
+            // This is done during onBeginFrame rather than setSession since the session is
+            // not guaranteed to have been initialized during the execution of setSession.
             if (!hasSetTextureNames) {
                 session.setCameraTextureName(cameraTextureId);
                 hasSetTextureNames = true;
