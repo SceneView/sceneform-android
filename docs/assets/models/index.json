@@ -1,13 +1,28 @@
 [
   {
-    "name": "Spoons",
-    "url": "Spoons.glb",
-    "scale": 4
+    "name": "MaterialSuite",
+    "url": "MaterialSuite.glb",
+    "scale": 1
   },
   {
     "name": "ClearCoat",
     "url": "ClearCoat.glb",
     "scale": 0.05
+  },
+  {
+    "name": "Fiat Punto",
+    "url": "FiatPunto.glb",
+    "scale": 0.5
+  },
+  {
+    "name": "Tiger",
+    "url": "https://storage.googleapis.com/ar-answers-in-search-models/static/Tiger/model.glb",
+    "scale": 0.75
+  },
+  {
+    "name": "Spoons",
+    "url": "Spoons.glb",
+    "scale": 4
   },
   {
     "name": "Metal Rough Spheres",
@@ -20,24 +35,9 @@
     "scale": 1
   },
   {
-    "name": "Tiger",
-    "url": "https://storage.googleapis.com/ar-answers-in-search-models/static/Tiger/model.glb",
-    "scale": 0.75
-  },
-  {
-    "name": "ClearCoat",
-    "url": "ClearCoat.glb",
-    "scale": 0.05
-  },
-  {
     "name": "Gumball",
     "url": "Gumball.glb",
     "scale": 0.5
-  },
-  {
-    "name": "MaterialSuite",
-    "url": "MaterialSuite.glb",
-    "scale": 1
   },
   {
     "name": "Game Boy",
@@ -47,11 +47,6 @@
   {
     "name": "Damaged Helmet",
     "url": "DamagedHelmet.glb",
-    "scale": 0.5
-  },
-  {
-    "name": "Fiat Punto",
-    "url": "FiatPunto.glb",
     "scale": 0.5
   }
 ]

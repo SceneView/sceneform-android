@@ -163,7 +163,7 @@ public void onTapPlane(HitResult hitResult, Plane plane, MotionEvent motionEvent
 
 
 | ![Depth Occlusion 01](https://thomasgorisse.github.io/sceneform-android-sdk/images/samples/screenshot_depth_01.png) | ![Depth Occlusion 02](https://thomasgorisse.github.io/sceneform-android-sdk/images/samples/screenshot_depth_02.png) | ![Depth Occlusion 03](https://thomasgorisse.github.io/sceneform-android-sdk/images/samples/screenshot_depth_03.png) |
-|-|-|-|
+| - | - | - |
 
 ```java
 @Override
@@ -193,16 +193,16 @@ public void onViewCreated(ArFragment arFragment, ArSceneView arSceneView) {
 ### Augmented Faces
 
 | ![Augmented Faces 01](https://user-images.githubusercontent.com/6597529/135052644-79cf8964-7778-42d0-83f6-1839b9c8ab8b.gif) | ![Augmented Faces 02](https://user-images.githubusercontent.com/6597529/135059873-3342d169-5ff4-4d0d-bdec-fdac44c282ba.png) | ![Augmented Faces 03](https://user-images.githubusercontent.com/6597529/135051599-14742a53-69db-47d2-a27b-ba641a1d2609.gif) |
-|-|-|-|
+| - | - | - |
 
 [**sample project...**](https://github.com/ThomasGorisse/sceneform-android-sdk/tree/master/samples/augmented-faces)
 
 ### Environment Lights
 
 | ![Environment Lights 01](https://user-images.githubusercontent.com/6597529/135054559-1c5282d6-2476-4e71-92c6-cfc234cb5f3b.gif) | ![Environment Lights 02](https://user-images.githubusercontent.com/6597529/135059208-57e101d4-6215-4941-9543-20d09397e4c3.png) | ![Environment Lights 03](https://user-images.githubusercontent.com/6597529/131824742-0207ccfb-7f24-487d-b2cf-4765753697d7.gif) |
-|-|-|-|
+| - | - | - |
 | ![Environment Lights 04](https://user-images.githubusercontent.com/6597529/131822279-613edadf-bdaf-4ae9-9da6-d620504af5f0.jpg) | ![Environment Lights 05](https://user-images.githubusercontent.com/6597529/135060214-b9b9be36-b0d2-4929-b957-c3a04fe40d1e.png) | ![Environment Lights 06](https://user-images.githubusercontent.com/6597529/131825447-d52d8c3e-2801-4d6a-8c51-8b32231c14d6.jpg) |
-|-|-|-|
+| - | - | - |
 
 [**sample project...**](https://github.com/ThomasGorisse/sceneform-android-sdk/tree/master/samples/environment-lights)
 
@@ -210,7 +210,7 @@ public void onViewCreated(ArFragment arFragment, ArSceneView arSceneView) {
 ### Video texture
 
 | ![Video texture 01](https://user-images.githubusercontent.com/6597529/124379676-b85b0c80-dcb8-11eb-8250-d7ec7a449fad.gif) | ![Video texture 02](https://user-images.githubusercontent.com/6597529/124379556-13403400-dcb8-11eb-9b56-00e36979eb0f.gif) | ![Video texture 03](https://user-images.githubusercontent.com/6597529/135055851-3d3dca81-2943-4f21-b778-5fd32fa46145.gif) |
-|-|-|-|
+| - | - | - |
 
 ```java
 @Override
@@ -232,7 +232,7 @@ public void onTapPlane(HitResult hitResult, Plane plane, MotionEvent motionEvent
 
 ![Dynamic materials 01](https://miro.medium.com/max/2000/1*0XSLVleiR5ijFD1aIoCm-A.jpeg)
 | ![Dynamic materials 02](https://images.squarespace-cdn.com/content/v1/5bf7a0d55ffd203cac0e0920/1583270741496-7FJ9O190FD2FXI5JCWM0/texture.png?format=300w) | ![Dynamic materials 03](https://images.squarespace-cdn.com/content/v1/5bf7a0d55ffd203cac0e0920/1583264336080-RQP89XDN9IOHLISPG9CC/custom_material.png?format=300w) |
-|-|-|
+| - | - |
 
 **[sample project...](https://github.com/ThomasGorisse/sceneform-android-sdk/tree/master/samples/image-texture)**
 
@@ -268,8 +268,8 @@ the app only being visible in the Google Play Store on devices that support ARCo
 <uses-feature android:name="android.hardware.camera.ar" android:required="true"/>
 
 <application>
-…
-<meta-data android:name="com.google.ar.core" android:value="required" />
+    …
+    <meta-data android:name="com.google.ar.core" android:value="required" />
 </application>
 ```
 **[more...](https://thomasgorisse.github.io/sceneform-android-sdk/manifest)**
@@ -285,25 +285,45 @@ arFragment.setOnTapArPlaneListener(MainActivity.this);
 ```java
 @Override
 public void onTapPlane(HitResult hitResult, Plane plane, MotionEvent motionEvent) {
-        if (renderable == null) {
-        Toast.makeText(this, "Loading...", Toast.LENGTH_SHORT).show();
-        return;
-        }
+   if (renderable == null) {
+       Toast.makeText(this, "Loading...", Toast.LENGTH_SHORT).show();
+       return;
+   }
 
-        // Create the Anchor.
-        Anchor anchor = hitResult.createAnchor();
-        AnchorNode anchorNode = new AnchorNode(anchor);
-        anchorNode.setParent(arFragment.getArSceneView().getScene());
+   // Create the Anchor.
+   Anchor anchor = hitResult.createAnchor();
+   AnchorNode anchorNode = new AnchorNode(anchor);
+   anchorNode.setParent(arFragment.getArSceneView().getScene());
 
-        // Create the transformable model and add it to the anchor.
-        TransformableNode model = new TransformableNode(arFragment.getTransformationSystem());
-        model.setParent(anchorNode);
-        model.setRenderable(renderable);
-        model.select();
-        }
+   // Create the transformable model and add it to the anchor.
+   TransformableNode model = new TransformableNode(arFragment.getTransformationSystem());
+   model.setParent(anchorNode);
+   model.setRenderable(renderable);
+   model.select();
+}
 ```
 **[sample...](https://github.com/ThomasGorisse/sceneform-android-sdk/tree/master/samples/gltf)**
 
+
+## Remove or Hide a node
+
+### Remove an AnchorNode from the Scene
+
+```kotlin
+anchorNode.anchor = null
+```
+
+### Remove a Model Node, VideoNode, AugmentedFaceNode,... from the Scene
+```kotlin
+node.parent = null
+```
+
+### Show/Hide a Node = Don't render it
+```kotlin
+node.enabled= false
+```
+
+**[documentation...](https://thomasgorisse.github.io/sceneform-android-sdk/remove_node)**
 
 ## Frame Rate (FPS-Bound)
 
@@ -314,8 +334,8 @@ The Update-Rate of the rendering is limited through the used camera config of AR
 ```java
 @Override
 public void onViewCreated(ArFragment arFragment, ArSceneView arSceneView) {
-        arSceneView.setMaxFramesPerSeconds([int])
-        }
+    arSceneView.setMaxFramesPerSeconds([int])
+}
 ```
 > The default value is **60**.
 
@@ -375,8 +395,8 @@ second for a jump, a third for sidestepping and so on:
 #### Play Sequentially
 ```java
 AnimatorSet animatorSet = new AnimatorSet();
-        animatorSet.playSequentially(ModelAnimator.ofMultipleAnimations(model, "walk", "run"));
-        animatorSet.start();
+animatorSet.playSequentially(ModelAnimator.ofMultipleAnimations(model, "walk", "run"));
+animatorSet.start();
 ```
 
 #### Auto Cancel
@@ -384,10 +404,10 @@ Here you can see that no call to `animator.cancel()` is required because the
 `animator.setAutoCancel(boolean)` is set to true by default
 ```java
 ObjectAnimator walkAnimator = ModelAnimator.ofAnimation(model, "walk");
-        walkButton.setOnClickListener(v -> walkAnimator.start());
+walkButton.setOnClickListener(v -> walkAnimator.start());
 
-        ObjectAnimator runAnimator = ModelAnimator.ofAnimation(model, "run");
-        runButton.setOnClickListener(v -> runAnimator.start());
+ObjectAnimator runAnimator = ModelAnimator.ofAnimation(model, "run");
+runButton.setOnClickListener(v -> runAnimator.start());
 ```
 
 
@@ -399,20 +419,20 @@ time or sequentially, please consider using an `AnimatorSet` with one
 ```java
 AnimatorSet completeFly = new AnimatorSet();
 
-        ObjectAnimator liftOff = ModelAnimator.ofAnimationFraction(airPlaneModel, "FlyAltitude",0, 40);
-        liftOff.setInterpolator(new AccelerateInterpolator());
+ObjectAnimator liftOff = ModelAnimator.ofAnimationFraction(airPlaneModel, "FlyAltitude",0, 40);
+liftOff.setInterpolator(new AccelerateInterpolator());
 
-        AnimatorSet flying = new AnimatorSet();
-        ObjectAnimator flyAround = ModelAnimator.ofAnimation(airPlaneModel, "FlyAround");
-        flyAround.setRepeatCount(ValueAnimator.INFINITE);
-        flyAround.setDuration(10000);
-        ObjectAnimator airportBusHome = ModelAnimator.ofAnimationFraction(busModel, "Move", 0);
-        flying.playTogether(flyAround, airportBusHome);
+AnimatorSet flying = new AnimatorSet();
+ObjectAnimator flyAround = ModelAnimator.ofAnimation(airPlaneModel, "FlyAround");
+flyAround.setRepeatCount(ValueAnimator.INFINITE);
+flyAround.setDuration(10000);
+ObjectAnimator airportBusHome = ModelAnimator.ofAnimationFraction(busModel, "Move", 0);
+flying.playTogether(flyAround, airportBusHome);
 
-        ObjectAnimator land = ModelAnimator.ofAnimationFraction(airPlaneModel, "FlyAltitude", 0);
-        land.setInterpolator(new DecelerateInterpolator());
+ObjectAnimator land = ModelAnimator.ofAnimationFraction(airPlaneModel, "FlyAltitude", 0);
+land.setInterpolator(new DecelerateInterpolator());
 
-        completeFly.playSequentially(liftOff, flying, land);
+completeFly.playSequentially(liftOff, flying, land);
 ```
 
 
