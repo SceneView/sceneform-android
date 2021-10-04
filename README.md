@@ -191,9 +191,9 @@ public void onViewCreated(ArFragment arFragment, ArSceneView arSceneView) {
 [**sample project...**](https://github.com/ThomasGorisse/sceneform-android-sdk/tree/master/samples/augmented-images)
 
 ### Augmented Faces
-
+| | |
+| --- | --- | --- |
 | ![Augmented Faces 01](https://user-images.githubusercontent.com/6597529/135052644-79cf8964-7778-42d0-83f6-1839b9c8ab8b.gif) | ![Augmented Faces 02](https://user-images.githubusercontent.com/6597529/135059873-3342d169-5ff4-4d0d-bdec-fdac44c282ba.png) | ![Augmented Faces 03](https://user-images.githubusercontent.com/6597529/135051599-14742a53-69db-47d2-a27b-ba641a1d2609.gif) |
-| - | - | - |
 
 [**sample project...**](https://github.com/ThomasGorisse/sceneform-android-sdk/tree/master/samples/augmented-faces)
 

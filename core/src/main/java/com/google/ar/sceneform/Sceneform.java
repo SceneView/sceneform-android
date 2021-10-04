@@ -38,8 +38,4 @@ public class Sceneform {
     public static String versionName() {
         return BuildConfig.VERSION_NAME;
     }
-
-    public static int versionCode() {
-        return BuildConfig.VERSION_CODE;
-    }
 }

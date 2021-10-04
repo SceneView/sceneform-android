@@ -1,3 +1,5 @@
+# Remove or Hide a node
+
 ## Remove an AnchorNode from the Scene
 ```kotlin
 anchorNode.anchor = null
