@@ -45,7 +45,7 @@ dependencies {
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$kotlin_version"
 
     // Filament
-    def filament_version = '1.12.0'
+    def filament_version = '1.12.8'
     api "com.google.android.filament:filament-android:$filament_version"
     api "com.google.android.filament:gltfio-android:$filament_version"
     api "com.google.android.filament:filament-utils-android:$filament_version"
