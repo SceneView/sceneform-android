@@ -32,5 +32,6 @@ dependencies {
     implementation "androidx.appcompat:appcompat:1.3.1"
     implementation "androidx.fragment:fragment-ktx:1.3.6"
 
-    implementation "com.gorisse.thomas.sceneform:sceneform:1.20.0"
+    releaseImplementation "com.gorisse.thomas.sceneform:sceneform:1.20.0"
+    debugApi project(":sceneform")
 }

@@ -34,5 +34,6 @@ dependencies {
 
     implementation "com.google.android.material:material:1.4.0"
 
-    implementation "com.gorisse.thomas.sceneform:sceneform:1.20.0"
+    releaseImplementation "com.gorisse.thomas.sceneform:sceneform:1.20.0"
+    debugApi project(":sceneform")
 }
