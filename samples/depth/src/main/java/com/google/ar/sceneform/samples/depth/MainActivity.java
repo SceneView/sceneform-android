@@ -143,8 +143,8 @@ public class MainActivity extends AppCompatActivity implements
         /*if (session.isDepthModeSupported(Config.DepthMode.RAW_DEPTH_ONLY))
             config.setDepthMode(Config.DepthMode.RAW_DEPTH_ONLY);*/
 
-        if (session.isDepthModeSupported(Config.DepthMode.AUTOMATIC)) {
-            config.setDepthMode(Config.DepthMode.AUTOMATIC);
+        if (session.isDepthModeSupported(Config.DepthMode.RAW_DEPTH_ONLY)) {
+            config.setDepthMode(Config.DepthMode.RAW_DEPTH_ONLY);
         }
 
         config.setUpdateMode(Config.UpdateMode.LATEST_CAMERA_IMAGE);
