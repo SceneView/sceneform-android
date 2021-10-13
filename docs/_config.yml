@@ -28,4 +28,4 @@ navigation:                # accepts {file, title, url, icon, sidebaricon}
   - {title: "Javadoc", url: "/javadoc/index.html"}
 
 external:
-  - {title: Github, icon: github, url: "https://github.com/ThomasGorisse/sceneform-android-sdk"}
+  - {icon: github, url: "https://github.com/ThomasGorisse/sceneform-android-sdk"}
