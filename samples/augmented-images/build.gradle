@@ -34,6 +34,7 @@ dependencies {
 
     implementation "com.google.android.material:material:1.4.0"
 
-    implementation "com.gorisse.thomas.sceneform:sceneform:1.20.0"
-    implementation "com.google.android.filament:filamat-android:1.12.0"
+    releaseImplementation "com.gorisse.thomas.sceneform:sceneform:1.20.0"
+    debugApi project(":sceneform")
+    implementation "com.google.android.filament:filamat-android:1.12.8"
 }

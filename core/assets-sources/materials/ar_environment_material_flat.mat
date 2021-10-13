@@ -1,5 +1,6 @@
 material {
     name : flat,
+    vertexDomain : device,
     shadingModel : unlit,
     blending : opaque,
     culling : none,
@@ -30,7 +31,7 @@ vertex {
     void materialVertex(inout MaterialVertexInputs material) {
         material.uv0 = mulMat4x4Float3(materialParams.uvTransform, vec3(material.uv0.x, material.uv0.y, 0.f)).xy;
         vec4 clip = getPosition();
-        clip.z = 0.99999f;
+        clip.z = 0.9999f;
         material.worldPosition = mulMat4x4Float3(getWorldFromClipMatrix(), clip.xyz);
     }
 } 

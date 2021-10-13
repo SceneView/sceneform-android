@@ -58,7 +58,6 @@ public class CameraStream {
             2.0f, 0.0f};
     private static final short[] INDICES = new short[]{0, 1, 2};
 
-
     private static final int FLOAT_SIZE_IN_BYTES = Float.SIZE / 8;
     private static final int UNINITIALIZED_FILAMENT_RENDERABLE = -1;
 
