@@ -13,7 +13,7 @@ markdown: GFM
 show_sidebar: false
 
 navigation:                # accepts {file, title, url, icon, sidebaricon}
-  - {title: "Home", file: "index.md", icon: "/images/icons/menu/home.svg"}
+  - {title: "Home", file: "index.md", icon: "home"}
   - {title: "Github", url: "https://github.com/ThomasGorisse/sceneform-android-sdk", icon: "/images/icons/menu/github.png"}
   - {title: "Dependencies", url: "/#dependencies", icon: "/images/icons/menu/download.svg"}
   - {title: "Usage", url: "/#basic-usage-simple-model-viewer", icon: "/images/icons/menu/code.svg"}
