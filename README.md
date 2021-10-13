@@ -191,9 +191,8 @@ public void onViewCreated(ArFragment arFragment, ArSceneView arSceneView) {
 [**sample project...**](https://github.com/ThomasGorisse/sceneform-android-sdk/tree/master/samples/augmented-images)
 
 ### Augmented Faces
-| | |
-| --- | --- | --- |
 | ![Augmented Faces 01](https://user-images.githubusercontent.com/6597529/135052644-79cf8964-7778-42d0-83f6-1839b9c8ab8b.gif) | ![Augmented Faces 02](https://user-images.githubusercontent.com/6597529/135059873-3342d169-5ff4-4d0d-bdec-fdac44c282ba.png) | ![Augmented Faces 03](https://user-images.githubusercontent.com/6597529/135051599-14742a53-69db-47d2-a27b-ba641a1d2609.gif) |
+| - | - | - |
 
 [**sample project...**](https://github.com/ThomasGorisse/sceneform-android-sdk/tree/master/samples/augmented-faces)
 
@@ -202,7 +201,6 @@ public void onViewCreated(ArFragment arFragment, ArSceneView arSceneView) {
 | ![Environment Lights 01](https://user-images.githubusercontent.com/6597529/135054559-1c5282d6-2476-4e71-92c6-cfc234cb5f3b.gif) | ![Environment Lights 02](https://user-images.githubusercontent.com/6597529/135059208-57e101d4-6215-4941-9543-20d09397e4c3.png) | ![Environment Lights 03](https://user-images.githubusercontent.com/6597529/131824742-0207ccfb-7f24-487d-b2cf-4765753697d7.gif) |
 | - | - | - |
 | ![Environment Lights 04](https://user-images.githubusercontent.com/6597529/131822279-613edadf-bdaf-4ae9-9da6-d620504af5f0.jpg) | ![Environment Lights 05](https://user-images.githubusercontent.com/6597529/135060214-b9b9be36-b0d2-4929-b957-c3a04fe40d1e.png) | ![Environment Lights 06](https://user-images.githubusercontent.com/6597529/131825447-d52d8c3e-2801-4d6a-8c51-8b32231c14d6.jpg) |
-| - | - | - |
 
 [**sample project...**](https://github.com/ThomasGorisse/sceneform-android-sdk/tree/master/samples/environment-lights)
 
