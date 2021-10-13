@@ -49,6 +49,9 @@ public class Renderer implements UiHelper.RendererCallback {
     private final ArrayList<LightInstance> lightInstances = new ArrayList<>();
     private final double[] cameraProjectionMatrix = new double[16];
     private final List<Mirror> mirrors = new ArrayList<>();
+    public Environment environment = null;
+    @Entity
+    public Integer mainLight = null;
     @Nullable
     private CameraProvider cameraProvider;
     private Surface surface;
@@ -57,15 +60,8 @@ public class Renderer implements UiHelper.RendererCallback {
     private com.google.android.filament.View view;
     private com.google.android.filament.View emptyView;
     private com.google.android.filament.Renderer renderer;
-
     private Camera camera;
     private Scene scene;
-
-    public Environment environment = null;
-
-    @Entity
-    public Integer mainLight = null;
-
     private boolean recreateSwapChain;
 
     private UiHelper filamentHelper;
@@ -408,7 +404,8 @@ public class Renderer implements UiHelper.RendererCallback {
      * <p>
      * Usually the Sun.
      */
-    public @Entity Integer getMainLight() {
+    public @Entity
+    Integer getMainLight() {
         return mainLight;
     }
 
