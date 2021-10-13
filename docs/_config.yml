@@ -6,7 +6,7 @@ plugins:
 
 name: Sceneform Maintained SDK for Android
 title: Sceneform Maintained SDK for Android
-show_title: false
+#show_title: false
 description: "Sceneform is a 3D framework with a physically based renderer that's optimized for mobile devices and that makes it easy for you to build Augmented Reality (AR) apps without requiring OpenGL or Unity."
 markdown: GFM
 
