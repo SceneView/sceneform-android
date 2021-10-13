@@ -10,18 +10,18 @@ title: Sceneform Maintained SDK for Android
 description: "Sceneform is a 3D framework with a physically based renderer that's optimized for mobile devices and that makes it easy for you to build Augmented Reality (AR) apps without requiring OpenGL or Unity."
 markdown: GFM
 
-show_sidebar: false
+show_sidebar: true
 
 navigation:                # accepts {file, title, url, icon, sidebaricon}
-  - {title: "Home", file: "index.md", icon: "home"}
-  - {title: "Github", url: "https://github.com/ThomasGorisse/sceneform-android-sdk", icon: "/images/icons/menu/github.png"}
-  - {title: "Dependencies", url: "/#dependencies", icon: "/images/icons/menu/download.svg"}
-  - {title: "Usage", url: "/#basic-usage-simple-model-viewer", icon: "/images/icons/menu/code.svg"}
-  - {title: "Samples", url: "/#samples", icon: "/images/icons/menu/view_in_ar.svg"}
-  - {title: "Emulator", url: "/#emulator", icon: "/images/icons/menu/smartphone.svg"}
-  - {title: "Documentation", url: "/#go-further", icon: "/images/icons/menu/book.svg"}
-  - {title: "Sponsor", url: "https://github.com/sponsors/ThomasGorisse", icon: "/images/icons/menu/favorite.svg"}
-  - {title: "Javadoc", url: "/javadoc/index.html", icon: "/images/icons/menu/api.svg"}
+  - {title: "Home", file: "index.md", icon: home}
+  - {title: "Github", url: "https://github.com/ThomasGorisse/sceneform-android-sdk", icon: github}
+  - {title: "Dependencies", url: "/#dependencies", icon: download}
+  - {title: "Usage", url: "/#basic-usage-simple-model-viewer", icon: code}
+  - {title: "Samples", url: "/#samples", icon: view_in_ar}
+  - {title: "Emulator", url: "/#emulator", icon: smartphone}
+  - {title: "Documentation", url: "/#go-further", icon: book}
+  - {title: "Sponsor", url: "https://github.com/sponsors/ThomasGorisse", icon: favorite}
+  - {title: "Javadoc", url: "/javadoc/index.html", icon: api}
 
 external:
   - {title: Github, icon: github, url: "https://github.com/ThomasGorisse/sceneform-android-sdk"}
