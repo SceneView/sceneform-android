@@ -13,20 +13,19 @@ description: "Sceneform is a 3D framework with a physically based renderer that'
 markdown: GFM
 dark_header: false
 minimal: true
-sidebar: false
-
-show_sidebar: false
+sidebar: true
+show_sidebar: true
 
 navigation:                # accepts {file, title, url, icon, sidebaricon}
-  - {title: "Home", file: "index.md", icon: home}
-  - {title: "Github", url: "https://github.com/ThomasGorisse/sceneform-android-sdk", icon: github}
-  - {title: "Dependencies", url: "/#dependencies", icon: download}
-  - {title: "Usage", url: "/#basic-usage-simple-model-viewer", icon: code}
-  - {title: "Samples", url: "/#samples", icon: view_in_ar}
-  - {title: "Emulator", url: "/#emulator", icon: smartphone}
-  - {title: "Documentation", url: "/#go-further", icon: book}
-  - {title: "Sponsor", url: "https://github.com/sponsors/ThomasGorisse", icon: favorite}
-  - {title: "Javadoc", url: "/javadoc/index.html", icon: api}
+  - {title: "Home", file: "index.md"}
+  - {title: "Github", url: "https://github.com/ThomasGorisse/sceneform-android-sdk"}
+  - {title: "Dependencies", url: "/#dependencies"}
+  - {title: "Usage", url: "/#basic-usage-simple-model-viewer"}
+  - {title: "Samples", url: "/#samples"}
+  - {title: "Emulator", url: "/#emulator"}
+  - {title: "Documentation", url: "/#go-further"}
+  - {title: "Sponsor", url: "https://github.com/sponsors/ThomasGorisse"}
+  - {title: "Javadoc", url: "/javadoc/index.html"}
 
 external:
   - {title: Github, icon: github, url: "https://github.com/ThomasGorisse/sceneform-android-sdk"}
