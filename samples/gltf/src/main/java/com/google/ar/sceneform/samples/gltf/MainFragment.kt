@@ -22,8 +22,7 @@ import com.gorisse.thomas.sceneform.scene.await
 
 class MainFragment : Fragment(R.layout.fragment_main) {
 
-    private val arFragment
-        get() = childFragmentManager.findFragmentById(R.id.arFragment) as ArFragment
+    private lateinit var arFragment: ArFragment
     private val arSceneView get() = arFragment.arSceneView
     private val scene get() = arSceneView.scene
 
@@ -33,7 +32,7 @@ class MainFragment : Fragment(R.layout.fragment_main) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        arFragment.apply {
+        arFragment = (childFragmentManager.findFragmentById(R.id.arFragment) as ArFragment).apply {
             setOnSessionConfigurationListener { session, config ->
                 // Modify the AR session configuration here
             }

@@ -20,7 +20,7 @@ navigation:                # accepts {file, title, url, icon, sidebaricon}
   - {title: "Home", file: "index.md"}
   - {title: "Github", url: "https://github.com/ThomasGorisse/sceneform-android-sdk"}
   - {title: "Dependencies", url: "/#dependencies"}
-  - {title: "Usage", url: "/#basic-usage-simple-model-viewer"}
+  - {title: "Usage", url: "/#usage-simple-model-viewer"}
   - {title: "Samples", url: "/#samples"}
   - {title: "Emulator", url: "/#emulator"}
   - {title: "Documentation", url: "/#go-further"}

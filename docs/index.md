@@ -1,6 +1,3 @@
-Sceneform Maintained SDK for Android
-====================================
-
 [![Maven Central](https://img.shields.io/maven-central/v/com.gorisse.thomas.sceneform/sceneform.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:%22com.gorisse.thomas.sceneform%22%20AND%20a:%22sceneform%22)
 
 #### This repository is a fork of [Sceneform](https://github.com/google-ar/sceneform-android-sdk) Copyright (c) 2021 Google Inc.  All rights reserved.
@@ -27,7 +24,7 @@ Note that this is only my personal choice but other contributors can still make 
 
 ### Sceneform is a 3D framework with a physically based renderer that's optimized for mobile devices and that makes it easy for you to build Augmented Reality (AR) apps without requiring OpenGL or Unity.
 
-![Logo](https://thomasgorisse.github.io/sceneform-android-sdk/images/logos/logo.png)
+![Logo](https://thomasgorisse.github.io/sceneform-android-sdk/images/logos/logo_rounded.png)
 
 * Continuous compatibility with the latests versions of [ARCore SDK](https://github.com/google-ar/arcore-android-sdk) and [Filament](https://github.com/google/filament)
 * Based on AndroidX
@@ -47,18 +44,11 @@ dependencies {
      implementation("com.gorisse.thomas.sceneform:sceneform:1.20.0")
 }
 ```
-**[more...](https://thomasgorisse.github.io/sceneform-android-sdk/dependencies)**
+[**more...**](https://thomasgorisse.github.io/sceneform-android-sdk/dependencies)
 
 
 
-## Sample App
-
-### AR Environment Lights
-
-[![Get it on Google Play](https://upload.wikimedia.org/wikipedia/commons/thumb/7/78/Google_Play_Store_badge_EN.svg/320px-Google_Play_Store_badge_EN.svg.png)](https://play.google.com/store/apps/details?id=com.gorisse.thomas.ar.environmentlights)
-
-
-## Basic Usage (Simple model viewer)
+## Usage (Simple model viewer)
 
 
 ### Update your `AndroidManifest.xml`
@@ -68,72 +58,61 @@ dependencies {
 <uses-permission android:name="android.permission.CAMERA" />
 
 <application>
-    …
+    ...
     <meta-data android:name="com.google.ar.core" android:value="optional" />
 </application>
 ```
-**[more...](https://thomasgorisse.github.io/sceneform-android-sdk/manifest)**
+[**more...**](https://thomasgorisse.github.io/sceneform-android-sdk/manifest)
 
 
 ### Add the `View` to your `layout`
 *res/layout/main_activity.xml*
 ```xml
-<FrameLayout
+<androidx.fragment.app.FragmentContainerView
     android:id="@+id/arFragment"
+    android:name="com.google.ar.sceneform.ux.ArFragment"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"/>
+    android:layout_height="match_parent" />
 ```
-**[sample...](https://github.com/ThomasGorisse/sceneform-android-sdk/blob/master/samples/gltf/src/main/res/layout/activity_main.xml)**
+[**sample...**](https://github.com/ThomasGorisse/sceneform-android-sdk/blob/master/samples/gltf/src/main/res/layout/activity_main.xml)
 
 
 ### Edit your `Activity` or `Fragment`
-*src/main/java/…/MainActivity.java*
-```java
-@Override
-protected void onCreate(Bundle savedInstanceState) {
-    …
-    getSupportFragmentManager().addFragmentOnAttachListener((fragmentManager, fragment) -> {
-        if (fragment.getId() == R.id.arFragment) {
-            arFragment = (ArFragment) fragment;
-            // Load model.glb from assets folder or http url
-            arFragment.setOnTapPlaneGlbModel("model.glb", null);
-        }
-    });
-    if (savedInstanceState == null) {
-        if (Sceneform.isSupported(this)) {
-            getSupportFragmentManager().beginTransaction()
-                    .add(R.id.arFragment, ArFragment.class, null)
-                    .commit();
-        }
-    }
+*src/main/java/.../MainActivity.java*
+```kotlin
+
+override fun onCreate(savedInstanceState: Bundle?) {
+    super.onCreate(savedInstanceState)
+
+    // Load model.glb from assets folder or http url
+    (supportFragmentManager.findFragmentById(R.id.arFragment) as ArFragment)
+        .setOnTapPlaneGlbModel("model.glb")
 }
 ```
 
 **Or**
 
-*src/main/java/…/MainFragment.java*
-```java
-@Override
-public void onCreate(Bundle savedInstanceState) {
-    …
-    if (savedInstanceState == null) {
-        if (Sceneform.isSupported(this)) {
-            getChildFragmentManager().beginTransaction()
-                    .add(R.id.arFragment, ArFragment.class, null)
-                    .commit();
-        }
-    }
-}
+*src/main/java/.../MainFragment.java*
+```kotlin
+override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+    super.onViewCreated(view, savedInstanceState)
 
-@Override
-public void onAttachFragment(Fragment childFragment) {
-    if (fragment.getId() == R.id.arFragment) {
-        // Load model.glb from assets folder or http url
-        ((ArFragment) fragment).setOnTapPlaneGlbModel("model.glb", null);
-    }
+    // Load model.glb from assets folder or http url
+    (childFragmentManager.findFragmentById(R.id.arFragment) as ArFragment)
+        .setOnTapPlaneGlbModel("https://storage.googleapis.com/ar-answers-in-search-models/static/Tiger/model.glb")
 }
 ```
-[**sample...**](https://github.com/ThomasGorisse/sceneform-android-sdk/blob/master/samples/gltf/src/main/java/com/google/ar/sceneform/samples/gltf/MainActivity.java)
+[**kotlin sample...**](https://github.com/ThomasGorisse/sceneform-android-sdk/blob/master/samples/gltf/src/main/java/com/google/ar/sceneform/samples/gltf/MainActivity.java)
+
+[**java sample...**](https://github.com/ThomasGorisse/sceneform-android-sdk/tree/master/samples/gltf-java)
+
+
+
+## Demo
+
+[![Get it on Google Play](https://upload.wikimedia.org/wikipedia/commons/thumb/7/78/Google_Play_Store_badge_EN.svg/320px-Google_Play_Store_badge_EN.svg.png)](https://play.google.com/store/apps/details?id=com.gorisse.thomas.ar.environmentlights)
+| [![Youtube Video 01](https://yt-embed.herokuapp.com/embed?v=9QP43nOSItU)](https://www.youtube.com/watch?v=9QP43nOSItU) | [![Youtube Video 02](https://yt-embed.herokuapp.com/embed?v=jpmWjigA3Ms)](https://www.youtube.com/watch?v=jpmWjigA3Ms) |
+| - | - |
 
 
 
@@ -145,18 +124,21 @@ public void onAttachFragment(Fragment childFragment) {
 [![Full Video](https://user-images.githubusercontent.com/6597529/124511737-1f6ee300-ddd7-11eb-8f97-ff8ba45809d5.gif)  
 **full video...**](https://user-images.githubusercontent.com/6597529/124378254-c4db6700-dcb0-11eb-80a2-2e7381d60906.mp4)
 
-```java
-@Override
-public void onTapPlane(HitResult hitResult, Plane plane, MotionEvent motionEvent) {
-   …
-   // Create the transformable model and add it to the anchor.
-   TransformableNode modelNode = new TransformableNode(arFragment.getTransformationSystem());
-   modelNode.setParent(anchorNode);
-   modelNode.setRenderable(this.model)
-        .animate(true).start();
+```kotlin
+arFragment.setOnTapArPlaneListener { hitResult, plane, motionEvent ->
+    // Create the Anchor
+    arFragment.arSceneView.scene.addChild(AnchorNode(hitResult.createAnchor()).apply {
+        // Create the transformable model and add it to the anchor
+        addChild(TransformableNode(arFragment.transformationSystem).apply {
+            renderable = model
+            renderableInstance.animate(true).start()
+        })
+    })
 }
 ```
-**[sample project...](https://github.com/ThomasGorisse/sceneform-android-sdk/tree/master/samples/gltf)**
+[**kotlin sample project...**](https://github.com/ThomasGorisse/sceneform-android-sdk/tree/master/samples/gltf)
+
+[**java sample project...**](https://github.com/ThomasGorisse/sceneform-android-sdk/tree/master/samples/gltf-java)
 
 
 ### Depth Occlusion
@@ -165,23 +147,23 @@ public void onTapPlane(HitResult hitResult, Plane plane, MotionEvent motionEvent
 | ![Depth Occlusion 01](https://thomasgorisse.github.io/sceneform-android-sdk/images/samples/screenshot_depth_01.png) | ![Depth Occlusion 02](https://thomasgorisse.github.io/sceneform-android-sdk/images/samples/screenshot_depth_02.png) | ![Depth Occlusion 03](https://thomasgorisse.github.io/sceneform-android-sdk/images/samples/screenshot_depth_03.png) |
 | - | - | - |
 
-```java
-@Override
-public void onSessionConfiguration(Session session, Config config) {
-   if (session.isDepthModeSupported(Config.DepthMode.AUTOMATIC)) {
-       config.setDepthMode(Config.DepthMode.AUTOMATIC);
-   }
-}
-
-@Override
-public void onViewCreated(ArFragment arFragment, ArSceneView arSceneView) {
-    // Available modes: DEPTH_OCCLUSION_DISABLED, DEPTH_OCCLUSION_ENABLED
-    arSceneView.getCameraStream().setDepthOcclusionMode(CameraStream.DepthOcclusionMode.DEPTH_OCCLUSION_ENABLED);
+```kotlin
+arFragment.apply {
+    setOnSessionConfigurationListener { session, config ->
+        if (session.isDepthModeSupported(Config.DepthMode.AUTOMATIC)) {
+            config.depthMode = Config.DepthMode.AUTOMATIC
+        }
+    }
+    setOnViewCreatedListener { arSceneView ->
+        // Available modes: DEPTH_OCCLUSION_DISABLED, DEPTH_OCCLUSION_ENABLED
+        arSceneView.cameraStream.depthOcclusionMode =
+            CameraStream.DepthOcclusionMode.DEPTH_OCCLUSION_ENABLED
+    }
 }
 ```
-**[documentation...](https://thomasgorisse.github.io/sceneform-android-sdk/depth)**
+[**documentation...**](https://thomasgorisse.github.io/sceneform-android-sdk/depth)
 
-**[sample project...](https://github.com/ThomasGorisse/sceneform-android-sdk/tree/master/samples/depth)**
+[**sample project...**](https://github.com/ThomasGorisse/sceneform-android-sdk/tree/master/samples/depth)
 
 
 ### Augmented Images
@@ -210,36 +192,33 @@ public void onViewCreated(ArFragment arFragment, ArSceneView arSceneView) {
 | ![Video texture 01](https://user-images.githubusercontent.com/6597529/124379676-b85b0c80-dcb8-11eb-8250-d7ec7a449fad.gif) | ![Video texture 02](https://user-images.githubusercontent.com/6597529/124379556-13403400-dcb8-11eb-9b56-00e36979eb0f.gif) | ![Video texture 03](https://user-images.githubusercontent.com/6597529/135055851-3d3dca81-2943-4f21-b778-5fd32fa46145.gif) |
 | - | - | - |
 
-```java
-@Override
-public void onTapPlane(HitResult hitResult, Plane plane, MotionEvent motionEvent) {
-    …
-    MediaPlayer player = MediaPlayer.create(this, R.raw.my_video);
-    player.start();
-    VideoNode videoNode = new VideoNode(this, player, chromaKeyColor, (throwable ->
-        Toast.makeText(this, "Unable to load material", Toast.LENGTH_LONG).show())
-    );
-    videoNode.setParent(anchorNode);
+```kotlin
+arFragment.setOnTapArPlaneListener { hitResult, plane, motionEvent ->
+    // Create the Anchor
+    arFragment.arSceneView.scene.addChild(AnchorNode(hitResult.createAnchor()).apply {
+        addChild(VideoNode(context, MediaPlayer.create(context, R.raw.video).apply {
+            start()
+        }, chromaKeyColor, null))
+    })
 }
 ```
 
-**[sample project...](https://github.com/ThomasGorisse/sceneform-android-sdk/tree/master/samples/video-texture)**
+[**sample project...**](https://github.com/ThomasGorisse/sceneform-android-sdk/tree/master/samples/video-texture)
 
 
 ### Dynamic materials/textures
 
-![Dynamic materials 01](https://miro.medium.com/max/2000/1*0XSLVleiR5ijFD1aIoCm-A.jpeg)
-| ![Dynamic materials 02](https://images.squarespace-cdn.com/content/v1/5bf7a0d55ffd203cac0e0920/1583270741496-7FJ9O190FD2FXI5JCWM0/texture.png?format=300w) | ![Dynamic materials 03](https://images.squarespace-cdn.com/content/v1/5bf7a0d55ffd203cac0e0920/1583264336080-RQP89XDN9IOHLISPG9CC/custom_material.png?format=300w) |
-| - | - |
+| ![Dynamic materials 01](https://miro.medium.com/max/2000/1*0XSLVleiR5ijFD1aIoCm-A.jpeg) | ![Dynamic materials 02](https://images.squarespace-cdn.com/content/v1/5bf7a0d55ffd203cac0e0920/1583270741496-7FJ9O190FD2FXI5JCWM0/texture.png?format=300w) | ![Dynamic materials 03](https://images.squarespace-cdn.com/content/v1/5bf7a0d55ffd203cac0e0920/1583264336080-RQP89XDN9IOHLISPG9CC/custom_material.png?format=300w) |
+| - | - | - |
 
-**[sample project...](https://github.com/ThomasGorisse/sceneform-android-sdk/tree/master/samples/image-texture)**
+[**sample project...**](https://github.com/ThomasGorisse/sceneform-android-sdk/tree/master/samples/image-texture)
 
 
 ### Non AR usage
 
 ![Non AR Usage 01](http://download.tuxfamily.org/sdtraces/BottinHTML/Bottin_D-J_files/282584ef7ae1d420897d47bd7ba4d46f.jpeg)
 
-**[sample project...](https://github.com/ThomasGorisse/sceneform-android-sdk/tree/master/samples/sceneview-background)**
+[**sample project...**](https://github.com/ThomasGorisse/sceneform-android-sdk/tree/master/samples/sceneview-background)
 
 
 ## Emulator
@@ -250,7 +229,7 @@ public void onTapPlane(HitResult hitResult, Plane plane, MotionEvent motionEvent
 
 ![image](https://user-images.githubusercontent.com/6597529/117983402-3513df00-b337-11eb-841d-49548429363e.png)
 
-**[more...](https://thomasgorisse.github.io/sceneform-android-sdk/emulator)**
+[**more...**](https://thomasgorisse.github.io/sceneform-android-sdk/emulator)
 
 
 
@@ -266,41 +245,41 @@ the app only being visible in the Google Play Store on devices that support ARCo
 <uses-feature android:name="android.hardware.camera.ar" android:required="true"/>
 
 <application>
-    …
+    ...
     <meta-data android:name="com.google.ar.core" android:value="required" />
 </application>
 ```
-**[more...](https://thomasgorisse.github.io/sceneform-android-sdk/manifest)**
+[**more...**](https://thomasgorisse.github.io/sceneform-android-sdk/manifest)
 
 
 ### Nodes
 
 To add a node or multiple nodes to the Scene when the user press on a surface, you can override the `onTapPlane` function from a `BaseArFragment.OnTapArPlaneListener`:
-```java
-arFragment.setOnTapArPlaneListener(MainActivity.this);
+```kotlin
+arFragment.setOnTapArPlaneListener(::onTapPlane)
 ```
 
-```java
-@Override
-public void onTapPlane(HitResult hitResult, Plane plane, MotionEvent motionEvent) {
-   if (renderable == null) {
-       Toast.makeText(this, "Loading...", Toast.LENGTH_SHORT).show();
-       return;
-   }
-
-   // Create the Anchor.
-   Anchor anchor = hitResult.createAnchor();
-   AnchorNode anchorNode = new AnchorNode(anchor);
-   anchorNode.setParent(arFragment.getArSceneView().getScene());
-
-   // Create the transformable model and add it to the anchor.
-   TransformableNode model = new TransformableNode(arFragment.getTransformationSystem());
-   model.setParent(anchorNode);
-   model.setRenderable(renderable);
-   model.select();
+```kotlin
+arFragment.setOnTapArPlaneListener { hitResult, plane, motionEvent ->
+    // Create the Anchor
+    arFragment.arSceneView.scene.addChild(AnchorNode(hitResult.createAnchor()).apply {
+        // Create the transformable model and add it to the anchor.
+        addChild(TransformableNode(arFragment.transformationSystem).apply {
+            renderable = model
+            renderableInstance.animate(true).start()
+            // Add child model relative the a parent model
+            addChild(Node().apply {
+                // Define the relative position
+                localPosition = Vector3(0.0f, 1f, 0.0f)
+                // Define the relative scale
+                localScale = Vector3(0.7f, 0.7f, 0.7f)
+                renderable = modelView
+            })
+        })
+    })
 }
 ```
-**[sample...](https://github.com/ThomasGorisse/sceneform-android-sdk/tree/master/samples/gltf)**
+[**sample...**](https://github.com/ThomasGorisse/sceneform-android-sdk/tree/master/samples/gltf)
 
 
 ## Remove or Hide a node
@@ -321,7 +300,7 @@ node.parent = null
 node.enabled= false
 ```
 
-**[documentation...](https://thomasgorisse.github.io/sceneform-android-sdk/remove_node)**
+[**documentation...**](https://thomasgorisse.github.io/sceneform-android-sdk/remove_node)
 
 ## Frame Rate (FPS-Bound)
 
@@ -329,15 +308,15 @@ node.enabled= false
 
 The Update-Rate of the rendering is limited through the used camera config of ARCore. For most Smartphones it is 30 fps and for the Pixel Smartphones it is 60 fps. The user can manually change this value *(you should know what you are doing)*.
 
-```java
-@Override
-public void onViewCreated(ArFragment arFragment, ArSceneView arSceneView) {
-    arSceneView.setMaxFramesPerSeconds([int])
+```kotlin
+arFragment.setOnViewCreatedListener { arSceneView ->
+    // Set a higher bound for the frame rate
+    arSceneView.setMaxFramesPerSeconds(60)
 }
 ```
 > The default value is **60**.
 
-**[documentation...](https://thomasgorisse.github.io/sceneform-android-sdk/fps_bound)**
+[**documentation...**](https://thomasgorisse.github.io/sceneform-android-sdk/fps_bound)
 
 
 ## Animations
@@ -393,8 +372,8 @@ second for a jump, a third for sidestepping and so on:
 #### Play Sequentially
 ```java
 AnimatorSet animatorSet = new AnimatorSet();
-        animatorSet.playSequentially(ModelAnimator.ofMultipleAnimations(model, "walk", "run"));
-        animatorSet.start();
+animatorSet.playSequentially(ModelAnimator.ofMultipleAnimations(model, "walk", "run"));
+animatorSet.start();
 ```
 
 #### Auto Cancel
@@ -402,10 +381,10 @@ Here you can see that no call to `animator.cancel()` is required because the
 `animator.setAutoCancel(boolean)` is set to true by default
 ```java
 ObjectAnimator walkAnimator = ModelAnimator.ofAnimation(model, "walk");
-        walkButton.setOnClickListener(v -> walkAnimator.start());
+walkButton.setOnClickListener(v -> walkAnimator.start());
 
-        ObjectAnimator runAnimator = ModelAnimator.ofAnimation(model, "run");
-        runButton.setOnClickListener(v -> runAnimator.start());
+ObjectAnimator runAnimator = ModelAnimator.ofAnimation(model, "run");
+runButton.setOnClickListener(v -> runAnimator.start());
 ```
 
 
@@ -417,20 +396,20 @@ time or sequentially, please consider using an `AnimatorSet` with one
 ```java
 AnimatorSet completeFly = new AnimatorSet();
 
-        ObjectAnimator liftOff = ModelAnimator.ofAnimationFraction(airPlaneModel, "FlyAltitude",0, 40);
-        liftOff.setInterpolator(new AccelerateInterpolator());
+ObjectAnimator liftOff = ModelAnimator.ofAnimationFraction(airPlaneModel, "FlyAltitude",0, 40);
+liftOff.setInterpolator(new AccelerateInterpolator());
 
-        AnimatorSet flying = new AnimatorSet();
-        ObjectAnimator flyAround = ModelAnimator.ofAnimation(airPlaneModel, "FlyAround");
-        flyAround.setRepeatCount(ValueAnimator.INFINITE);
-        flyAround.setDuration(10000);
-        ObjectAnimator airportBusHome = ModelAnimator.ofAnimationFraction(busModel, "Move", 0);
-        flying.playTogether(flyAround, airportBusHome);
+AnimatorSet flying = new AnimatorSet();
+ObjectAnimator flyAround = ModelAnimator.ofAnimation(airPlaneModel, "FlyAround");
+flyAround.setRepeatCount(ValueAnimator.INFINITE);
+flyAround.setDuration(10000);
+ObjectAnimator airportBusHome = ModelAnimator.ofAnimationFraction(busModel, "Move", 0);
+flying.playTogether(flyAround, airportBusHome);
 
-        ObjectAnimator land = ModelAnimator.ofAnimationFraction(airPlaneModel, "FlyAltitude", 0);
-        land.setInterpolator(new DecelerateInterpolator());
+ObjectAnimator land = ModelAnimator.ofAnimationFraction(airPlaneModel, "FlyAltitude", 0);
+land.setInterpolator(new DecelerateInterpolator());
 
-        completeFly.playSequentially(liftOff, flying, land);
+completeFly.playSequentially(liftOff, flying, land);
 ```
 
 
@@ -457,7 +436,7 @@ Every PropertyValuesHolder that applies a modification on the time position of t
 must use the `ModelAnimation.TIME_POSITION` instead of its own Property in order to possibly cancel
 any ObjectAnimator operating time modifications on the same ModelAnimation.
 
-**[more...](https://thomasgorisse.github.io/sceneform-android-sdk/animations)**
+[**more...**](https://thomasgorisse.github.io/sceneform-android-sdk/animations)
 
 
 

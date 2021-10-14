@@ -27,7 +27,7 @@ Note that this is only my personal choice but other contributors can still make 
 
 ### Sceneform is a 3D framework with a physically based renderer that's optimized for mobile devices and that makes it easy for you to build Augmented Reality (AR) apps without requiring OpenGL or Unity.
 
-![Logo](https://thomasgorisse.github.io/sceneform-android-sdk/images/logos/logo.png)
+![Logo](https://thomasgorisse.github.io/sceneform-android-sdk/images/logos/logo_rounded.png)
 
 * Continuous compatibility with the latests versions of [ARCore SDK](https://github.com/google-ar/arcore-android-sdk) and [Filament](https://github.com/google/filament) 
 * Based on AndroidX
@@ -83,14 +83,13 @@ dependencies {
 ### Edit your `Activity` or `Fragment`
 *src/main/java/.../MainActivity.java*
 ```kotlin
-val arFragment
-    get() = supportFragmentManager.findFragmentById(R.id.arFragment) as ArFragment
 
 override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
 
     // Load model.glb from assets folder or http url
-    arFragment.setOnTapPlaneGlbModel("model.glb")
+    (supportFragmentManager.findFragmentById(R.id.arFragment) as ArFragment)
+        .setOnTapPlaneGlbModel("model.glb")
 }
 ```
 
@@ -98,14 +97,12 @@ override fun onCreate(savedInstanceState: Bundle?) {
 
 *src/main/java/.../MainFragment.java*
 ```kotlin
-val arFragment
-    get() = childFragmentManager.findFragmentById(R.id.arFragment) as ArFragment
-
 override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     super.onViewCreated(view, savedInstanceState)
 
     // Load model.glb from assets folder or http url
-    arFragment.setOnTapPlaneGlbModel("https://storage.googleapis.com/ar-answers-in-search-models/static/Tiger/model.glb")
+    (childFragmentManager.findFragmentById(R.id.arFragment) as ArFragment)
+        .setOnTapPlaneGlbModel("https://storage.googleapis.com/ar-answers-in-search-models/static/Tiger/model.glb")
 }
 ```
 [**kotlin sample...**](https://github.com/ThomasGorisse/sceneform-android-sdk/blob/master/samples/gltf/src/main/java/com/google/ar/sceneform/samples/gltf/MainActivity.java)
@@ -131,10 +128,10 @@ override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 **full video...**](https://user-images.githubusercontent.com/6597529/124378254-c4db6700-dcb0-11eb-80a2-2e7381d60906.mp4)
 
 ```kotlin
-fun onTapPlane(hitResult: HitResult, plane: Plane, motionEvent: MotionEvent) {
-    // Create the Anchor.
-    scene.addChild(AnchorNode(hitResult.createAnchor()).apply {
-        // Create the transformable model and add it to the anchor.
+arFragment.setOnTapArPlaneListener { hitResult, plane, motionEvent ->
+    // Create the Anchor
+    arFragment.arSceneView.scene.addChild(AnchorNode(hitResult.createAnchor()).apply {
+        // Create the transformable model and add it to the anchor
         addChild(TransformableNode(arFragment.transformationSystem).apply {
             renderable = model
             renderableInstance.animate(true).start()
@@ -154,20 +151,16 @@ fun onTapPlane(hitResult: HitResult, plane: Plane, motionEvent: MotionEvent) {
 | - | - | - |
 
 ```kotlin
-override fun onViewCreated(view: View, savedInstanceState: Bundle?) { 
-    super.onViewCreated(view, savedInstanceState)
-
-    arFragment.apply {
-        setOnSessionConfigurationListener { session, config ->
-            if (session.isDepthModeSupported(Config.DepthMode.AUTOMATIC)) {
-                config.depthMode = Config.DepthMode.AUTOMATIC
-            }
+arFragment.apply {
+    setOnSessionConfigurationListener { session, config ->
+        if (session.isDepthModeSupported(Config.DepthMode.AUTOMATIC)) {
+            config.depthMode = Config.DepthMode.AUTOMATIC
         }
-        setOnViewCreatedListener { arSceneView ->
-            // Available modes: DEPTH_OCCLUSION_DISABLED, DEPTH_OCCLUSION_ENABLED
-            arSceneView.cameraStream.depthOcclusionMode =
-                CameraStream.DepthOcclusionMode.DEPTH_OCCLUSION_ENABLED
-        }
+    }
+    setOnViewCreatedListener { arSceneView ->
+        // Available modes: DEPTH_OCCLUSION_DISABLED, DEPTH_OCCLUSION_ENABLED
+        arSceneView.cameraStream.depthOcclusionMode =
+            CameraStream.DepthOcclusionMode.DEPTH_OCCLUSION_ENABLED
     }
 }
 ```
@@ -203,8 +196,9 @@ override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 | - | - | - |
 
 ```kotlin
-fun onTapPlane(hitResult: HitResult, plane: Plane, motionEvent: MotionEvent) {
-    scene.addChild(AnchorNode(hitResult.createAnchor()).apply {
+arFragment.setOnTapArPlaneListener { hitResult, plane, motionEvent ->
+    // Create the Anchor
+    arFragment.arSceneView.scene.addChild(AnchorNode(hitResult.createAnchor()).apply {
         addChild(VideoNode(context, MediaPlayer.create(context, R.raw.video).apply {
             start()
         }, chromaKeyColor, null))
@@ -269,9 +263,9 @@ arFragment.setOnTapArPlaneListener(::onTapPlane)
 ```
 
 ```kotlin
-fun onTapPlane(hitResult: HitResult, plane: Plane, motionEvent: MotionEvent) {
-    // Create the Anchor.
-    scene.addChild(AnchorNode(hitResult.createAnchor()).apply {
+arFragment.setOnTapArPlaneListener { hitResult, plane, motionEvent ->
+    // Create the Anchor
+    arFragment.arSceneView.scene.addChild(AnchorNode(hitResult.createAnchor()).apply {
         // Create the transformable model and add it to the anchor.
         addChild(TransformableNode(arFragment.transformationSystem).apply {
             renderable = model
@@ -317,10 +311,10 @@ node.enabled= false
 
 The Update-Rate of the rendering is limited through the used camera config of ARCore. For most Smartphones it is 30 fps and for the Pixel Smartphones it is 60 fps. The user can manually change this value *(you should know what you are doing)*.
 
-```java
-@Override
-public void onViewCreated(ArFragment arFragment, ArSceneView arSceneView) {
-    arSceneView.setMaxFramesPerSeconds([int])
+```kotlin
+arFragment.setOnViewCreatedListener { arSceneView ->
+    // Set a higher bound for the frame rate
+    arSceneView.setMaxFramesPerSeconds(60)
 }
 ```
 > The default value is **60**.
