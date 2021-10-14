@@ -26,7 +26,7 @@ Note that this is only my personal choice but other contributors can still make 
 
 ### Sceneform is a 3D framework with a physically based renderer that's optimized for mobile devices and that makes it easy for you to build Augmented Reality (AR) apps without requiring OpenGL or Unity.
 
-* Continuous compatibility with the latests versions of [ARCore SDK](https://github.com/google-ar/arcore-android-sdk) and [Filament](https://github.com/google/filament)
+* Continuous compatibility with the latests versions of [ARCore SDK](https://github.com/google-ar/arcore-android-sdk) and [Filament](https://github.com/google/filament) 
 * Based on AndroidX
 * Available as gradle `mavenCentral()` dependency
 * Supports <a href="https://www.khronos.org/gltf/">glTF</a> format
@@ -74,7 +74,7 @@ dependencies {
     android:layout_width="match_parent"
     android:layout_height="match_parent" />
 ```
-[**sample...**](https://github.com/ThomasGorisse/sceneform-android-sdk/blob/master/samples/gltf/src/main/res/layout/activity_main.xml)
+[**sample...**](https://github.com/ThomasGorisse/sceneform-android-sdk/blob/master/samples/gltf/src/main/res/layout/fragment_main.xml)
 
 
 ### Edit your `Activity` or `Fragment`
@@ -102,9 +102,9 @@ override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         .setOnTapPlaneGlbModel("https://storage.googleapis.com/ar-answers-in-search-models/static/Tiger/model.glb")
 }
 ```
-[**kotlin sample...**](https://github.com/ThomasGorisse/sceneform-android-sdk/blob/master/samples/gltf/src/main/java/com/google/ar/sceneform/samples/gltf/MainActivity.java)
+[**kotlin sample...**](https://github.com/ThomasGorisse/sceneform-android-sdk/blob/master/samples/gltf/src/main/java/com/google/ar/sceneform/samples/gltf/MainFragment.kt)
 
-[**java sample...**](https://github.com/ThomasGorisse/sceneform-android-sdk/tree/master/samples/gltf-java)
+[**java sample...**](https://github.com/ThomasGorisse/sceneform-android-sdk/tree/master/samples/gltf-java/src/main/java/com/google/ar/sceneform/samples/gltf/MainActivity.java)
 
 
 
@@ -354,7 +354,7 @@ You can compare it to a track playing something corresponding to a particular be
 \
 For example, on Blender "AnimationName" can correspond to
 * An action defined inside the `Non linear Animation View Port`  
-  ![](https://thomasgorisse.github.io/sceneform-android-sdk/images/tutorials/screenshotl_blender_animation_01.jpg)
+![](https://thomasgorisse.github.io/sceneform-android-sdk/images/tutorials/screenshotl_blender_animation_01.jpg)
 * A single object behavior in the `Timeline ViewPort`
 
 **To know the actual animation names of a glb/gltf file, you can drag it on a glTF Viewer like [here](https://gltf-viewer.donmccurdy.com/) and find it in the animation list.**
@@ -373,8 +373,8 @@ second for a jump, a third for sidestepping and so on:
 #### Play Sequentially
 ```java
 AnimatorSet animatorSet = new AnimatorSet();
-        animatorSet.playSequentially(ModelAnimator.ofMultipleAnimations(model, "walk", "run"));
-        animatorSet.start();
+animatorSet.playSequentially(ModelAnimator.ofMultipleAnimations(model, "walk", "run"));
+animatorSet.start();
 ```
 
 #### Auto Cancel
@@ -382,10 +382,10 @@ Here you can see that no call to `animator.cancel()` is required because the
 `animator.setAutoCancel(boolean)` is set to true by default
 ```java
 ObjectAnimator walkAnimator = ModelAnimator.ofAnimation(model, "walk");
-        walkButton.setOnClickListener(v -> walkAnimator.start());
+walkButton.setOnClickListener(v -> walkAnimator.start());
 
-        ObjectAnimator runAnimator = ModelAnimator.ofAnimation(model, "run");
-        runButton.setOnClickListener(v -> runAnimator.start());
+ObjectAnimator runAnimator = ModelAnimator.ofAnimation(model, "run");
+runButton.setOnClickListener(v -> runAnimator.start());
 ```
 
 
@@ -397,20 +397,20 @@ time or sequentially, please consider using an `AnimatorSet` with one
 ```java
 AnimatorSet completeFly = new AnimatorSet();
 
-        ObjectAnimator liftOff = ModelAnimator.ofAnimationFraction(airPlaneModel, "FlyAltitude",0, 40);
-        liftOff.setInterpolator(new AccelerateInterpolator());
+ObjectAnimator liftOff = ModelAnimator.ofAnimationFraction(airPlaneModel, "FlyAltitude",0, 40);
+liftOff.setInterpolator(new AccelerateInterpolator());
 
-        AnimatorSet flying = new AnimatorSet();
-        ObjectAnimator flyAround = ModelAnimator.ofAnimation(airPlaneModel, "FlyAround");
-        flyAround.setRepeatCount(ValueAnimator.INFINITE);
-        flyAround.setDuration(10000);
-        ObjectAnimator airportBusHome = ModelAnimator.ofAnimationFraction(busModel, "Move", 0);
-        flying.playTogether(flyAround, airportBusHome);
+AnimatorSet flying = new AnimatorSet();
+ObjectAnimator flyAround = ModelAnimator.ofAnimation(airPlaneModel, "FlyAround");
+flyAround.setRepeatCount(ValueAnimator.INFINITE);
+flyAround.setDuration(10000);
+ObjectAnimator airportBusHome = ModelAnimator.ofAnimationFraction(busModel, "Move", 0);
+flying.playTogether(flyAround, airportBusHome);
 
-        ObjectAnimator land = ModelAnimator.ofAnimationFraction(airPlaneModel, "FlyAltitude", 0);
-        land.setInterpolator(new DecelerateInterpolator());
+ObjectAnimator land = ModelAnimator.ofAnimationFraction(airPlaneModel, "FlyAltitude", 0);
+land.setInterpolator(new DecelerateInterpolator());
 
-        completeFly.playSequentially(liftOff, flying, land);
+completeFly.playSequentially(liftOff, flying, land);
 ```
 
 
