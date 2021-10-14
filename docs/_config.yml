@@ -27,5 +27,5 @@ navigation:                # accepts {file, title, url, icon, sidebaricon}
   - {title: "Sponsor", url: "https://github.com/sponsors/ThomasGorisse"}
   - {title: "Javadoc", url: "/javadoc/index.html"}
 
-external:
-  - {icon: github, url: "https://github.com/ThomasGorisse/sceneform-android-sdk"}
+#external:
+#  - {icon: github, url: "https://github.com/ThomasGorisse/sceneform-android-sdk"}

@@ -64,7 +64,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    public void onViewCreated(ArFragment arFragment, ArSceneView arSceneView) {
+    public void onViewCreated(ArSceneView arSceneView) {
         this.arSceneView = arSceneView;
 
         // This is important to make sure that the camera stream renders first so that

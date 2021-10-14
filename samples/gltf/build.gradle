@@ -1,9 +1,11 @@
 plugins {
     id 'com.android.application'
+    id 'kotlin-android'
 }
 
 android {
     compileSdkVersion 30
+
     defaultConfig {
         applicationId "com.google.ar.sceneform.samples.gltf"
 
@@ -17,15 +19,36 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
     aaptOptions {
         noCompress 'filamat', 'ktx'
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
     }
 }
 
 dependencies {
-    implementation "androidx.appcompat:appcompat:1.3.1"
-    implementation "androidx.fragment:fragment:1.3.6"
 
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlin_version"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$kotlin_version"
+
+    // AndroidX
+    implementation 'androidx.core:core-ktx:1.6.0'
+    implementation "androidx.appcompat:appcompat:1.3.1"
+    implementation "androidx.fragment:fragment-ktx:1.3.6"
+
+    // Material
+    implementation 'com.google.android.material:material:1.4.0'
+
+    // Sceneform
     releaseImplementation "com.gorisse.thomas.sceneform:sceneform:1.20.0"
     debugApi project(":sceneform")
 }

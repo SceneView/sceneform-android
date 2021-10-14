@@ -70,7 +70,7 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void onViewCreated(ArFragment arFragment, ArSceneView arSceneView) {
+    public void onViewCreated(ArSceneView arSceneView) {
         arFragment.setOnViewCreatedListener(null);
 
         // Available modes: DEPTH_OCCLUSION_DISABLED, DEPTH_OCCLUSION_ENABLED

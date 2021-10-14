@@ -28,6 +28,7 @@ import com.google.ar.sceneform.AnchorNode;
 import com.google.ar.sceneform.ArSceneView;
 import com.google.ar.sceneform.FrameTime;
 import com.google.ar.sceneform.Node;
+import com.google.ar.sceneform.NodeParent;
 import com.google.ar.sceneform.Scene;
 import com.google.ar.sceneform.math.MathHelper;
 import com.google.ar.sceneform.math.Quaternion;
@@ -102,7 +103,7 @@ public class TranslationController extends BaseTransformationController<DragGest
     }
 
     Vector3 initialForwardInWorld = transformableNode.getForward();
-    Node parent = transformableNode.getParent();
+    Node parent = transformableNode.getParentNode();
     if (parent != null) {
       initialForwardInLocal.set(parent.worldToLocalDirection(initialForwardInWorld));
     } else {
@@ -140,7 +141,7 @@ public class TranslationController extends BaseTransformationController<DragGest
         if (plane.isPoseInPolygon(pose) && allowedPlaneTypes.contains(plane.getType())) {
           desiredLocalPosition = new Vector3(pose.tx(), pose.ty(), pose.tz());
           desiredLocalRotation = new Quaternion(pose.qx(), pose.qy(), pose.qz(), pose.qw());
-          Node parent = getTransformableNode().getParent();
+          Node parent = getTransformableNode().getParentNode();
           if (parent != null && desiredLocalPosition != null && desiredLocalRotation != null) {
             desiredLocalPosition = parent.worldToLocalPoint(desiredLocalPosition);
             desiredLocalRotation =
@@ -204,7 +205,7 @@ public class TranslationController extends BaseTransformationController<DragGest
   }
 
   private AnchorNode getAnchorNodeOrDie() {
-    Node parent = getTransformableNode().getParent();
+    NodeParent parent = getTransformableNode().getParent();
     if (!(parent instanceof AnchorNode)) {
       throw new IllegalStateException("TransformableNode must have an AnchorNode as a parent.");
     }

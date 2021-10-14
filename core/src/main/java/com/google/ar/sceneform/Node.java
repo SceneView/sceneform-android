@@ -318,16 +318,27 @@ public class Node extends NodeParent implements TransformProvider {
         return scene;
     }
 
+
+    /**
+     * Returns the parent of this node.
+     *
+     * @return the parent as a {@link NodeParent}
+     */
+    @Nullable
+    public final NodeParent getParent() {
+        return parent;
+    }
+
     /**
      * Returns the parent of this node. If this {@link Node} has a parent, and that parent is a {@link
-     * Node} or {@link Node} subclass, then this function returns the parent as a {@link Node}.
+     * Node} subclass, then this function returns the parent as a {@link Node}.
      * Returns null if the parent is a {@link Scene}, use {@link #getScene()} to retrieve the parent
      * instead.
      *
      * @return the parent as a {@link Node}, if the parent is a {@link Node}.
      */
     @Nullable
-    public final Node getParent() {
+    public final Node getParentNode() {
         return parentAsNode;
     }
 
@@ -1344,7 +1355,6 @@ public class Node extends NodeParent implements TransformProvider {
 
 
     // TODO: Gltf animation api should be consistent with Sceneform.
-    @Nullable
     public RenderableInstance getRenderableInstance() {
         return renderableInstance;
     }

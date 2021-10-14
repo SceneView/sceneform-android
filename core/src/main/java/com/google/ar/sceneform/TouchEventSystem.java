@@ -310,7 +310,7 @@ public class TouchEventSystem {
         break;
       } else {
         if (bubble) {
-          resultNode = resultNode.getParent();
+          resultNode = resultNode.getParentNode();
         } else {
           resultNode = null;
         }

@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.google.ar.sceneform.samples.gltf">
+
+    <!-- Always needed for AR. -->
+    <uses-permission android:name="android.permission.CAMERA" />
+
+    <!-- Needed to load gltf from network. -->
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <!-- Sceneform requires OpenGLES 3.0 or later. -->
+    <uses-feature
+        android:glEsVersion="0x00030000"
+        android:required="true" />
+
+    <!-- Indicates that this app requires Google Play Services for AR ("AR Required") and results in
+         the app only being visible in the Google Play Store on devices that support ARCore.
+         For an "AR Optional" app, remove this tag. -->
+    <uses-feature
+        android:name="android.hardware.camera.ar"
+        android:required="true" />
+
+    <application
+        android:icon="@drawable/ic_launcher"
+        android:label="@string/app_name"
+        android:theme="@style/AppTheme">
+
+        <!-- Indicates that this app requires Google Play Services for AR ("AR Required") and causes
+        the Google Play Store to download and intall Google Play Services for AR along with the app.
+        For an "AR Optional" app, specify "optional" instead of "required". -->
+        <meta-data
+            android:name="com.google.ar.core"
+            android:value="required" />
+
+        <activity
+            android:name=".MainActivity"
+            android:configChanges="orientation|screenSize"
+            android:exported="true"
+            android:label="@string/app_name"
+            android:screenOrientation="locked"
+            android:theme="@style/AppTheme">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+    </application>
+</manifest>

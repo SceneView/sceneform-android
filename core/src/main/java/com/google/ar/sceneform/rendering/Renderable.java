@@ -336,7 +336,7 @@ public abstract class Renderable {
      * careful when modifying the data before or between build calls.
      */
     @SuppressWarnings({"AndroidApiChecker", "FutureReturnValueIgnored"}) // CompletableFuture
-    abstract static class Builder<T extends Renderable, B extends Builder<T, B>> {
+    public abstract static class Builder<T extends Renderable, B extends Builder<T, B>> {
         /**
          * @hide
          */

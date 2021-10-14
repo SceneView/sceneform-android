@@ -74,7 +74,7 @@ public class ArFragment extends BaseArFragment {
         super.onViewCreated(view, savedInstanceState);
 
         if (onViewCreatedListener != null) {
-            onViewCreatedListener.onViewCreated(this, getArSceneView());
+            onViewCreatedListener.onViewCreated(getArSceneView());
         }
     }
 
@@ -133,7 +133,21 @@ public class ArFragment extends BaseArFragment {
      * @param glbSource Glb file source location can be come from the asset folder ("model.glb")
      *                  or an http source ("http://domain.com/model.glb")
      */
-    public void setOnTapPlaneGlbModel(String glbSource, OnTapModelListener listener) {
+    public void setOnTapPlaneGlbModel(String glbSource) {
+        setOnTapPlaneGlbModel(glbSource, null);
+    }
+
+    /**
+     * Loads a monolithic binary glTF and add it to the fragment when the user tap on a detected
+     * plane surface.
+     * <p>
+     * Plays the animations automatically if the model has one.
+     * </p>
+     *
+     * @param glbSource Glb file source location can be come from the asset folder ("model.glb")
+     *                  or an http source ("http://domain.com/model.glb")
+     */
+    public void setOnTapPlaneGlbModel(String glbSource, @Nullable OnTapModelListener listener) {
         ModelRenderable.builder()
                 .setSource(
                         getContext(),
@@ -211,10 +225,9 @@ public class ArFragment extends BaseArFragment {
         /**
          * Called at the end of the fragment onCreateView() call.
          *
-         * @param arFragment  the onViewCreated fragment.
          * @param arSceneView the created ARSceneView ready to be configured.
          */
-        void onViewCreated(ArFragment arFragment, ArSceneView arSceneView);
+        void onViewCreated(ArSceneView arSceneView);
     }
 
     /**
