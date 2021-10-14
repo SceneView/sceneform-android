@@ -111,8 +111,9 @@ override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 ## Demo
 
 [![Get it on Google Play](https://upload.wikimedia.org/wikipedia/commons/thumb/7/78/Google_Play_Store_badge_EN.svg/320px-Google_Play_Store_badge_EN.svg.png)](https://play.google.com/store/apps/details?id=com.gorisse.thomas.ar.environmentlights)
-| [![Youtube Video 01](https://yt-embed.herokuapp.com/embed?v=9QP43nOSItU)](https://www.youtube.com/watch?v=9QP43nOSItU) | [![Youtube Video 02](https://yt-embed.herokuapp.com/embed?v=jpmWjigA3Ms)](https://www.youtube.com/watch?v=jpmWjigA3Ms) |  |
-| - | - | - |
+
+| [![Youtube Video 01](https://yt-embed.herokuapp.com/embed?v=9QP43nOSItU)](https://www.youtube.com/watch?v=9QP43nOSItU) | [![Youtube Video 02](https://yt-embed.herokuapp.com/embed?v=jpmWjigA3Ms)](https://www.youtube.com/watch?v=jpmWjigA3Ms) |
+| - | - |
 
 
 
@@ -372,8 +373,8 @@ second for a jump, a third for sidestepping and so on:
 #### Play Sequentially
 ```java
 AnimatorSet animatorSet = new AnimatorSet();
-animatorSet.playSequentially(ModelAnimator.ofMultipleAnimations(model, "walk", "run"));
-animatorSet.start();
+        animatorSet.playSequentially(ModelAnimator.ofMultipleAnimations(model, "walk", "run"));
+        animatorSet.start();
 ```
 
 #### Auto Cancel
@@ -381,10 +382,10 @@ Here you can see that no call to `animator.cancel()` is required because the
 `animator.setAutoCancel(boolean)` is set to true by default
 ```java
 ObjectAnimator walkAnimator = ModelAnimator.ofAnimation(model, "walk");
-walkButton.setOnClickListener(v -> walkAnimator.start());
+        walkButton.setOnClickListener(v -> walkAnimator.start());
 
-ObjectAnimator runAnimator = ModelAnimator.ofAnimation(model, "run");
-runButton.setOnClickListener(v -> runAnimator.start());
+        ObjectAnimator runAnimator = ModelAnimator.ofAnimation(model, "run");
+        runButton.setOnClickListener(v -> runAnimator.start());
 ```
 
 
@@ -396,20 +397,20 @@ time or sequentially, please consider using an `AnimatorSet` with one
 ```java
 AnimatorSet completeFly = new AnimatorSet();
 
-ObjectAnimator liftOff = ModelAnimator.ofAnimationFraction(airPlaneModel, "FlyAltitude",0, 40);
-liftOff.setInterpolator(new AccelerateInterpolator());
+        ObjectAnimator liftOff = ModelAnimator.ofAnimationFraction(airPlaneModel, "FlyAltitude",0, 40);
+        liftOff.setInterpolator(new AccelerateInterpolator());
 
-AnimatorSet flying = new AnimatorSet();
-ObjectAnimator flyAround = ModelAnimator.ofAnimation(airPlaneModel, "FlyAround");
-flyAround.setRepeatCount(ValueAnimator.INFINITE);
-flyAround.setDuration(10000);
-ObjectAnimator airportBusHome = ModelAnimator.ofAnimationFraction(busModel, "Move", 0);
-flying.playTogether(flyAround, airportBusHome);
+        AnimatorSet flying = new AnimatorSet();
+        ObjectAnimator flyAround = ModelAnimator.ofAnimation(airPlaneModel, "FlyAround");
+        flyAround.setRepeatCount(ValueAnimator.INFINITE);
+        flyAround.setDuration(10000);
+        ObjectAnimator airportBusHome = ModelAnimator.ofAnimationFraction(busModel, "Move", 0);
+        flying.playTogether(flyAround, airportBusHome);
 
-ObjectAnimator land = ModelAnimator.ofAnimationFraction(airPlaneModel, "FlyAltitude", 0);
-land.setInterpolator(new DecelerateInterpolator());
+        ObjectAnimator land = ModelAnimator.ofAnimationFraction(airPlaneModel, "FlyAltitude", 0);
+        land.setInterpolator(new DecelerateInterpolator());
 
-completeFly.playSequentially(liftOff, flying, land);
+        completeFly.playSequentially(liftOff, flying, land);
 ```
 
 
