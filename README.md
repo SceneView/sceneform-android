@@ -51,14 +51,7 @@ dependencies {
 
 
 
-## Sample App
-
-### AR Environment Lights
-
-| [![Get it on Google Play](https://upload.wikimedia.org/wikipedia/commons/thumb/7/78/Google_Play_Store_badge_EN.svg/320px-Google_Play_Store_badge_EN.svg.png)](https://play.google.com/store/apps/details?id=com.gorisse.thomas.ar.environmentlights) | [![Youtube Video 01](https://img.youtube.com/vi/9QP43nOSItU&t=3s/0.jpg)](https://www.youtube.com/watch?v=9QP43nOSItU&t=3s) | [![Youtube Video 02](https://img.youtube.com/vi/jpmWjigA3Ms/0.jpg)](https://www.youtube.com/watch?v=jpmWjigA3Ms) |  
-| - | - | - |
-
-## Basic Usage (Simple model viewer)
+## Usage (Simple model viewer)
 
 
 ### Update your `AndroidManifest.xml`
@@ -115,8 +108,18 @@ override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     arFragment.setOnTapPlaneGlbModel("https://storage.googleapis.com/ar-answers-in-search-models/static/Tiger/model.glb")
 }
 ```
-[**sample...**](https://github.com/ThomasGorisse/sceneform-android-sdk/blob/master/samples/gltf/src/main/java/com/google/ar/sceneform/samples/gltf/MainActivity.java)
+[**kotlin sample...**](https://github.com/ThomasGorisse/sceneform-android-sdk/blob/master/samples/gltf/src/main/java/com/google/ar/sceneform/samples/gltf/MainActivity.java)
+
 [**java sample...**](https://github.com/ThomasGorisse/sceneform-android-sdk/tree/master/samples/gltf-java)
+
+
+
+## Demo
+
+[![Get it on Google Play](https://upload.wikimedia.org/wikipedia/commons/thumb/7/78/Google_Play_Store_badge_EN.svg/320px-Google_Play_Store_badge_EN.svg.png)](https://play.google.com/store/apps/details?id=com.gorisse.thomas.ar.environmentlights)
+| [![Youtube Video 01](https://yt-embed.herokuapp.com/embed?v=9QP43nOSItU)](https://www.youtube.com/watch?v=9QP43nOSItU) | [![Youtube Video 02](https://yt-embed.herokuapp.com/embed?v=jpmWjigA3Ms)](https://www.youtube.com/watch?v=jpmWjigA3Ms) |
+| - | - |
+
 
 
 ## Samples
@@ -139,7 +142,8 @@ fun onTapPlane(hitResult: HitResult, plane: Plane, motionEvent: MotionEvent) {
     })
 }
 ```
-[**sample project...**](https://github.com/ThomasGorisse/sceneform-android-sdk/tree/master/samples/gltf)
+[**kotlin sample project...**](https://github.com/ThomasGorisse/sceneform-android-sdk/tree/master/samples/gltf)
+
 [**java sample project...**](https://github.com/ThomasGorisse/sceneform-android-sdk/tree/master/samples/gltf-java)
 
 
