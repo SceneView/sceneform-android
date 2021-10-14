@@ -44,7 +44,7 @@ Note that this is only my personal choice but other contributors can still make 
 *app/build.gradle*
 ```gradle
 dependencies {
-     implementation("com.gorisse.thomas.sceneform:sceneform:1.20.0")
+     implementation("com.gorisse.thomas.sceneform:sceneform:1.20.1")
 }
 ```
 [**more...**](https://thomasgorisse.github.io/sceneform-android-sdk/dependencies)
