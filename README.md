@@ -77,7 +77,7 @@ dependencies {
     android:layout_width="match_parent"
     android:layout_height="match_parent" />
 ```
-[**sample...**](https://github.com/ThomasGorisse/sceneform-android-sdk/blob/master/samples/gltf/src/main/res/layout/activity_main.xml)
+[**sample...**](https://github.com/ThomasGorisse/sceneform-android-sdk/blob/master/samples/gltf/src/main/res/layout/fragment_main.xml)
 
 
 ### Edit your `Activity` or `Fragment`
@@ -105,9 +105,9 @@ override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         .setOnTapPlaneGlbModel("https://storage.googleapis.com/ar-answers-in-search-models/static/Tiger/model.glb")
 }
 ```
-[**kotlin sample...**](https://github.com/ThomasGorisse/sceneform-android-sdk/blob/master/samples/gltf/src/main/java/com/google/ar/sceneform/samples/gltf/MainActivity.java)
+[**kotlin sample...**](https://github.com/ThomasGorisse/sceneform-android-sdk/blob/master/samples/gltf/src/main/java/com/google/ar/sceneform/samples/gltf/MainFragment.kt)
 
-[**java sample...**](https://github.com/ThomasGorisse/sceneform-android-sdk/tree/master/samples/gltf-java)
+[**java sample...**](https://github.com/ThomasGorisse/sceneform-android-sdk/tree/master/samples/gltf-java/src/main/java/com/google/ar/sceneform/samples/gltf/MainActivity.java)
 
 
 
