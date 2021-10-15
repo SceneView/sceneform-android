@@ -13,6 +13,8 @@ android {
         minSdkVersion 24
         targetSdkVersion 30
 
+        consumerProguardFiles 'lib-proguard-rules.pro'
+
         buildConfigField 'String', 'VERSION_NAME', "\"${project.properties['VERSION_NAME']}\""
     }
     compileOptions {
