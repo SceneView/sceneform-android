@@ -82,10 +82,12 @@ public class MainActivity extends AppCompatActivity implements
             }
         }
 
-        // .glb models can be loaded at runtime when needed or when app starts
-        // This method loads ModelRenderable when app starts
-        loadMatrixModel();
-        loadMatrixMaterial();
+        if(Sceneform.isSupported(this)) {
+            // .glb models can be loaded at runtime when needed or when app starts
+            // This method loads ModelRenderable when app starts
+            loadMatrixModel();
+            loadMatrixMaterial();
+        }
     }
 
     @Override
@@ -100,9 +102,6 @@ public class MainActivity extends AppCompatActivity implements
     public void onSessionConfiguration(Session session, Config config) {
         // Disable plane detection
         config.setPlaneFindingMode(Config.PlaneFindingMode.DISABLED);
-
-        if (session.isDepthModeSupported(Config.DepthMode.AUTOMATIC))
-            config.setDepthMode(Config.DepthMode.AUTOMATIC);
 
         // Images to be detected by our AR need to be added in AugmentedImageDatabase
         // This is how database is created at runtime

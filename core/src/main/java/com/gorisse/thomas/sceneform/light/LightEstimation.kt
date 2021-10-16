@@ -200,7 +200,7 @@ class EnvironmentLightsEstimate(
  * @param cameraExposureFactor ARCore's light estimation uses unit-less (relative) values while
  * Filament uses a physically based camera model with lux or lumen values.
  * In order to keep the "standard" Filament behavior we scale AR Core values.
- * Infos: https://github.com/ThomasGorisse/sceneform-android-sdk/pull/156#issuecomment-911873565
+ * Infos: https://github.com/ThomasGorisse/sceneformmaintained/pull/156#issuecomment-911873565
  */
 fun Frame.environmentLightsEstimate(
     config: LightEstimationConfig,
@@ -350,7 +350,7 @@ fun LightEstimate.ambientIntensityEnvironmentLights(
  * @param cameraExposureFactor ARCore's light estimation uses unit-less (relative) values while
  * Filament uses a physically based camera model with lux or lumen values.
  * In order to keep the "standard" Filament behavior we scale AR Core values.
- * Infos: https://github.com/ThomasGorisse/sceneform-android-sdk/pull/156#issuecomment-911873565
+ * Infos: https://github.com/ThomasGorisse/sceneformmaintained/pull/156#issuecomment-911873565
  */
 fun LightEstimate.environmentalHdrEnvironmentLights(
     previousEstimate: EnvironmentLightsEstimate?,
