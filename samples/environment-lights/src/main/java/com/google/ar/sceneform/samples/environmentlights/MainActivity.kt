@@ -25,7 +25,7 @@ import com.gorisse.thomas.sceneform.light.LightEstimationConfig
 import kotlinx.coroutines.*
 import java.util.*
 
-const val serverUrl = "https://thomasgorisse.github.io/sceneformmaintained/assets"
+const val serverUrl = "https://thomasgorisse.github.io/SceneformMaintained/assets"
 
 class MainActivity : AppCompatActivity() {
 

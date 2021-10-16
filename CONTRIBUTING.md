@@ -1,6 +1,6 @@
 # How to Contribute
 
-Please use the [issue tracker](https://github.com/thomasgorisse/sceneformmaintained/issues)
+Please use the [issue tracker](https://github.com/ThomasGorisse/SceneformMaintained/issues)
 to report any issue as we do not accept pull requests for this repository.
 
 If you'd like to send us a patch or pull request, there are just a few small

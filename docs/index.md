@@ -1,8 +1,8 @@
-![Logo](https://thomasgorisse.github.io/sceneformmaintained/images/logos/logo_rounded.png)
+![Logo](https://thomasgorisse.github.io/SceneformMaintained/images/logos/logo_rounded.png)
 
 [![Maven Central](https://img.shields.io/maven-central/v/com.gorisse.thomas.sceneform/sceneform.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:%22com.gorisse.thomas.sceneform%22%20AND%20a:%22sceneform%22)
 
-#### This repository is a fork of [Sceneform](https://github.com/google-ar/sceneformmaintained) Copyright (c) 2021 Google Inc.  All rights reserved.
+#### This repository is a fork of [Sceneform](https://github.com/google-ar/SceneformMaintained) Copyright (c) 2021 Google Inc.  All rights reserved.
 
 #### Maintained and continued by [Nikita Zaytsev](https://github.com/grassydragon), [Vojta Maiwald](https://github.com/VojtaMaiwald), [Brigido Rodriguez](https://github.com/imbrig), [Fvito](https://github.com/fvito), [Marius Kajczuga](https://github.com/Venthorus), [Robert Gregat](https://github.com/RGregat) and [Thomas Gorisse](https://github.com/ThomasGorisse)
 
@@ -44,7 +44,7 @@ dependencies {
      implementation("com.gorisse.thomas.sceneform:sceneform:1.20.1")
 }
 ```
-[**more...**](https://thomasgorisse.github.io/sceneformmaintained/dependencies)
+[**more...**](https://thomasgorisse.github.io/SceneformMaintained/dependencies)
 
 
 
@@ -62,7 +62,7 @@ dependencies {
     <meta-data android:name="com.google.ar.core" android:value="optional" />
 </application>
 ```
-[**more...**](https://thomasgorisse.github.io/sceneformmaintained/manifest)
+[**more...**](https://thomasgorisse.github.io/SceneformMaintained/manifest)
 
 
 ### Add the `View` to your `layout`
@@ -74,7 +74,7 @@ dependencies {
     android:layout_width="match_parent"
     android:layout_height="match_parent" />
 ```
-[**sample...**](https://github.com/ThomasGorisse/sceneformmaintained/blob/master/samples/gltf/src/main/res/layout/fragment_main.xml)
+[**sample...**](https://github.com/ThomasGorisse/SceneformMaintained/blob/master/samples/gltf/src/main/res/layout/fragment_main.xml)
 
 
 ### Edit your `Activity` or `Fragment`
@@ -102,9 +102,9 @@ override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         .setOnTapPlaneGlbModel("https://storage.googleapis.com/ar-answers-in-search-models/static/Tiger/model.glb")
 }
 ```
-[**kotlin sample...**](https://github.com/ThomasGorisse/sceneformmaintained/blob/master/samples/gltf/src/main/java/com/google/ar/sceneform/samples/gltf/MainFragment.kt)
+[**kotlin sample...**](https://github.com/ThomasGorisse/SceneformMaintained/blob/master/samples/gltf/src/main/java/com/google/ar/sceneform/samples/gltf/MainFragment.kt)
 
-[**java sample...**](https://github.com/ThomasGorisse/sceneformmaintained/tree/master/samples/gltf-java/src/main/java/com/google/ar/sceneform/samples/gltf/MainActivity.java)
+[**java sample...**](https://github.com/ThomasGorisse/SceneformMaintained/tree/master/samples/gltf-java/src/main/java/com/google/ar/sceneform/samples/gltf/MainActivity.java)
 
 
 
@@ -137,15 +137,15 @@ arFragment.setOnTapArPlaneListener { hitResult, plane, motionEvent ->
     })
 }
 ```
-[**kotlin sample project...**](https://github.com/ThomasGorisse/sceneformmaintained/tree/master/samples/gltf)
+[**kotlin sample project...**](https://github.com/ThomasGorisse/SceneformMaintained/tree/master/samples/gltf)
 
-[**java sample project...**](https://github.com/ThomasGorisse/sceneformmaintained/tree/master/samples/gltf-java)
+[**java sample project...**](https://github.com/ThomasGorisse/SceneformMaintained/tree/master/samples/gltf-java)
 
 
 ### Depth Occlusion
 
 
-| ![Depth Occlusion 01](https://thomasgorisse.github.io/sceneformmaintained/images/samples/screenshot_depth_01.png) | ![Depth Occlusion 02](https://thomasgorisse.github.io/sceneformmaintained/images/samples/screenshot_depth_02.png) | ![Depth Occlusion 03](https://thomasgorisse.github.io/sceneformmaintained/images/samples/screenshot_depth_03.png) |
+| ![Depth Occlusion 01](https://thomasgorisse.github.io/SceneformMaintained/images/samples/screenshot_depth_01.png) | ![Depth Occlusion 02](https://thomasgorisse.github.io/SceneformMaintained/images/samples/screenshot_depth_02.png) | ![Depth Occlusion 03](https://thomasgorisse.github.io/SceneformMaintained/images/samples/screenshot_depth_03.png) |
 | - | - | - |
 
 ```kotlin
@@ -162,22 +162,22 @@ arFragment.apply {
     }
 }
 ```
-[**documentation...**](https://thomasgorisse.github.io/sceneformmaintained/depth)
+[**documentation...**](https://thomasgorisse.github.io/SceneformMaintained/depth)
 
-[**sample project...**](https://github.com/ThomasGorisse/sceneformmaintained/tree/master/samples/depth)
+[**sample project...**](https://github.com/ThomasGorisse/SceneformMaintained/tree/master/samples/depth)
 
 
 ### Augmented Images
 
 ![Augmented Images 01](https://user-images.githubusercontent.com/6597529/124591171-47ecf080-de5c-11eb-9196-8fe123e7ea58.gif)
 
-[**sample project...**](https://github.com/ThomasGorisse/sceneformmaintained/tree/master/samples/augmented-images)
+[**sample project...**](https://github.com/ThomasGorisse/SceneformMaintained/tree/master/samples/augmented-images)
 
 ### Augmented Faces
 | ![Augmented Faces 01](https://user-images.githubusercontent.com/6597529/135052644-79cf8964-7778-42d0-83f6-1839b9c8ab8b.gif) | ![Augmented Faces 02](https://user-images.githubusercontent.com/6597529/135059873-3342d169-5ff4-4d0d-bdec-fdac44c282ba.png) | ![Augmented Faces 03](https://user-images.githubusercontent.com/6597529/135051599-14742a53-69db-47d2-a27b-ba641a1d2609.gif) |
 | - | - | - |
 
-[**sample project...**](https://github.com/ThomasGorisse/sceneformmaintained/tree/master/samples/augmented-faces)
+[**sample project...**](https://github.com/ThomasGorisse/SceneformMaintained/tree/master/samples/augmented-faces)
 
 ### Environment Lights
 
@@ -185,7 +185,7 @@ arFragment.apply {
 | - | - | - |
 | ![Environment Lights 04](https://user-images.githubusercontent.com/6597529/131822279-613edadf-bdaf-4ae9-9da6-d620504af5f0.jpg) | ![Environment Lights 05](https://user-images.githubusercontent.com/6597529/135060214-b9b9be36-b0d2-4929-b957-c3a04fe40d1e.png) | ![Environment Lights 06](https://user-images.githubusercontent.com/6597529/131825447-d52d8c3e-2801-4d6a-8c51-8b32231c14d6.jpg) |
 
-[**sample project...**](https://github.com/ThomasGorisse/sceneformmaintained/tree/master/samples/environment-lights)
+[**sample project...**](https://github.com/ThomasGorisse/SceneformMaintained/tree/master/samples/environment-lights)
 
 
 ### Video texture
@@ -204,7 +204,7 @@ arFragment.setOnTapArPlaneListener { hitResult, plane, motionEvent ->
 }
 ```
 
-[**sample project...**](https://github.com/ThomasGorisse/sceneformmaintained/tree/master/samples/video-texture)
+[**sample project...**](https://github.com/ThomasGorisse/SceneformMaintained/tree/master/samples/video-texture)
 
 
 ### Dynamic materials/textures
@@ -212,14 +212,14 @@ arFragment.setOnTapArPlaneListener { hitResult, plane, motionEvent ->
 | ![Dynamic materials 01](https://miro.medium.com/max/2000/1*0XSLVleiR5ijFD1aIoCm-A.jpeg) | ![Dynamic materials 02](https://images.squarespace-cdn.com/content/v1/5bf7a0d55ffd203cac0e0920/1583270741496-7FJ9O190FD2FXI5JCWM0/texture.png?format=300w) | ![Dynamic materials 03](https://images.squarespace-cdn.com/content/v1/5bf7a0d55ffd203cac0e0920/1583264336080-RQP89XDN9IOHLISPG9CC/custom_material.png?format=300w) |
 | - | - | - |
 
-[**sample project...**](https://github.com/ThomasGorisse/sceneformmaintained/tree/master/samples/image-texture)
+[**sample project...**](https://github.com/ThomasGorisse/SceneformMaintained/tree/master/samples/image-texture)
 
 
 ### Non AR usage
 
 ![Non AR Usage 01](http://download.tuxfamily.org/sdtraces/BottinHTML/Bottin_D-J_files/282584ef7ae1d420897d47bd7ba4d46f.jpeg)
 
-[**sample project...**](https://github.com/ThomasGorisse/sceneformmaintained/tree/master/samples/sceneview-background)
+[**sample project...**](https://github.com/ThomasGorisse/SceneformMaintained/tree/master/samples/sceneview-background)
 
 
 ## Emulator
@@ -230,7 +230,7 @@ arFragment.setOnTapArPlaneListener { hitResult, plane, motionEvent ->
 
 ![image](https://user-images.githubusercontent.com/6597529/117983402-3513df00-b337-11eb-841d-49548429363e.png)
 
-[**more...**](https://thomasgorisse.github.io/sceneformmaintained/emulator)
+[**more...**](https://thomasgorisse.github.io/SceneformMaintained/emulator)
 
 
 
@@ -250,7 +250,7 @@ the app only being visible in the Google Play Store on devices that support ARCo
     <meta-data android:name="com.google.ar.core" android:value="required" />
 </application>
 ```
-[**more...**](https://thomasgorisse.github.io/sceneformmaintained/manifest)
+[**more...**](https://thomasgorisse.github.io/SceneformMaintained/manifest)
 
 
 ### Nodes
@@ -280,7 +280,7 @@ arFragment.setOnTapArPlaneListener { hitResult, plane, motionEvent ->
     })
 }
 ```
-[**sample...**](https://github.com/ThomasGorisse/sceneformmaintained/tree/master/samples/gltf)
+[**sample...**](https://github.com/ThomasGorisse/SceneformMaintained/tree/master/samples/gltf)
 
 
 ## Remove or Hide a node
@@ -301,7 +301,7 @@ node.parent = null
 node.enabled= false
 ```
 
-[**documentation...**](https://thomasgorisse.github.io/sceneformmaintained/remove_node)
+[**documentation...**](https://thomasgorisse.github.io/SceneformMaintained/remove_node)
 
 ## Frame Rate (FPS-Bound)
 
@@ -317,7 +317,7 @@ arFragment.setOnViewCreatedListener { arSceneView ->
 ```
 > The default value is **60**.
 
-[**documentation...**](https://thomasgorisse.github.io/sceneformmaintained/fps_bound)
+[**documentation...**](https://thomasgorisse.github.io/SceneformMaintained/fps_bound)
 
 
 ## Animations
@@ -354,7 +354,7 @@ You can compare it to a track playing something corresponding to a particular be
 \
 For example, on Blender "AnimationName" can correspond to
 * An action defined inside the `Non linear Animation View Port`  
-![](https://thomasgorisse.github.io/sceneformmaintained/images/tutorials/screenshotl_blender_animation_01.jpg)
+![](https://thomasgorisse.github.io/SceneformMaintained/images/tutorials/screenshotl_blender_animation_01.jpg)
 * A single object behavior in the `Timeline ViewPort`
 
 **To know the actual animation names of a glb/gltf file, you can drag it on a glTF Viewer like [here](https://gltf-viewer.donmccurdy.com/) and find it in the animation list.**
@@ -437,7 +437,7 @@ Every PropertyValuesHolder that applies a modification on the time position of t
 must use the `ModelAnimation.TIME_POSITION` instead of its own Property in order to possibly cancel
 any ObjectAnimator operating time modifications on the same ModelAnimation.
 
-[**more...**](https://thomasgorisse.github.io/sceneformmaintained/animations)
+[**more...**](https://thomasgorisse.github.io/SceneformMaintained/animations)
 
 
 

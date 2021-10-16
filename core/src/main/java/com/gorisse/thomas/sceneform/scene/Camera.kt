@@ -40,7 +40,7 @@ val Camera.ev100: Float
  * exposure.
  *
  * **Sources:**
- *  - [https://github.com/ThomasGorisse/sceneformmaintained/pull/156#issuecomment-911873565]
+ *  - [https://github.com/ThomasGorisse/SceneformMaintained/pull/156#issuecomment-911873565]
  *  - [https://github.com/google/filament/blob/main/filament/src/Exposure.cpp#L46]
  */
 val Camera.exposureFactor get() = 1.0f / ev100

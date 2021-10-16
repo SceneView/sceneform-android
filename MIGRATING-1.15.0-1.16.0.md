@@ -13,7 +13,7 @@ follow the following steps:
 
 In the interest of adopting open standards, the support for `SFA` and `SFB`
 files has been removed in 1.16.0 and replaced with
-[`glTF`](https://www.khronos.org/gltf/) support. Refer to the [GltfActivity](https://github.com/thomasgorisse/sceneformmaintained/blob/master/samples/gltf/app/src/main/java/com/google/ar/sceneform/samples/gltf/GltfActivity.java#L104)
+[`glTF`](https://www.khronos.org/gltf/) support. Refer to the [GltfActivity](https://github.com/ThomasGorisse/SceneformMaintained/blob/master/samples/gltf/app/src/main/java/com/google/ar/sceneform/samples/gltf/GltfActivity.java#L104)
 activity to see an example of how to load a `glTF` file.
 
 ## Migrate Sceneform dependencies
