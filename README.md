@@ -21,6 +21,10 @@ Sceneform Maintained SDK for Android
 * Simple model loading for basic usage
 
 
+---
+### Click on :star: to find us easily
+---
+
 
 ## Dependencies
 
