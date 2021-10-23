@@ -5,20 +5,25 @@ Sceneform Maintained SDK for Android
 
 [![Maven Central](https://img.shields.io/maven-central/v/com.gorisse.thomas.sceneform/sceneform.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:%22com.gorisse.thomas.sceneform%22%20AND%20a:%22sceneform%22)
 
-#### This repository is a fork of [Sceneform](https://github.com/google-ar/sceneform-android-sdk) Copyright (c) 2021 Google Inc.  All rights reserved.
+### ARCore Android SDK with Google Filament for Augmented Reality apps: glTF 3D objects, Augmented Images, Augmented Faces, Depth and much more in Kotlin/Java
 
-#### Maintained and continued by [Nikita Zaytsev](https://github.com/grassydragon), [Vojta Maiwald](https://github.com/VojtaMaiwald), [Brigido Rodriguez](https://github.com/imbrig), [Fvito](https://github.com/fvito), [Marius Kajczuga](https://github.com/Venthorus), [Robert Gregat](https://github.com/RGregat) and [Thomas Gorisse](https://github.com/ThomasGorisse)
-
-
-### Sceneform is a 3D framework with a physically based renderer that's optimized for mobile devices and that makes it easy for you to build Augmented Reality (AR) apps without requiring OpenGL or Unity.
-
-* Continuous compatibility with the latests versions of [ARCore SDK](https://github.com/google-ar/arcore-android-sdk) and [Filament](https://github.com/google/filament) 
-* Based on AndroidX
-* Available as gradle `mavenCentral()` dependency
+* Android gradle dependency in Kotlin/Java
+* No OpenGL or Unity need
+* Latest versions of [ARCore SDK](https://github.com/google-ar/arcore-android-sdk) and [Filament](https://github.com/google/filament) 
+* Latest versions of Android dependencies (Android Build tools, AndroidX,...)
+* Available on `mavenCentral()`
 * Supports <a href="https://www.khronos.org/gltf/">glTF</a> format
-* Animations made easy
+* glTF/glb with animations support
+* Augmented Images supported
+* Augmented Faces supported
 * Depth supported
 * Simple model loading for basic usage
+
+
+This repository is a fork of [Sceneform](https://github.com/google-ar/sceneform-android-sdk) Copyright (c) 2021 Google Inc.  All rights reserved.
+
+
+#### Maintained and continued by [Nikita Zaytsev](https://github.com/grassydragon), [Vojta Maiwald](https://github.com/VojtaMaiwald), [Brigido Rodriguez](https://github.com/imbrig), [Fvito](https://github.com/fvito), [Marius Kajczuga](https://github.com/Venthorus), [Robert Gregat](https://github.com/RGregat) and [Thomas Gorisse](https://github.com/ThomasGorisse)
 
 
 ---
@@ -95,15 +100,6 @@ override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 [**kotlin sample...**](https://github.com/ThomasGorisse/SceneformMaintained/blob/master/samples/gltf/src/main/java/com/google/ar/sceneform/samples/gltf/MainFragment.kt)
 
 [**java sample...**](https://github.com/ThomasGorisse/SceneformMaintained/tree/master/samples/gltf-java/src/main/java/com/google/ar/sceneform/samples/gltf/MainActivity.java)
-
-
-
-## Demo
-
-[![Get it on Google Play](https://upload.wikimedia.org/wikipedia/commons/thumb/7/78/Google_Play_Store_badge_EN.svg/320px-Google_Play_Store_badge_EN.svg.png)](https://play.google.com/store/apps/details?id=com.gorisse.thomas.ar.environmentlights)
-
-| [![Youtube Video 01](https://yt-embed.herokuapp.com/embed?v=9QP43nOSItU)](https://www.youtube.com/watch?v=9QP43nOSItU) | [![Youtube Video 02](https://yt-embed.herokuapp.com/embed?v=jpmWjigA3Ms)](https://www.youtube.com/watch?v=jpmWjigA3Ms) |
-| - | - |
 
 
 
@@ -199,8 +195,8 @@ arFragment.setOnTapArPlaneListener { hitResult, plane, motionEvent ->
 
 ### Dynamic materials/textures
 
-| ![Dynamic materials 01](https://miro.medium.com/max/2000/1*0XSLVleiR5ijFD1aIoCm-A.jpeg) | ![Dynamic materials 02](https://images.squarespace-cdn.com/content/v1/5bf7a0d55ffd203cac0e0920/1583270741496-7FJ9O190FD2FXI5JCWM0/texture.png?format=300w) | ![Dynamic materials 03](https://images.squarespace-cdn.com/content/v1/5bf7a0d55ffd203cac0e0920/1583264336080-RQP89XDN9IOHLISPG9CC/custom_material.png?format=300w) |
-| - | - | - |
+| ![Dynamic materials 01](https://miro.medium.com/max/2000/1*0XSLVleiR5ijFD1aIoCm-A.jpeg) | ![Dynamic materials 02](https://images.squarespace-cdn.com/content/v1/5bf7a0d55ffd203cac0e0920/1583270741496-7FJ9O190FD2FXI5JCWM0/texture.png?format=300w) |
+| - | - |
 
 [**sample project...**](https://github.com/ThomasGorisse/SceneformMaintained/tree/master/samples/image-texture)
 
@@ -210,6 +206,16 @@ arFragment.setOnTapArPlaneListener { hitResult, plane, motionEvent ->
 ![Non AR Usage 01](http://download.tuxfamily.org/sdtraces/BottinHTML/Bottin_D-J_files/282584ef7ae1d420897d47bd7ba4d46f.jpeg)
 
 [**sample project...**](https://github.com/ThomasGorisse/SceneformMaintained/tree/master/samples/sceneview-background)
+
+
+
+## Demo
+
+[![Get it on Google Play](https://upload.wikimedia.org/wikipedia/commons/thumb/7/78/Google_Play_Store_badge_EN.svg/320px-Google_Play_Store_badge_EN.svg.png)](https://play.google.com/store/apps/details?id=com.gorisse.thomas.ar.environmentlights)
+
+| [![Youtube Video 01](https://yt-embed.herokuapp.com/embed?v=9QP43nOSItU)](https://www.youtube.com/watch?v=9QP43nOSItU) | [![Youtube Video 02](https://yt-embed.herokuapp.com/embed?v=jpmWjigA3Ms)](https://www.youtube.com/watch?v=jpmWjigA3Ms) |
+| - | - |
+
 
 
 ## Emulator
