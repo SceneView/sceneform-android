@@ -27,7 +27,7 @@ This repository is a fork of [Sceneform](https://github.com/google-ar/sceneform-
 
 
 ---
-### Click on :star: to find us easily
+### :star: Star the repository to find us easily
 ---
 
 
@@ -164,6 +164,24 @@ arFragment.apply {
 | - | - | - |
 
 [**sample project...**](https://github.com/ThomasGorisse/SceneformMaintained/tree/master/samples/augmented-faces)
+
+
+### Cloud Anchors
+
+![image](https://user-images.githubusercontent.com/6597529/139030872-2fcaa720-42c8-4927-9308-bd7765b91771.png)
+
+```kotlin
+// Create a new anchor = the pose of which ARCore will try to resolve using the ARCore Cloud Anchor service and the provided cloudAnchorId
+sceneView.session?.resolveCloudAnchor(cloudAnchorId)?.let { resolvedAnchor ->
+  sceneView.scene.addChild(AnchorNode(resolvedAnchor).apply {
+      addChild(VideoNode(context, MediaPlayer.create(context, R.raw.restaurant_presentation).apply {
+                  this.start()
+              },null)
+      )
+  })
+}
+```
+
 
 ### Environment Lights
 
