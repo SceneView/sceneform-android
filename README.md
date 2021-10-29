@@ -1,6 +1,26 @@
 Sceneform Maintained SDK for Android
 ====================================
 
+---
+
+### :zap: **NEWS** :zap:
+### Use [SceneView for Android new library](https://thomasgorisse.github.io/SceneformMaintained/sceneview) for simplier/better/more recent usage and access all the latest ARCore functionnalies
+#### **[SceneView for Android](https://thomasgorisse.github.io/SceneformMaintained/sceneview) is a 3D/AR Android View with ARCore and Google Filament integrated**
+*Sponsor us or contribute in here to access it*
+#### **Features**
+- Use `SceneView` for 3D only or `ArSceneView` for ARCore + 3D
+- Everything is accessible at the SceneView/ArSceneview level = No more `ArFragment`, no more `sceneFragment.sceneview.scene`, `sceneFragment.session.config`,...
+- Just add the `<ArSceneView>` to your layout or create an `ArSceneview(context)`. *Compose coming next*
+- Camera Permission and ARCore install/update are handled automaticly by the view
+- Latest ARCore features (the coming next will be integrated quicker thanks to Kotlin). *DepthHit and InstantPlacement very soon*
+- Lifecycle aware components = Increased memory cleanup and performances
+- LifecycleScope for ressource loading in coroutines = Started on view created and cancelled on destroy.
+- Mutliple instances is now possible
+
+:zap: 
+
+---
+
 ![Logo](https://thomasgorisse.github.io/SceneformMaintained/images/logos/logo_rounded.png)
 
 [![Maven Central](https://img.shields.io/maven-central/v/com.gorisse.thomas.sceneform/sceneform.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:%22com.gorisse.thomas.sceneform%22%20AND%20a:%22sceneform%22)
@@ -29,21 +49,6 @@ This repository is a fork of [Sceneform](https://github.com/google-ar/sceneform-
 ---
 
 ### :star: Star the repository to find us easily
-
----
-
-### :zap: Use [SceneView for Android](https://thomasgorisse.github.io/SceneformMaintained/sceneview) for simplier/better/more recent usage and access all the latest ARCore functionnalies
-#### **[SceneView](https://thomasgorisse.github.io/SceneformMaintained/sceneview) is a 3D/AR Android View with ARCore and Google Filament integrated**
-*Sponsor us or contribute in here to access it*
-#### **Features**
-- Use SceneView for 3D only or ArSceneView for ARCore + 3D
-- Everything is accessible at the SceneView/ArSceneview level = No more `ArFragment`, no more `sceneFragment.sceneview.scene`, `sceneFragment.session.config`,...
-- Just add the `<ArSceneView>` to your layout or create an `ArSceneview(context)`. *Compose coming next*
-- Camera Permission and ARCore install/update are handled automaticly by the view
-- Latest ARCore features (the coming next will be integrated quicker thanks to Kotlin). *DepthHit and InstantPlacement very soon*
-- Lifecycle aware components = Increased memory cleanup and performances
-- LifecycleScope for ressource loading in coroutines = Started on view created and cancelled on destroy.
-- Mutliple instances is now possible
 
 ---
 
