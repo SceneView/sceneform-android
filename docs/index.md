@@ -2,39 +2,47 @@
 
 [![Maven Central](https://img.shields.io/maven-central/v/com.gorisse.thomas.sceneform/sceneform.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:%22com.gorisse.thomas.sceneform%22%20AND%20a:%22sceneform%22)
 
-#### This repository is a fork of [Sceneform](https://github.com/google-ar/SceneformMaintained) Copyright (c) 2021 Google Inc.  All rights reserved.
+### ARCore Android SDK with Google Filament for Augmented Reality apps: glTF 3D objects, Augmented Images, Augmented Faces, Depth and much more in Kotlin/Java
+
+* Android gradle dependency in Kotlin/Java
+* No OpenGL or Unity need
+* Latest versions of [ARCore SDK](https://github.com/google-ar/arcore-android-sdk) and [Filament](https://github.com/google/filament)
+* Latest versions of Android dependencies (Android Build tools, AndroidX,...)
+* Available on `mavenCentral()`
+* Supports <a href="https://www.khronos.org/gltf/">glTF</a> format
+* glTF/glb with animations support
+* Augmented Images supported
+* Augmented Faces supported
+* Depth supported
+* Simple model loading for basic usage
+
+
+This repository is a fork of [Sceneform](https://github.com/google-ar/sceneform-android-sdk) Copyright (c) 2021 Google Inc.  All rights reserved.
+
 
 #### Maintained and continued by [Nikita Zaytsev](https://github.com/grassydragon), [Vojta Maiwald](https://github.com/VojtaMaiwald), [Brigido Rodriguez](https://github.com/imbrig), [Fvito](https://github.com/fvito), [Marius Kajczuga](https://github.com/Venthorus), [Robert Gregat](https://github.com/RGregat) and [Thomas Gorisse](https://github.com/ThomasGorisse)
 
 
 ---
 
-## We need sponsoring to continue...
-After one year of days and nights working on Scenform Maintained, we only get $5 sponsoring (thanks to [Sergio Cancino](https://github.com/Sergiioh)).
-
-### Sceneform Maintained is not only a quick library for helping developers but a complete AR SDK.
-
-After a quick look at the Play Store, we can see that they are a lot of paying users (billions for some) apps that are using this SDK.
-I'm not looking forward to earn a living with Sceneform Maintained but every work that make you earn money should also be remunerated/redistributed to this repository contributors.
-
-### So my personnal decision for now is to keep the new features (Instant placement, depth points, objects detection, environment skybox,..) private and spend my time on personal remunerative apps until I get a descent sponsoring.
-
-Note that this is only my personal choice but other contributors can still make PR.
+### :star: Star the repository to find us easily
 
 ---
 
+### :zap: Use [SceneView for Android](https://thomasgorisse.github.io/SceneformMaintained/sceneview) for simplier/better/more recent usage and access all the latest ARCore functionnalies
+#### **[SceneView](https://thomasgorisse.github.io/SceneformMaintained/sceneview) is a 3D/AR Android View with ARCore and Google Filament integrated**
+*Sponsor us or contribute in here to access it*
+#### **Features**
+- Use SceneView for 3D only or ArSceneView for ARCore + 3D
+- Everything is accessible at the SceneView/ArSceneview level = No more `ArFragment`, no more `sceneFragment.sceneview.scene`, `sceneFragment.session.config`,...
+- Just add the `<ArSceneView>` to your layout or create an `ArSceneview(context)`. *Compose coming next*
+- Camera Permission and ARCore install/update are handled automaticly by the view
+- Latest ARCore features (the coming next will be integrated quicker thanks to Kotlin). *DepthHit and InstantPlacement very soon*
+- Lifecycle aware components = Increased memory cleanup and performances
+- LifecycleScope for ressource loading in coroutines = Started on view created and cancelled on destroy.
+- Mutliple instances is now possible
 
-### Sceneform is a 3D framework with a physically based renderer that's optimized for mobile devices and that makes it easy for you to build Augmented Reality (AR) apps without requiring OpenGL or Unity.
-
-* Continuous compatibility with the latests versions of [ARCore SDK](https://github.com/google-ar/arcore-android-sdk) and [Filament](https://github.com/google/filament) 
-* Based on AndroidX
-* Available as gradle `mavenCentral()` dependency
-* Supports <a href="https://www.khronos.org/gltf/">glTF</a> format
-* Animations made easy
-* Depth supported
-* Simple model loading for basic usage
-
-
+---
 
 ## Dependencies
 
@@ -108,15 +116,6 @@ override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
 
 
-## Demo
-
-[![Get it on Google Play](https://upload.wikimedia.org/wikipedia/commons/thumb/7/78/Google_Play_Store_badge_EN.svg/320px-Google_Play_Store_badge_EN.svg.png)](https://play.google.com/store/apps/details?id=com.gorisse.thomas.ar.environmentlights)
-
-| [![Youtube Video 01](https://yt-embed.herokuapp.com/embed?v=9QP43nOSItU)](https://www.youtube.com/watch?v=9QP43nOSItU) | [![Youtube Video 02](https://yt-embed.herokuapp.com/embed?v=jpmWjigA3Ms)](https://www.youtube.com/watch?v=jpmWjigA3Ms) |
-| - | - |
-
-
-
 ## Samples
 
 
@@ -179,6 +178,24 @@ arFragment.apply {
 
 [**sample project...**](https://github.com/ThomasGorisse/SceneformMaintained/tree/master/samples/augmented-faces)
 
+
+### Cloud Anchors
+
+![image](https://user-images.githubusercontent.com/6597529/139030872-2fcaa720-42c8-4927-9308-bd7765b91771.png)
+
+```kotlin
+// Create a new anchor = the pose of which ARCore will try to resolve using the ARCore Cloud Anchor service and the provided cloudAnchorId
+sceneView.session?.resolveCloudAnchor(cloudAnchorId)?.let { resolvedAnchor ->
+  sceneView.scene.addChild(AnchorNode(resolvedAnchor).apply {
+      addChild(VideoNode(context, MediaPlayer.create(context, R.raw.restaurant_presentation).apply {
+                  this.start()
+              },null)
+      )
+  })
+}
+```
+
+
 ### Environment Lights
 
 | ![Environment Lights 01](https://user-images.githubusercontent.com/6597529/135054559-1c5282d6-2476-4e71-92c6-cfc234cb5f3b.gif) | ![Environment Lights 02](https://user-images.githubusercontent.com/6597529/135059208-57e101d4-6215-4941-9543-20d09397e4c3.png) | ![Environment Lights 03](https://user-images.githubusercontent.com/6597529/131824742-0207ccfb-7f24-487d-b2cf-4765753697d7.gif) |
@@ -209,8 +226,8 @@ arFragment.setOnTapArPlaneListener { hitResult, plane, motionEvent ->
 
 ### Dynamic materials/textures
 
-| ![Dynamic materials 01](https://miro.medium.com/max/2000/1*0XSLVleiR5ijFD1aIoCm-A.jpeg) | ![Dynamic materials 02](https://images.squarespace-cdn.com/content/v1/5bf7a0d55ffd203cac0e0920/1583270741496-7FJ9O190FD2FXI5JCWM0/texture.png?format=300w) | ![Dynamic materials 03](https://images.squarespace-cdn.com/content/v1/5bf7a0d55ffd203cac0e0920/1583264336080-RQP89XDN9IOHLISPG9CC/custom_material.png?format=300w) |
-| - | - | - |
+| ![Dynamic materials 01](https://miro.medium.com/max/2000/1*0XSLVleiR5ijFD1aIoCm-A.jpeg) | ![Dynamic materials 02](https://images.squarespace-cdn.com/content/v1/5bf7a0d55ffd203cac0e0920/1583270741496-7FJ9O190FD2FXI5JCWM0/texture.png?format=300w) |
+| - | - |
 
 [**sample project...**](https://github.com/ThomasGorisse/SceneformMaintained/tree/master/samples/image-texture)
 
@@ -220,6 +237,16 @@ arFragment.setOnTapArPlaneListener { hitResult, plane, motionEvent ->
 ![Non AR Usage 01](http://download.tuxfamily.org/sdtraces/BottinHTML/Bottin_D-J_files/282584ef7ae1d420897d47bd7ba4d46f.jpeg)
 
 [**sample project...**](https://github.com/ThomasGorisse/SceneformMaintained/tree/master/samples/sceneview-background)
+
+
+
+## Demo
+
+[![Get it on Google Play](https://upload.wikimedia.org/wikipedia/commons/thumb/7/78/Google_Play_Store_badge_EN.svg/320px-Google_Play_Store_badge_EN.svg.png)](https://play.google.com/store/apps/details?id=com.gorisse.thomas.ar.environmentlights)
+
+| [![Youtube Video 01](https://yt-embed.herokuapp.com/embed?v=9QP43nOSItU)](https://www.youtube.com/watch?v=9QP43nOSItU) | [![Youtube Video 02](https://yt-embed.herokuapp.com/embed?v=jpmWjigA3Ms)](https://www.youtube.com/watch?v=jpmWjigA3Ms) |
+| - | - |
+
 
 
 ## Emulator
@@ -246,8 +273,8 @@ the app only being visible in the Google Play Store on devices that support ARCo
 <uses-feature android:name="android.hardware.camera.ar" android:required="true"/>
 
 <application>
-    ...
-    <meta-data android:name="com.google.ar.core" android:value="required" />
+...
+<meta-data android:name="com.google.ar.core" android:value="required" />
 </application>
 ```
 [**more...**](https://thomasgorisse.github.io/SceneformMaintained/manifest)
@@ -262,22 +289,22 @@ arFragment.setOnTapArPlaneListener(::onTapPlane)
 
 ```kotlin
 arFragment.setOnTapArPlaneListener { hitResult, plane, motionEvent ->
-    // Create the Anchor
-    arFragment.arSceneView.scene.addChild(AnchorNode(hitResult.createAnchor()).apply {
-        // Create the transformable model and add it to the anchor.
-        addChild(TransformableNode(arFragment.transformationSystem).apply {
-            renderable = model
-            renderableInstance.animate(true).start()
-            // Add child model relative the a parent model
-            addChild(Node().apply {
-                // Define the relative position
-                localPosition = Vector3(0.0f, 1f, 0.0f)
-                // Define the relative scale
-                localScale = Vector3(0.7f, 0.7f, 0.7f)
-                renderable = modelView
-            })
-        })
+  // Create the Anchor
+  arFragment.arSceneView.scene.addChild(AnchorNode(hitResult.createAnchor()).apply {
+    // Create the transformable model and add it to the anchor.
+    addChild(TransformableNode(arFragment.transformationSystem).apply {
+      renderable = model
+      renderableInstance.animate(true).start()
+      // Add child model relative the a parent model
+      addChild(Node().apply {
+        // Define the relative position
+        localPosition = Vector3(0.0f, 1f, 0.0f)
+        // Define the relative scale
+        localScale = Vector3(0.7f, 0.7f, 0.7f)
+        renderable = modelView
+      })
     })
+  })
 }
 ```
 [**sample...**](https://github.com/ThomasGorisse/SceneformMaintained/tree/master/samples/gltf)
@@ -311,8 +338,8 @@ The Update-Rate of the rendering is limited through the used camera config of AR
 
 ```kotlin
 arFragment.setOnViewCreatedListener { arSceneView ->
-    // Set a higher bound for the frame rate
-    arSceneView.setMaxFramesPerSeconds(60)
+  // Set a higher bound for the frame rate
+  arSceneView.setMaxFramesPerSeconds(60)
 }
 ```
 > The default value is **60**.
@@ -354,7 +381,7 @@ You can compare it to a track playing something corresponding to a particular be
 \
 For example, on Blender "AnimationName" can correspond to
 * An action defined inside the `Non linear Animation View Port`  
-![](https://thomasgorisse.github.io/SceneformMaintained/images/tutorials/screenshotl_blender_animation_01.jpg)
+  ![](https://thomasgorisse.github.io/SceneformMaintained/images/tutorials/screenshotl_blender_animation_01.jpg)
 * A single object behavior in the `Timeline ViewPort`
 
 **To know the actual animation names of a glb/gltf file, you can drag it on a glTF Viewer like [here](https://gltf-viewer.donmccurdy.com/) and find it in the animation list.**
@@ -373,8 +400,8 @@ second for a jump, a third for sidestepping and so on:
 #### Play Sequentially
 ```java
 AnimatorSet animatorSet = new AnimatorSet();
-animatorSet.playSequentially(ModelAnimator.ofMultipleAnimations(model, "walk", "run"));
-animatorSet.start();
+        animatorSet.playSequentially(ModelAnimator.ofMultipleAnimations(model, "walk", "run"));
+        animatorSet.start();
 ```
 
 #### Auto Cancel
@@ -382,10 +409,10 @@ Here you can see that no call to `animator.cancel()` is required because the
 `animator.setAutoCancel(boolean)` is set to true by default
 ```java
 ObjectAnimator walkAnimator = ModelAnimator.ofAnimation(model, "walk");
-walkButton.setOnClickListener(v -> walkAnimator.start());
+        walkButton.setOnClickListener(v -> walkAnimator.start());
 
-ObjectAnimator runAnimator = ModelAnimator.ofAnimation(model, "run");
-runButton.setOnClickListener(v -> runAnimator.start());
+        ObjectAnimator runAnimator = ModelAnimator.ofAnimation(model, "run");
+        runButton.setOnClickListener(v -> runAnimator.start());
 ```
 
 
@@ -397,20 +424,20 @@ time or sequentially, please consider using an `AnimatorSet` with one
 ```java
 AnimatorSet completeFly = new AnimatorSet();
 
-ObjectAnimator liftOff = ModelAnimator.ofAnimationFraction(airPlaneModel, "FlyAltitude",0, 40);
-liftOff.setInterpolator(new AccelerateInterpolator());
+        ObjectAnimator liftOff = ModelAnimator.ofAnimationFraction(airPlaneModel, "FlyAltitude",0, 40);
+        liftOff.setInterpolator(new AccelerateInterpolator());
 
-AnimatorSet flying = new AnimatorSet();
-ObjectAnimator flyAround = ModelAnimator.ofAnimation(airPlaneModel, "FlyAround");
-flyAround.setRepeatCount(ValueAnimator.INFINITE);
-flyAround.setDuration(10000);
-ObjectAnimator airportBusHome = ModelAnimator.ofAnimationFraction(busModel, "Move", 0);
-flying.playTogether(flyAround, airportBusHome);
+        AnimatorSet flying = new AnimatorSet();
+        ObjectAnimator flyAround = ModelAnimator.ofAnimation(airPlaneModel, "FlyAround");
+        flyAround.setRepeatCount(ValueAnimator.INFINITE);
+        flyAround.setDuration(10000);
+        ObjectAnimator airportBusHome = ModelAnimator.ofAnimationFraction(busModel, "Move", 0);
+        flying.playTogether(flyAround, airportBusHome);
 
-ObjectAnimator land = ModelAnimator.ofAnimationFraction(airPlaneModel, "FlyAltitude", 0);
-land.setInterpolator(new DecelerateInterpolator());
+        ObjectAnimator land = ModelAnimator.ofAnimationFraction(airPlaneModel, "FlyAltitude", 0);
+        land.setInterpolator(new DecelerateInterpolator());
 
-completeFly.playSequentially(liftOff, flying, land);
+        completeFly.playSequentially(liftOff, flying, land);
 ```
 
 

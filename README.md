@@ -32,8 +32,8 @@ This repository is a fork of [Sceneform](https://github.com/google-ar/sceneform-
 
 ---
 
-### :zap: Use [SceneView for Android](https://github.com/ThomasGorisse/sceneview-android) for simplier/better/more recent usage and access all the latest ARCore functionnalies
-#### **[SceneView](https://github.com/ThomasGorisse/sceneview-android) is a 3D/AR Android View with ARCore and Google Filament integrated**
+### :zap: Use [SceneView for Android](https://thomasgorisse.github.io/SceneformMaintained/sceneview) for simplier/better/more recent usage and access all the latest ARCore functionnalies
+#### **[SceneView](https://thomasgorisse.github.io/SceneformMaintained/sceneview) is a 3D/AR Android View with ARCore and Google Filament integrated**
 *Sponsor us or contribute in here to access it*
 #### **Features**
 - Use SceneView for 3D only or ArSceneView for ARCore + 3D

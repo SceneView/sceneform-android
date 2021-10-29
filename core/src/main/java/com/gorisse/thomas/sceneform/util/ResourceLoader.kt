@@ -74,7 +74,7 @@ object ResourceLoader {
  *
  * @see ResourceLoader.fileBuffer
  */
-internal suspend fun Context.fileBuffer(fileLocation: String): ByteBuffer? =
+suspend fun Context.fileBuffer(fileLocation: String): ByteBuffer? =
     ResourceLoader.fileBuffer(this, fileLocation)
 
 /**

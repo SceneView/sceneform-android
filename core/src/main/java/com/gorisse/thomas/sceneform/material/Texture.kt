@@ -1,4 +1,4 @@
-package com.gorisse.thomas.sceneform.model
+package com.gorisse.thomas.sceneform.material
 
 import com.google.android.filament.Skybox
 import com.google.android.filament.Texture
