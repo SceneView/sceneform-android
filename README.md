@@ -4,7 +4,7 @@ Sceneform Maintained SDK for Android
 ---
 
 ### :zap: **NEWS** :zap:
-### Use [SceneView for Android new library](https://thomasgorisse.github.io/SceneformMaintained/sceneview) for simplier/better/more recent usage and access all the latest ARCore functionnalies
+### Use [SceneView for Android new library](https://thomasgorisse.github.io/SceneformMaintained/sceneview) for simplier/better/more recent usage and access all the latest ARCore functionnalities
 #### **[SceneView for Android](https://thomasgorisse.github.io/SceneformMaintained/sceneview) is a 3D/AR Android View with ARCore and Google Filament integrated**
 *Sponsor us or contribute in here to access it*
 #### **Features**
