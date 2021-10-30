@@ -91,7 +91,7 @@ dependencies {
     android:layout_width="match_parent"
     android:layout_height="match_parent" />
 ```
-[**sample...**](https://github.com/ThomasGorisse/SceneformMaintained/blob/master/samples/gltf/src/main/res/layout/fragment_main.xml)
+[**sample...**](https://github.com/ThomasGorisse/SceneformMaintained/blob/master/samples/ar-model-viewer/src/main/res/layout/fragment_main.xml)
 
 
 ### Edit your `Activity` or `Fragment`
@@ -119,9 +119,9 @@ override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         .setOnTapPlaneGlbModel("https://storage.googleapis.com/ar-answers-in-search-models/static/Tiger/model.glb")
 }
 ```
-[**kotlin sample...**](https://github.com/ThomasGorisse/SceneformMaintained/blob/master/samples/gltf/src/main/java/com/google/ar/sceneform/samples/gltf/MainFragment.kt)
+[**kotlin sample...**](https://github.com/ThomasGorisse/SceneformMaintained/blob/master/samples/ar-model-viewer/src/main/java/com/google/ar/sceneform/samples/gltf/MainFragment.kt)
 
-[**java sample...**](https://github.com/ThomasGorisse/SceneformMaintained/tree/master/samples/gltf-java/src/main/java/com/google/ar/sceneform/samples/gltf/MainActivity.java)
+[**java sample...**](https://github.com/ThomasGorisse/SceneformMaintained/tree/master/samples/ar-model-viewer-java/src/main/java/com/google/ar/sceneform/samples/gltf/MainActivity.java)
 
 
 
@@ -145,9 +145,9 @@ arFragment.setOnTapArPlaneListener { hitResult, plane, motionEvent ->
     })
 }
 ```
-[**kotlin sample project...**](https://github.com/ThomasGorisse/SceneformMaintained/tree/master/samples/gltf)
+[**kotlin sample project...**](https://github.com/ThomasGorisse/SceneformMaintained/tree/master/samples/ar-model-viewer)
 
-[**java sample project...**](https://github.com/ThomasGorisse/SceneformMaintained/tree/master/samples/gltf-java)
+[**java sample project...**](https://github.com/ThomasGorisse/SceneformMaintained/tree/master/samples/ar-model-viewer-java)
 
 
 ### Depth Occlusion
@@ -245,7 +245,7 @@ arFragment.setOnTapArPlaneListener { hitResult, plane, motionEvent ->
 
 ![Non AR Usage 01](http://download.tuxfamily.org/sdtraces/BottinHTML/Bottin_D-J_files/282584ef7ae1d420897d47bd7ba4d46f.jpeg)
 
-[**sample project...**](https://github.com/ThomasGorisse/SceneformMaintained/tree/master/samples/sceneview-background)
+[**sample project...**](https://github.com/ThomasGorisse/SceneformMaintained/tree/master/samples/3d-model-viewer)
 
 
 
@@ -316,7 +316,7 @@ arFragment.setOnTapArPlaneListener { hitResult, plane, motionEvent ->
     })
 }
 ```
-[**sample...**](https://github.com/ThomasGorisse/SceneformMaintained/tree/master/samples/gltf)
+[**sample...**](https://github.com/ThomasGorisse/SceneformMaintained/tree/master/samples/ar-model-viewer)
 
 
 ## Remove or Hide a node

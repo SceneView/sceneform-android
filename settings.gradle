@@ -1,22 +1,22 @@
 include ':core', ':ux', ':sceneform',
         // Samples
+        ':sample-3d-model-viewer',
+        ':sample-ar-model-viewer',
+        ':sample-ar-model-viewer-java',
         ':sample-augmented-faces',
         ':sample-augmented-images',
         ':sample-depth',
         ':sample-environment-lights',
-        ':sample-gltf',
-        ':sample-gltf-java',
         ':sample-image-texture',
-        ':sample-sceneview-background',
         ':sample-video-texture'
 
 // Dirs
+project(':sample-3d-model-viewer').projectDir = new File('samples/3d-model-viewer')
+project(':sample-ar-model-viewer').projectDir = new File('samples/ar-model-viewer')
+project(':sample-ar-model-viewer-java').projectDir = new File('samples/ar-model-viewer-java')
 project(':sample-augmented-faces').projectDir = new File('samples/augmented-faces')
 project(':sample-augmented-images').projectDir = new File('samples/augmented-images')
 project(':sample-depth').projectDir = new File(rootDir, 'samples/depth')
 project(':sample-environment-lights').projectDir = new File(rootDir, 'samples/environment-lights')
-project(':sample-gltf').projectDir = new File('samples/gltf')
-project(':sample-gltf-java').projectDir = new File('samples/gltf-java')
 project(':sample-image-texture').projectDir = new File('samples/image-texture')
-project(':sample-sceneview-background').projectDir = new File('samples/sceneview-background')
 project(':sample-video-texture').projectDir = new File('samples/video-texture')

@@ -10,8 +10,8 @@ import com.google.android.filament.utils.HDRLoader
 import com.google.android.filament.utils.IBLPrefilterContext
 import com.gorisse.thomas.sceneform.Filament
 import com.gorisse.thomas.sceneform.light.build
-import com.gorisse.thomas.sceneform.model.destroy
-import com.gorisse.thomas.sceneform.model.use
+import com.gorisse.thomas.sceneform.material.destroy
+import com.gorisse.thomas.sceneform.material.use
 import com.gorisse.thomas.sceneform.util.fileBuffer
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
