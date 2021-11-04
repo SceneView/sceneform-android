@@ -19,6 +19,7 @@ Augmented Reality applications: AR 3D Models (glTF file format), Augmented Image
 - Lifecycle aware components = Increased memory cleanup and performances
 - LifecycleScope for ressource loading in coroutines = Started on view created and cancelled on destroy.
 - Mutliple instances is now possible
+- Much easier to use. Exemple: localPosition, worldPosition,...localRotation, worldScale are now directly accesible with a unique property (no more local/world Vector3) `positionX`,...,`rotationY`,...`scale = 0.5`,...)
 
 :zap: 
 
