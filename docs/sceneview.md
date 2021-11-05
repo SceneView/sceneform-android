@@ -2,9 +2,11 @@
 
 ## This is the coming next replacement of Sceneform Maintained only accessible to contributors and sponsors for now
 
+## [Give it a try and support us for $5](https://github.com/sponsors/ThomasGorisse/sponsorships?sponsor=ThomasGorisse&tier_id=107219)
+
 ## Features
 
-- Use SceneView for 3D only or ArSceneView for ARCore + 3D
+- Use `SceneView` for 3D only or `ArSceneView` for ARCore + 3D
 - Everything is accessible at the SceneView/ArSceneview level = No more `ArFragment`, no more `sceneFragment.sceneview.scene`, `sceneFragment.session.config`,...
 - Just add the `<ArSceneView>` to your layout or create an `ArSceneview(context)`. *Compose coming next*
 - Camera Permission and ARCore install/update are handled automaticly by the view
@@ -12,7 +14,7 @@
 - Lifecycle aware components = Increased memory cleanup and performances
 - LifecycleScope for ressource loading in coroutines = Started on view created and cancelled on destroy.
 - Mutliple instances is now possible
-
+- Much easier to use. Exemple: localPosition, worldPosition,...localRotation, worldScale are now directly accesible with a unique property (no more local/world Vector3) `positionX`,...,`rotationY`,...`scale = 0.5`,...)
 
 ## Dependency
 
