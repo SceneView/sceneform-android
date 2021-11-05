@@ -7,9 +7,12 @@ Augmented Reality applications: AR 3D Models (glTF file format), Augmented Image
 ---
 
 ### :zap: **NEWS** :zap:
-### Move to [SceneView for Android](https://thomasgorisse.github.io/SceneformMaintained/sceneview) Kotlin dependency for simplier/better/more recent usage and access all the latest ARCore functionnalities (Instant Placement, Depth,...)
+### Move to [SceneView for Android](https://thomasgorisse.github.io/SceneformMaintained/sceneview) dependency for simplier/better/more recent usage and access all the latest ARCore functionnalities (Instant Placement, Depth,...)
+
 #### **[SceneView for Android](https://thomasgorisse.github.io/SceneformMaintained/sceneview) is a 3D/AR Android View with ARCore and Google Filament integrated**
-*Sponsor us or contribute in here to access it*
+
+### [Give it a try and support us for $5](https://github.com/sponsors/ThomasGorisse/sponsorships?sponsor=ThomasGorisse&tier_id=107219)
+
 #### **Features**
 - Use `SceneView` for 3D only or `ArSceneView` for ARCore + 3D
 - Everything is accessible at the SceneView/ArSceneview level = No more `ArFragment`, no more `sceneFragment.sceneview.scene`, `sceneFragment.session.config`,...
@@ -21,7 +24,7 @@ Augmented Reality applications: AR 3D Models (glTF file format), Augmented Image
 - Mutliple instances is now possible
 - Much easier to use. Exemple: localPosition, worldPosition,...localRotation, worldScale are now directly accesible with a unique property (no more local/world Vector3) `positionX`,...,`rotationY`,...`scale = 0.5`,...)
 
-:zap: 
+:zap: :zap:
 
 ---
 
