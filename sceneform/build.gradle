@@ -3,7 +3,7 @@ plugins {
     id 'kotlin-android'
     id 'kotlin-android-extensions'
     id 'kotlin-kapt'
-    id 'com.vanniktech.maven.publish'
+//    id 'com.vanniktech.maven.publish'
 }
 
 android {
@@ -38,6 +38,6 @@ dependencies {
     api project(":ux")
 }
 
-mavenPublish {
-    releaseSigningEnabled = project.hasProperty('signing.keyId') && project.hasProperty('signing.password')
-}
+//mavenPublish {
+//    releaseSigningEnabled = project.hasProperty('signing.keyId') && project.hasProperty('signing.password')
+//}

@@ -1,8 +1,32 @@
-![Logo](https://thomasgorisse.github.io/SceneformMaintained/images/logos/logo_rounded.png)
+---
+
+### :zap: **NEWS - 11/07/2020** :zap:
+SceneformMaintained is now part of the SceneView Open Community.
+
+Everyone interested can participate in improvements or make feature queries.
+
+**Come talk with us on the [Discord channel](https://discord.gg/ZuakSUPM) (Please don't use it for issues, go to the GitHub Issues section instead)**
+
+**Mail us [sceneview@gorisse.com](mailto:sceneview@gorisse.com) (Please don't use it for issues, go to the GitHub Issues section instead)**
+### 
+### :zap: :zap:
+
+---
+
+---
+
+### :zap: **NEWS - 11/01/2020** :zap:
+We are currently releasing the successor of Sceneform Maintained which is has greats improvements and latest ARCore features: DepthHit, InstantPlacement,...
+
+More infos: [SceneView for Android](https://sceneview.github.io/SceneformMaintained/sceneview)
+
+If you want to help us, see what it looks like or be an early user, you can [participate here](https://github.com/sponsors/ThomasGorisse/sponsorships?sponsor=ThomasGorisse&tier_id=107219&preview=false) for early access.
+### 
+### :zap: :zap:
+
+---
 
 [![Maven Central](https://img.shields.io/maven-central/v/com.gorisse.thomas.sceneform/sceneform.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:%22com.gorisse.thomas.sceneform%22%20AND%20a:%22sceneform%22)
-
-### ARCore Android SDK with Google Filament for Augmented Reality apps: glTF 3D objects, Augmented Images, Augmented Faces, Depth and much more in Kotlin/Java
 
 * Android gradle dependency in Kotlin/Java
 * No OpenGL or Unity need
@@ -25,22 +49,7 @@ This repository is a fork of [Sceneform](https://github.com/google-ar/sceneform-
 
 ---
 
-### :star: Star the repository to find us easily
-
----
-
-### :zap: Use [SceneView for Android](https://thomasgorisse.github.io/SceneformMaintained/sceneview) for simplier/better/more recent usage and access all the latest ARCore functionnalies
-#### **[SceneView](https://thomasgorisse.github.io/SceneformMaintained/sceneview) is a 3D/AR Android View with ARCore and Google Filament integrated**
-*Sponsor us or contribute in here to access it*
-#### **Features**
-- Use SceneView for 3D only or ArSceneView for ARCore + 3D
-- Everything is accessible at the SceneView/ArSceneview level = No more `ArFragment`, no more `sceneFragment.sceneview.scene`, `sceneFragment.session.config`,...
-- Just add the `<ArSceneView>` to your layout or create an `ArSceneview(context)`. *Compose coming next*
-- Camera Permission and ARCore install/update are handled automaticly by the view
-- Latest ARCore features (the coming next will be integrated quicker thanks to Kotlin). *DepthHit and InstantPlacement very soon*
-- Lifecycle aware components = Increased memory cleanup and performances
-- LifecycleScope for ressource loading in coroutines = Started on view created and cancelled on destroy.
-- Mutliple instances is now possible
+### :star: Star the repository to help us being known
 
 ---
 
@@ -52,7 +61,7 @@ dependencies {
      implementation("com.gorisse.thomas.sceneform:sceneform:1.20.1")
 }
 ```
-[**more...**](https://thomasgorisse.github.io/SceneformMaintained/dependencies)
+[**more...**](https://sceneview.github.io/SceneformMaintained/dependencies)
 
 
 
@@ -70,7 +79,7 @@ dependencies {
     <meta-data android:name="com.google.ar.core" android:value="optional" />
 </application>
 ```
-[**more...**](https://thomasgorisse.github.io/SceneformMaintained/manifest)
+[**more...**](https://sceneview.github.io/SceneformMaintained/manifest)
 
 
 ### Add the `View` to your `layout`
@@ -144,7 +153,7 @@ arFragment.setOnTapArPlaneListener { hitResult, plane, motionEvent ->
 ### Depth Occlusion
 
 
-| ![Depth Occlusion 01](https://thomasgorisse.github.io/SceneformMaintained/images/samples/screenshot_depth_01.png) | ![Depth Occlusion 02](https://thomasgorisse.github.io/SceneformMaintained/images/samples/screenshot_depth_02.png) | ![Depth Occlusion 03](https://thomasgorisse.github.io/SceneformMaintained/images/samples/screenshot_depth_03.png) |
+| ![Depth Occlusion 01](https://user-images.githubusercontent.com/6597529/140717447-6f3a833c-7236-4680-a380-4ebf857edd7a.png) | ![Depth Occlusion 02](https://user-images.githubusercontent.com/6597529/140717611-e3216b28-a43a-4fd7-93fd-b39d8bd3e954.png) | ![Depth Occlusion 03](https://user-images.githubusercontent.com/6597529/140717767-d68bc373-3ddf-4234-bd2a-0c1e89c0efe2.png) |
 | - | - | - |
 
 ```kotlin
@@ -161,7 +170,7 @@ arFragment.apply {
     }
 }
 ```
-[**documentation...**](https://thomasgorisse.github.io/SceneformMaintained/depth)
+[**documentation...**](https://sceneview.github.io/SceneformMaintained/depth)
 
 [**sample project...**](https://github.com/ThomasGorisse/SceneformMaintained/tree/master/samples/depth)
 
@@ -257,7 +266,7 @@ arFragment.setOnTapArPlaneListener { hitResult, plane, motionEvent ->
 
 ![image](https://user-images.githubusercontent.com/6597529/117983402-3513df00-b337-11eb-841d-49548429363e.png)
 
-[**more...**](https://thomasgorisse.github.io/SceneformMaintained/emulator)
+[**more...**](https://sceneview.github.io/SceneformMaintained/emulator)
 
 
 
@@ -273,11 +282,11 @@ the app only being visible in the Google Play Store on devices that support ARCo
 <uses-feature android:name="android.hardware.camera.ar" android:required="true"/>
 
 <application>
-...
-<meta-data android:name="com.google.ar.core" android:value="required" />
+    ...
+    <meta-data android:name="com.google.ar.core" android:value="required" />
 </application>
 ```
-[**more...**](https://thomasgorisse.github.io/SceneformMaintained/manifest)
+[**more...**](https://sceneview.github.io/SceneformMaintained/manifest)
 
 
 ### Nodes
@@ -289,22 +298,22 @@ arFragment.setOnTapArPlaneListener(::onTapPlane)
 
 ```kotlin
 arFragment.setOnTapArPlaneListener { hitResult, plane, motionEvent ->
-  // Create the Anchor
-  arFragment.arSceneView.scene.addChild(AnchorNode(hitResult.createAnchor()).apply {
-    // Create the transformable model and add it to the anchor.
-    addChild(TransformableNode(arFragment.transformationSystem).apply {
-      renderable = model
-      renderableInstance.animate(true).start()
-      // Add child model relative the a parent model
-      addChild(Node().apply {
-        // Define the relative position
-        localPosition = Vector3(0.0f, 1f, 0.0f)
-        // Define the relative scale
-        localScale = Vector3(0.7f, 0.7f, 0.7f)
-        renderable = modelView
-      })
+    // Create the Anchor
+    arFragment.arSceneView.scene.addChild(AnchorNode(hitResult.createAnchor()).apply {
+        // Create the transformable model and add it to the anchor.
+        addChild(TransformableNode(arFragment.transformationSystem).apply {
+            renderable = model
+            renderableInstance.animate(true).start()
+            // Add child model relative the a parent model
+            addChild(Node().apply {
+                // Define the relative position
+                localPosition = Vector3(0.0f, 1f, 0.0f)
+                // Define the relative scale
+                localScale = Vector3(0.7f, 0.7f, 0.7f)
+                renderable = modelView
+            })
+        })
     })
-  })
 }
 ```
 [**sample...**](https://github.com/ThomasGorisse/SceneformMaintained/tree/master/samples/ar-model-viewer)
@@ -328,7 +337,7 @@ node.parent = null
 node.enabled= false
 ```
 
-[**documentation...**](https://thomasgorisse.github.io/SceneformMaintained/remove_node)
+[**documentation...**](https://sceneview.github.io/SceneformMaintained/remove_node)
 
 ## Frame Rate (FPS-Bound)
 
@@ -338,13 +347,13 @@ The Update-Rate of the rendering is limited through the used camera config of AR
 
 ```kotlin
 arFragment.setOnViewCreatedListener { arSceneView ->
-  // Set a higher bound for the frame rate
-  arSceneView.setMaxFramesPerSeconds(60)
+    // Set a higher bound for the frame rate
+    arSceneView.setMaxFramesPerSeconds(60)
 }
 ```
 > The default value is **60**.
 
-[**documentation...**](https://thomasgorisse.github.io/SceneformMaintained/fps_bound)
+[**documentation...**](https://sceneview.github.io/SceneformMaintained/fps_bound)
 
 
 ## Animations
@@ -381,7 +390,7 @@ You can compare it to a track playing something corresponding to a particular be
 \
 For example, on Blender "AnimationName" can correspond to
 * An action defined inside the `Non linear Animation View Port`  
-  ![](https://thomasgorisse.github.io/SceneformMaintained/images/tutorials/screenshotl_blender_animation_01.jpg)
+  ![](https://user-images.githubusercontent.com/6597529/140717849-ae1d99e3-74c4-4b8a-8b05-242d6ee7d865.jpg)
 * A single object behavior in the `Timeline ViewPort`
 
 **To know the actual animation names of a glb/gltf file, you can drag it on a glTF Viewer like [here](https://gltf-viewer.donmccurdy.com/) and find it in the animation list.**
@@ -464,7 +473,7 @@ Every PropertyValuesHolder that applies a modification on the time position of t
 must use the `ModelAnimation.TIME_POSITION` instead of its own Property in order to possibly cancel
 any ObjectAnimator operating time modifications on the same ModelAnimation.
 
-[**more...**](https://thomasgorisse.github.io/SceneformMaintained/animations)
+[**more...**](https://sceneview.github.io/SceneformMaintained/animations)
 
 
 

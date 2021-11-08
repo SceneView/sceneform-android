@@ -1,9 +1,11 @@
+import java.nio.channels.ScatteringByteChannel
+
 plugins {
     id 'com.android.library'
     id 'kotlin-android'
     id 'kotlin-android-extensions'
     id 'kotlin-kapt'
-    id 'com.vanniktech.maven.publish'
+//    id 'com.vanniktech.maven.publish'
 }
 
 android {
@@ -67,6 +69,6 @@ dependencies {
     implementation "com.github.kittinunf.fuel:fuel-coroutines:2.3.1"
 }
 
-mavenPublish {
-    releaseSigningEnabled = project.hasProperty('signing.keyId') && project.hasProperty('signing.password')
-}
+//mavenPublish {
+//    releaseSigningEnabled = project.hasProperty('signing.keyId') && project.hasProperty('signing.password')
+//}
