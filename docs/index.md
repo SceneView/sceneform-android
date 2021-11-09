@@ -18,7 +18,7 @@ Everyone interested can participate in improvements or make feature queries.
 ### :zap: **NEWS - 11/01/2020** :zap:
 We are currently releasing the successor of Sceneform Maintained which is has greats improvements and latest ARCore features: DepthHit, InstantPlacement,...
 
-More infos: [SceneView for Android](https://sceneview.github.io/SceneformMaintained/sceneview)
+More infos: [SceneView for Android](https://sceneview.github.io/sceneform-android/sceneview)
 
 If you want to help us, see what it looks like or be an early user, you can [participate here](https://github.com/sponsors/ThomasGorisse/sponsorships?sponsor=ThomasGorisse&tier_id=107219&preview=false) for early access.
 ### 
@@ -61,7 +61,7 @@ dependencies {
      implementation("com.gorisse.thomas.sceneform:sceneform:1.20.1")
 }
 ```
-[**more...**](https://sceneview.github.io/SceneformMaintained/dependencies)
+[**more...**](https://sceneview.github.io/sceneform-android/dependencies)
 
 
 
@@ -79,7 +79,7 @@ dependencies {
     <meta-data android:name="com.google.ar.core" android:value="optional" />
 </application>
 ```
-[**more...**](https://sceneview.github.io/SceneformMaintained/manifest)
+[**more...**](https://sceneview.github.io/sceneform-android/manifest)
 
 
 ### Add the `View` to your `layout`
@@ -91,7 +91,7 @@ dependencies {
     android:layout_width="match_parent"
     android:layout_height="match_parent" />
 ```
-[**sample...**](https://github.com/ThomasGorisse/SceneformMaintained/blob/master/samples/ar-model-viewer/src/main/res/layout/fragment_main.xml)
+[**sample...**](https://github.com/SceneView/sceneform-android/blob/master/samples/ar-model-viewer/src/main/res/layout/fragment_main.xml)
 
 
 ### Edit your `Activity` or `Fragment`
@@ -119,9 +119,9 @@ override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         .setOnTapPlaneGlbModel("https://storage.googleapis.com/ar-answers-in-search-models/static/Tiger/model.glb")
 }
 ```
-[**kotlin sample...**](https://github.com/ThomasGorisse/SceneformMaintained/blob/master/samples/ar-model-viewer/src/main/java/com/google/ar/sceneform/samples/gltf/MainFragment.kt)
+[**kotlin sample...**](https://github.com/SceneView/sceneform-android/blob/master/samples/ar-model-viewer/src/main/java/com/google/ar/sceneform/samples/gltf/MainFragment.kt)
 
-[**java sample...**](https://github.com/ThomasGorisse/SceneformMaintained/tree/master/samples/ar-model-viewer-java/src/main/java/com/google/ar/sceneform/samples/gltf/MainActivity.java)
+[**java sample...**](https://github.com/SceneView/sceneform-android/tree/master/samples/ar-model-viewer-java/src/main/java/com/google/ar/sceneform/samples/gltf/MainActivity.java)
 
 
 
@@ -145,9 +145,9 @@ arFragment.setOnTapArPlaneListener { hitResult, plane, motionEvent ->
     })
 }
 ```
-[**kotlin sample project...**](https://github.com/ThomasGorisse/SceneformMaintained/tree/master/samples/ar-model-viewer)
+[**kotlin sample project...**](https://github.com/SceneView/sceneform-android/tree/master/samples/ar-model-viewer)
 
-[**java sample project...**](https://github.com/ThomasGorisse/SceneformMaintained/tree/master/samples/ar-model-viewer-java)
+[**java sample project...**](https://github.com/SceneView/sceneform-android/tree/master/samples/ar-model-viewer-java)
 
 
 ### Depth Occlusion
@@ -170,22 +170,22 @@ arFragment.apply {
     }
 }
 ```
-[**documentation...**](https://sceneview.github.io/SceneformMaintained/depth)
+[**documentation...**](https://sceneview.github.io/sceneform-android/depth)
 
-[**sample project...**](https://github.com/ThomasGorisse/SceneformMaintained/tree/master/samples/depth)
+[**sample project...**](https://github.com/SceneView/sceneform-android/tree/master/samples/depth)
 
 
 ### Augmented Images
 
 ![Augmented Images 01](https://user-images.githubusercontent.com/6597529/124591171-47ecf080-de5c-11eb-9196-8fe123e7ea58.gif)
 
-[**sample project...**](https://github.com/ThomasGorisse/SceneformMaintained/tree/master/samples/augmented-images)
+[**sample project...**](https://github.com/SceneView/sceneform-android/tree/master/samples/augmented-images)
 
 ### Augmented Faces
 | ![Augmented Faces 01](https://user-images.githubusercontent.com/6597529/135052644-79cf8964-7778-42d0-83f6-1839b9c8ab8b.gif) | ![Augmented Faces 02](https://user-images.githubusercontent.com/6597529/135059873-3342d169-5ff4-4d0d-bdec-fdac44c282ba.png) | ![Augmented Faces 03](https://user-images.githubusercontent.com/6597529/135051599-14742a53-69db-47d2-a27b-ba641a1d2609.gif) |
 | - | - | - |
 
-[**sample project...**](https://github.com/ThomasGorisse/SceneformMaintained/tree/master/samples/augmented-faces)
+[**sample project...**](https://github.com/SceneView/sceneform-android/tree/master/samples/augmented-faces)
 
 
 ### Cloud Anchors
@@ -211,7 +211,7 @@ sceneView.session?.resolveCloudAnchor(cloudAnchorId)?.let { resolvedAnchor ->
 | - | - | - |
 | ![Environment Lights 04](https://user-images.githubusercontent.com/6597529/131822279-613edadf-bdaf-4ae9-9da6-d620504af5f0.jpg) | ![Environment Lights 05](https://user-images.githubusercontent.com/6597529/135060214-b9b9be36-b0d2-4929-b957-c3a04fe40d1e.png) | ![Environment Lights 06](https://user-images.githubusercontent.com/6597529/131825447-d52d8c3e-2801-4d6a-8c51-8b32231c14d6.jpg) |
 
-[**sample project...**](https://github.com/ThomasGorisse/SceneformMaintained/tree/master/samples/environment-lights)
+[**sample project...**](https://github.com/SceneView/sceneform-android/tree/master/samples/environment-lights)
 
 
 ### Video texture
@@ -230,7 +230,7 @@ arFragment.setOnTapArPlaneListener { hitResult, plane, motionEvent ->
 }
 ```
 
-[**sample project...**](https://github.com/ThomasGorisse/SceneformMaintained/tree/master/samples/video-texture)
+[**sample project...**](https://github.com/SceneView/sceneform-android/tree/master/samples/video-texture)
 
 
 ### Dynamic materials/textures
@@ -238,14 +238,14 @@ arFragment.setOnTapArPlaneListener { hitResult, plane, motionEvent ->
 | ![Dynamic materials 01](https://miro.medium.com/max/2000/1*0XSLVleiR5ijFD1aIoCm-A.jpeg) | ![Dynamic materials 02](https://images.squarespace-cdn.com/content/v1/5bf7a0d55ffd203cac0e0920/1583270741496-7FJ9O190FD2FXI5JCWM0/texture.png?format=300w) |
 | - | - |
 
-[**sample project...**](https://github.com/ThomasGorisse/SceneformMaintained/tree/master/samples/image-texture)
+[**sample project...**](https://github.com/SceneView/sceneform-android/tree/master/samples/image-texture)
 
 
 ### Non AR usage
 
 ![Non AR Usage 01](http://download.tuxfamily.org/sdtraces/BottinHTML/Bottin_D-J_files/282584ef7ae1d420897d47bd7ba4d46f.jpeg)
 
-[**sample project...**](https://github.com/ThomasGorisse/SceneformMaintained/tree/master/samples/3d-model-viewer)
+[**sample project...**](https://github.com/SceneView/sceneform-android/tree/master/samples/3d-model-viewer)
 
 
 
@@ -266,7 +266,7 @@ arFragment.setOnTapArPlaneListener { hitResult, plane, motionEvent ->
 
 ![image](https://user-images.githubusercontent.com/6597529/117983402-3513df00-b337-11eb-841d-49548429363e.png)
 
-[**more...**](https://sceneview.github.io/SceneformMaintained/emulator)
+[**more...**](https://sceneview.github.io/sceneform-android/emulator)
 
 
 
@@ -286,7 +286,7 @@ the app only being visible in the Google Play Store on devices that support ARCo
     <meta-data android:name="com.google.ar.core" android:value="required" />
 </application>
 ```
-[**more...**](https://sceneview.github.io/SceneformMaintained/manifest)
+[**more...**](https://sceneview.github.io/sceneform-android/manifest)
 
 
 ### Nodes
@@ -316,7 +316,7 @@ arFragment.setOnTapArPlaneListener { hitResult, plane, motionEvent ->
     })
 }
 ```
-[**sample...**](https://github.com/ThomasGorisse/SceneformMaintained/tree/master/samples/ar-model-viewer)
+[**sample...**](https://github.com/SceneView/sceneform-android/tree/master/samples/ar-model-viewer)
 
 
 ## Remove or Hide a node
@@ -337,7 +337,7 @@ node.parent = null
 node.enabled= false
 ```
 
-[**documentation...**](https://sceneview.github.io/SceneformMaintained/remove_node)
+[**documentation...**](https://sceneview.github.io/sceneform-android/remove_node)
 
 ## Frame Rate (FPS-Bound)
 
@@ -353,7 +353,7 @@ arFragment.setOnViewCreatedListener { arSceneView ->
 ```
 > The default value is **60**.
 
-[**documentation...**](https://sceneview.github.io/SceneformMaintained/fps_bound)
+[**documentation...**](https://sceneview.github.io/sceneform-android/fps_bound)
 
 
 ## Animations
@@ -473,7 +473,7 @@ Every PropertyValuesHolder that applies a modification on the time position of t
 must use the `ModelAnimation.TIME_POSITION` instead of its own Property in order to possibly cancel
 any ObjectAnimator operating time modifications on the same ModelAnimation.
 
-[**more...**](https://sceneview.github.io/SceneformMaintained/animations)
+[**more...**](https://sceneview.github.io/sceneform-android/animations)
 
 
 

@@ -1,6 +1,6 @@
 # How to Contribute
 
-Please use the [issue tracker](https://github.com/ThomasGorisse/SceneformMaintained/issues)
+Please use the [issue tracker](https://github.com/SceneView/sceneform-android/issues)
 to report any issue as we do not accept pull requests for this repository.
 
 If you'd like to send us a patch or pull request, there are just a few small

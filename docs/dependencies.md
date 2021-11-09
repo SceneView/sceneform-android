@@ -36,6 +36,6 @@ allprojects {
 *app/build.gradle*
 ```gradle
 dependencies {
-    implementation 'com.github.thomasgorisse.sceneformmaintained:sceneform:-SNAPSHOT'
+    implementation 'com.github.sceneview.sceneform-android:sceneform:-SNAPSHOT'
 }
 ```

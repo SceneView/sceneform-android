@@ -18,7 +18,7 @@ show_sidebar: true
 
 navigation:                # accepts {file, title, url, icon, sidebaricon}
   - {title: "Home", file: "index.md"}
-  - {title: "Github", url: "https://github.com/ThomasGorisse/SceneformMaintained"}
+  - {title: "Github", url: "https://github.com/SceneView/sceneform-android"}
   - {title: "Dependencies", url: "/#dependencies"}
   - {title: "Usage", url: "/#usage-simple-model-viewer"}
   - {title: "Demo", url: "/#demo"}
@@ -29,4 +29,4 @@ navigation:                # accepts {file, title, url, icon, sidebaricon}
   - {title: "Javadoc", url: "/javadoc/index.html"}
 
 #external:
-#  - {icon: github, url: "https://github.com/ThomasGorisse/SceneformMaintained"}
+#  - {icon: github, url: "https://github.com/SceneView/sceneform-android"}
