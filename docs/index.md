@@ -1,5 +1,3 @@
----
-
 ### :zap: **NEWS - 11/07/2020** :zap:
 SceneformMaintained is now part of the SceneView Open Community.
 

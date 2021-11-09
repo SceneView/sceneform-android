@@ -6,7 +6,6 @@ plugins:
   - jekyll-remote-theme
 
 title: Sceneform Maintained SDK for Android
-permalink: /:title/
 show_title: false
 show_description: false
 description: "Sceneform is a 3D framework with a physically based renderer that's optimized for mobile devices and that makes it easy for you to build Augmented Reality (AR) apps without requiring OpenGL or Unity."
