@@ -11,7 +11,7 @@ SceneformMaintained is now part of the SceneView Open Community.
 
 Everyone interested can participate in improvements or make feature queries.
 
-**Come talk with us on the [Discord channel](https://discord.gg/ZuakSUPM) (Please don't use it for issues, go to the GitHub Issues section instead)**
+**Come talk with us on the [Discord channel](https://discord.gg/UbNDDBTNqb) (Please don't use it for issues, go to the GitHub Issues section instead)**
 
 **Mail us at [sceneview@gorisse.com](mailto:sceneview@gorisse.com) (Please don't use it for issues, go to the GitHub Issues section instead)**
 ### 
