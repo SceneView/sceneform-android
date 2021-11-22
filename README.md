@@ -1,4 +1,6 @@
-![Discord](https://img.shields.io/discord/893787194295222292?color=7389D8&label=Discord&logo=Discord&logoColor=ffffff&style=flat)
+<a href="https://discord.gg/UbNDDBTNqb">
+     <img alt="Discord" src="https://img.shields.io/discord/893787194295222292?color=7389D8&label=Discord&logo=Discord&logoColor=ffffff&style=flat-square">
+</a>
 
 Sceneform Maintained SDK for Android
 ====================================
