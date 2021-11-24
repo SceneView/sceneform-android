@@ -67,7 +67,7 @@ public class ArSceneView extends SceneView {
      * @see ArSceneViewKt#setEstimatedEnvironmentLights(ArSceneView, EnvironmentLightsEstimate)
      * @see ArSceneViewKt#getEstimatedEnvironmentLights(ArSceneView)
      */
-    public LightEstimationConfig _lightEstimationConfig;
+    public LightEstimationConfig _lightEstimationConfig = new LightEstimationConfig();
 
     private AtomicBoolean isProcessingFrame = new AtomicBoolean(false);
     @Nullable

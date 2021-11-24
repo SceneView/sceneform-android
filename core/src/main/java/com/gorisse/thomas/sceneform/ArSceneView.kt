@@ -32,9 +32,7 @@ import com.gorisse.thomas.sceneform.light.*
  * @see LightEstimationConfig.AMBIENT_INTENSITY
  */
 var ArSceneView.lightEstimationConfig: LightEstimationConfig
-    get() = _lightEstimationConfig ?: LightEstimationConfig().also {
-        _lightEstimationConfig = it
-    }
+    get() = _lightEstimationConfig
     set(value) {
         if (_lightEstimationConfig != value) {
             if (sessionConfig != null && value.mode != sessionConfig?.lightEstimationMode) {
