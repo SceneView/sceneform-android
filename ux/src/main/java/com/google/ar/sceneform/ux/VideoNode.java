@@ -135,7 +135,7 @@ public class VideoNode extends Node {
     public Renderable makePlane(float width, float height, Material material) {
         return PlaneFactory.makePlane(
                 new Vector3(width, height, 0.0f),
-                new Vector3(width, height, 0.0f),
+                new Vector3(0.0f, height/2.0f, 0.0f),
                 material
         );
     }
