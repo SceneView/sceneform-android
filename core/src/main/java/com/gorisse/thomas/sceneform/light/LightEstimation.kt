@@ -141,7 +141,7 @@ data class LightEstimationConfig @JvmOverloads constructor(
 
 
         /**
-         * ### Use this mode if you only want to disable all ARCore light estimation lights
+         * ### Use this mode if you want to disable all ARCore light estimation lights
          *
          * The reflected environment will the default one or the one defined by
          * [com.google.ar.sceneform.SceneView.environment]

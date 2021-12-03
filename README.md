@@ -221,6 +221,23 @@ sceneView.session?.resolveCloudAnchor(cloudAnchorId)?.let { resolvedAnchor ->
 | - | - | - |
 | ![Environment Lights 04](https://user-images.githubusercontent.com/6597529/131822279-613edadf-bdaf-4ae9-9da6-d620504af5f0.jpg) | ![Environment Lights 05](https://user-images.githubusercontent.com/6597529/135060214-b9b9be36-b0d2-4929-b957-c3a04fe40d1e.png) | ![Environment Lights 06](https://user-images.githubusercontent.com/6597529/131825447-d52d8c3e-2801-4d6a-8c51-8b32231c14d6.jpg) |
 
+```kotlin
+// Use this mode if you want your objects to be more like if they where real
+arSceneView.lightEstimationConfig = LightEstimationConfig.REALISTIC
+```
+```kotlin
+// Use this mode if you want your objects to be more spectacular
+arSceneView.lightEstimationConfig = LightEstimationConfig.SPECTACULAR
+```
+```kotlin
+// Use this mode if you only want to apply ARCore lights colors and intensity
+arSceneView.lightEstimationConfig = LightEstimationConfig.AMBIENT_INTENSITY
+```
+```kotlin
+// Use this mode if you want to disable all ARCore light estimation lights
+arSceneView.lightEstimationConfig = LightEstimationConfig.AMBIENT_INTENSITY
+```
+
 [**sample project...**](https://github.com/SceneView/sceneform-android/tree/master/samples/environment-lights)
 
 
