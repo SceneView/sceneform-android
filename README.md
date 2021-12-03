@@ -235,7 +235,7 @@ arSceneView.lightEstimationConfig = LightEstimationConfig.AMBIENT_INTENSITY
 ```
 ```kotlin
 // Use this mode if you want to disable all ARCore light estimation lights
-arSceneView.lightEstimationConfig = LightEstimationConfig.AMBIENT_INTENSITY
+arSceneView.lightEstimationConfig = LightEstimationConfig.DISABLED
 ```
 
 [**sample project...**](https://github.com/SceneView/sceneform-android/tree/master/samples/environment-lights)
