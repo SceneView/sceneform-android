@@ -152,6 +152,12 @@ public class MainActivity extends AppCompatActivity implements
         });
         videoNode.setParent(modelNode);
 
+        // If you want that the VideoNode is always looking to the
+        // Camera (You) comment the next line out. Use it mainly
+        // if you want to display a Video. The use with activated
+        // ChromaKey might look odd.
+        //videoNode.setRotateAlwaysToCamera(true);
+
         modelNode.select();
     }
 }

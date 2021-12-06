@@ -5,7 +5,10 @@ import android.media.MediaPlayer;
 
 import androidx.annotation.Nullable;
 
+import com.google.ar.sceneform.Camera;
+import com.google.ar.sceneform.FrameTime;
 import com.google.ar.sceneform.Node;
+import com.google.ar.sceneform.math.Quaternion;
 import com.google.ar.sceneform.math.Vector3;
 import com.google.ar.sceneform.rendering.Color;
 import com.google.ar.sceneform.rendering.ExternalTexture;
@@ -35,6 +38,7 @@ public class VideoNode extends Node {
     private final ExternalTexture texture;
     private final Color chromaKeyColor;
     private final Listener listener;
+    private boolean rotateAlwaysToCamera = false;
 
     /**
      * Create a new VideoNode for showing a video from a MediaPlayer instance inside a node on an
@@ -135,9 +139,24 @@ public class VideoNode extends Node {
     public Renderable makePlane(float width, float height, Material material) {
         return PlaneFactory.makePlane(
                 new Vector3(width, height, 0.0f),
-                new Vector3(width, height, 0.0f),
+                new Vector3(0.0f, height/2.0f, 0.0f),
                 material
         );
+    }
+
+    @Override
+    public void onUpdate(FrameTime frameTime) {
+        super.onUpdate(frameTime);
+        if(rotateAlwaysToCamera &&
+                getScene() != null &&
+                getScene().getCamera() != null
+        ) {
+            Vector3 cameraPosition = getScene().getCamera().getWorldPosition();
+            Vector3 cardPosition = getWorldPosition();
+            Vector3 direction = Vector3.subtract(cameraPosition, cardPosition);
+            Quaternion lookRotation = Quaternion.lookRotation(direction, Vector3.up());
+            setWorldRotation(lookRotation);
+        }
     }
 
     public MediaPlayer getPlayer() {
@@ -150,6 +169,20 @@ public class VideoNode extends Node {
 
     public Color getChromaKeyColor() {
         return chromaKeyColor;
+    }
+
+    public boolean isRotateAlwaysToCamera() {
+        return rotateAlwaysToCamera;
+    }
+
+    /**
+     * If this Flag is set to true, the VideoNode will always
+     * point to the Camera (You).
+     *
+     * @param rotateAlwaysToCamera boolean
+     */
+    public void setRotateAlwaysToCamera(boolean rotateAlwaysToCamera) {
+        this.rotateAlwaysToCamera = rotateAlwaysToCamera;
     }
 
     private void onCreated(VideoNode videoNode) {
