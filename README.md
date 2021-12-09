@@ -13,7 +13,7 @@ Augmented Reality applications: AR 3D Models (glTF file format), Augmented Image
 ### :zap: **NEWS - 08/12/2020** :zap:
 **[The New SceneView Android](https://github.com/SceneView/sceneview-android) is now open sourced and available on `mavenCentral()`**
 
-Come to give it a try if you start a new project or not. SceneView has a quite quick automatic migration class that will help you move your app from Sceneform
+Come to give it a try if you start a new project or not. SceneView has a quite quick automatic migration class that will help you moving your app from Sceneform
 
 If you want to help us, you can [contribute here](https://sceneview.github.io/sponsoring/).
 
