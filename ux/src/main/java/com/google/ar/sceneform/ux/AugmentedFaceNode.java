@@ -296,16 +296,19 @@ public class AugmentedFaceNode extends Node {
 
             Matrix.multiplyMM(matrix, 0, inverseRootNodeMatrix, 0, regionPoseMatrix, 0);
 
-            int instance = tfm.getInstance(faceMeshSkeleton.get(type));
-
-            tfm.setTransform(instance, matrix);
-
-            tfm.getWorldTransform(instance, matrix);
-            float[] position = new float[4];
-            Matrix.multiplyMV(position, 0, matrix, 0, new float[] { 0, 0, 0, 1 }, 0);
-            Log.d(TAG, type + " " + Arrays.toString(position));
+            if(faceMeshSkeleton.containsKey(type)) {
+                int instance = tfm.getInstance(faceMeshSkeleton.get(type));
+                tfm.setTransform(instance, matrix);
+                tfm.getWorldTransform(instance, matrix);
+            }
+            // Log Position
+//            float[] position = new float[4];
+//            Matrix.multiplyMV(position, 0, matrix, 0, new float[] { 0, 0, 0, 1 }, 0);
+//            Log.d(TAG, type + " " + Arrays.toString(position));
         }
-        faceRegionNode.getRenderableInstance().getFilamentAsset().getAnimator().updateBoneMatrices();
+        if(faceRegionNode != null && faceRegionNode.getRenderableInstance() != null) {
+            faceRegionNode.getRenderableInstance().getFilamentAsset().getAnimator().updateBoneMatrices();
+        }
     }
 
     private boolean isTracking() {
