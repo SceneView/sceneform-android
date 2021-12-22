@@ -56,7 +56,7 @@ public class ArSceneView extends SceneView {
     // pauseResumeTask is modified on the main thread only.  It may be completed on background
     // threads however.
     private final SequentialTask pauseResumeTask = new SequentialTask();
-    private int cameraTextureId;
+    public int cameraTextureId;
     private boolean hasSetTextureNames = false;
     @Nullable
     private Session session;
