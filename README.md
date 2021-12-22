@@ -10,31 +10,31 @@ Augmented Reality applications: AR 3D Models (glTF file format), Augmented Image
 
 ---
 
+### :zap: **NEWS - 08/12/2020** :zap:
+**[The New SceneView Android](https://github.com/SceneView/sceneview-android) is now open sourced and available on `mavenCentral()`**
+
+Come to give it a try if you start a new project or not. SceneView has a quite quick automatic migration class that will help you moving your app from Sceneform
+
+If you want to help us, you can [contribute here](https://sceneview.github.io/sponsoring/).
+
+Come talk with us on the [Discord channel](https://discord.gg/UbNDDBTNqb) (Please don't use it for issues, go to the GitHub Issues section instead)
+
+---
+
+### :zap: **NEWS - 06/12/2020** :zap:
+**[SceneView Community Website](https://sceneview.github.io/) is out and online**
+
+Find some more infos about the tools and samples.
+
+---
+
 ### :zap: **NEWS - 11/07/2020** :zap:
-SceneformMaintained is now part of the SceneView Open Community.
+**SceneformMaintained is now part of the SceneView Open Community**
 
-Everyone interested can participate in improvements or make feature queries.
-
-**Come talk with us on the [Discord channel](https://discord.gg/UbNDDBTNqb) (Please don't use it for issues, go to the GitHub Issues section instead)**
-
-**Mail us at [sceneview@gorisse.com](mailto:sceneview@gorisse.com) (Please don't use it for issues, go to the GitHub Issues section instead)**
-### 
-### :zap: :zap:
+Everyone interested can participate in improvements or make feature requests.
 
 ---
 
----
-
-### :zap: **NEWS - 11/01/2020** :zap:
-We are currently releasing the successor of Sceneform Maintained which is has greats improvements and latest ARCore features: DepthHit, InstantPlacement,...
-
-More infos: [SceneView for Android](https://sceneview.github.io/sceneform-android/sceneview)
-
-If you want to help us, see what it looks like or be an early user, you can [participate here](https://github.com/sponsors/ThomasGorisse/sponsorships?sponsor=ThomasGorisse&tier_id=107219&preview=false) for early access.
-### 
-### :zap: :zap:
-
----
 
 [![Maven Central](https://img.shields.io/maven-central/v/com.gorisse.thomas.sceneform/sceneform.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:%22com.gorisse.thomas.sceneform%22%20AND%20a:%22sceneform%22)
 
@@ -221,6 +221,8 @@ sceneView.session?.resolveCloudAnchor(cloudAnchorId)?.let { resolvedAnchor ->
 | - | - | - |
 | ![Environment Lights 04](https://user-images.githubusercontent.com/6597529/131822279-613edadf-bdaf-4ae9-9da6-d620504af5f0.jpg) | ![Environment Lights 05](https://user-images.githubusercontent.com/6597529/135060214-b9b9be36-b0d2-4929-b957-c3a04fe40d1e.png) | ![Environment Lights 06](https://user-images.githubusercontent.com/6597529/131825447-d52d8c3e-2801-4d6a-8c51-8b32231c14d6.jpg) |
 
+https://user-images.githubusercontent.com/83349532/144654379-a4476baf-8a22-45aa-8088-4f5e3fc7384b.mp4
+
 ```kotlin
 // Use this mode if you want your objects to be more like if they where real
 arSceneView.lightEstimationConfig = LightEstimationConfig.REALISTIC
@@ -235,7 +237,7 @@ arSceneView.lightEstimationConfig = LightEstimationConfig.AMBIENT_INTENSITY
 ```
 ```kotlin
 // Use this mode if you want to disable all ARCore light estimation lights
-arSceneView.lightEstimationConfig = LightEstimationConfig.AMBIENT_INTENSITY
+arSceneView.lightEstimationConfig = LightEstimationConfig.DISABLED
 ```
 
 [**sample project...**](https://github.com/SceneView/sceneform-android/tree/master/samples/environment-lights)
