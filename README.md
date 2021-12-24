@@ -1,6 +1,5 @@
-<a href="https://discord.gg/UbNDDBTNqb">
-     <img alt="Discord" src="https://img.shields.io/discord/893787194295222292?color=7389D8&label=Discord&logo=Discord&logoColor=ffffff&style=flat-square">
-</a>
+[![Maven Central](https://img.shields.io/maven-central/v/com.gorisse.thomas.sceneform/sceneform.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:%22com.gorisse.thomas.sceneform%22%20AND%20a:%22sceneform%22)
+[![Discord](https://img.shields.io/discord/893787194295222292?color=7389D8&label=Discord&logo=Discord&logoColor=ffffff&style=flat-square)](https://discord.gg/UbNDDBTNqb)
 
 Sceneform Maintained SDK for Android
 ====================================
@@ -10,45 +9,52 @@ Augmented Reality applications: AR 3D Models (glTF file format), Augmented Image
 
 ---
 
-### :zap: **NEWS - 08/12/2020** :zap:
-**[The New SceneView Android](https://github.com/SceneView/sceneview-android) is now open sourced and available on `mavenCentral()`**
+### :zap: **NEWS - 12/22/2020** :zap:
+**1st [SceneView Open Collective](https://opencollective.com/sceneview) sponsor**
 
-Come to give it a try if you start a new project or not. SceneView has a quite quick automatic migration class that will help you moving your app from Sceneform
+We are helping our sponsor developer in making an AR app with more precise answering and code sharing.
 
-If you want to help us, you can [contribute here](https://sceneview.github.io/sponsoring/).
-
-Come talk with us on the [Discord channel](https://discord.gg/UbNDDBTNqb) (Please don't use it for issues, go to the GitHub Issues section instead)
+Our community knwoleges help them to gain a lot of time on problematic and AR specific parts.
 
 ---
 
-### :zap: **NEWS - 06/12/2020** :zap:
+### :zap: **NEWS - 12/15/2021** :zap:
+**[SceneView Android - Release 0.0.3](https://github.com/SceneView/sceneview-android) is available on `mavenCentral()`**
+
+Give it a try if you start a new project or not: SceneView has a quite quick automatic migration class that will help you moving your app from Sceneform
+
+---
+
+### :zap: **NEWS - 12/6/2021** :zap:
 **[SceneView Community Website](https://sceneview.github.io/) is out and online**
 
 Find some more infos about the tools and samples.
 
 ---
 
-### :zap: **NEWS - 11/07/2020** :zap:
-**SceneformMaintained is now part of the SceneView Open Community**
+### :zap: **NEWS - 11/15/2021** :zap:
+**[Discord Channel](https://sceneview.github.io/)** creation
 
-Everyone interested can participate in improvements or make feature requests.
+[![Discord channel](https://discordapp.com/api/guilds/893787194295222292/widget.png?style=banner3)](https://discord.gg/UbNDDBTNqb)
+
+(Please don't use it for issues, go to the GitHub Issues section instead)
 
 ---
 
+## Differences with Google Sceneform (1.15.0, 1.16.0, 1.17.0 and 1.17.1)
 
-[![Maven Central](https://img.shields.io/maven-central/v/com.gorisse.thomas.sceneform/sceneform.svg?label=Maven%20Central)](https://search.maven.org/search?q=g:%22com.gorisse.thomas.sceneform%22%20AND%20a:%22sceneform%22)
-
-* Android gradle dependency in Kotlin/Java
-* No OpenGL or Unity need
-* Latest versions of [ARCore SDK](https://github.com/google-ar/arcore-android-sdk) and [Filament](https://github.com/google/filament) 
+* No Android Studio plugin needed: Use glTF and glb files directly instead of sfb, fbx, obj,...
+* Latest versions of [ARCore SDK](https://github.com/google-ar/arcore-android-sdk) and [Google Filament](https://github.com/google/filament)
 * Latest versions of Android dependencies (Android Build tools, AndroidX,...)
 * Available on `mavenCentral()`
 * Supports <a href="https://www.khronos.org/gltf/">glTF</a> format
 * glTF/glb with animations support
 * Augmented Images supported
 * Augmented Faces supported
-* Depth supported
+* Video Node supported
+* Depth occlusion supported
 * Simple model loading for basic usage
+* No OpenGL or Unity need
 
 
 This repository is a fork of [Sceneform](https://github.com/google-ar/sceneform-android-sdk) Copyright (c) 2021 Google Inc.  All rights reserved.
@@ -155,6 +161,7 @@ arFragment.setOnTapArPlaneListener { hitResult, plane, motionEvent ->
     })
 }
 ```
+
 [**kotlin sample project...**](https://github.com/SceneView/sceneform-android/tree/master/samples/ar-model-viewer)
 
 [**java sample project...**](https://github.com/SceneView/sceneform-android/tree/master/samples/ar-model-viewer-java)
@@ -200,7 +207,8 @@ arFragment.apply {
 
 ### Cloud Anchors
 
-![image](https://user-images.githubusercontent.com/6597529/139030872-2fcaa720-42c8-4927-9308-bd7765b91771.png)
+![image](https://user-images.githubusercontent.com/6597529/147357339-aa8234d5-38b4-4883-8e01-e6ca7a22f9c2.png) | ![image](https://user-images.githubusercontent.com/6597529/139030872-2fcaa720-42c8-4927-9308-bd7765b91771.png)
+| - | - |
 
 ```kotlin
 // Create a new anchor = the pose of which ARCore will try to resolve using the ARCore Cloud Anchor service and the provided cloudAnchorId
