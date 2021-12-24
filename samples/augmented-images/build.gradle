@@ -36,5 +36,5 @@ dependencies {
 
     releaseImplementation "com.gorisse.thomas.sceneform:sceneform:1.20.3"
     debugApi project(":sceneform")
-    implementation "com.google.android.filament:filamat-android:1.12.8"
+    implementation "com.google.android.filament:filamat-android:1.15.1"
 }

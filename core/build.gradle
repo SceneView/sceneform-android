@@ -50,13 +50,13 @@ dependencies {
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:1.5.2"
 
     // Filament
-    def filament_version = '1.12.8'
+    def filament_version = '1.15.1'
     api "com.google.android.filament:filament-android:$filament_version"
     api "com.google.android.filament:gltfio-android:$filament_version"
     api "com.google.android.filament:filament-utils-android:$filament_version"
 
     // ARCore
-    def arcore_version = '1.26.0'
+    def arcore_version = '1.29.0'
     api "com.google.ar:core:$arcore_version"
 
     // AndroidX
