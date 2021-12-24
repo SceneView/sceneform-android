@@ -70,7 +70,7 @@ Find some more infos about the tools and samples.
 - **Depth** occlusion and placement (**SceneView only**)
 - **InstantPlacement** (**SceneView only**)
 - **HdrLightEstimation** with adjustements between more Spectacular or Realistic
-- Simple **Model Viewer** for basic usage, with only ArSceneView parameters
+- Simple **Model Viewer** for basic usage, with only ArSceneView parameters (**SceneView only**)
 - Less OpenGL knowlege needed
 
 
