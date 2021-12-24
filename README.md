@@ -42,21 +42,29 @@ Find some more infos about the tools and samples.
 (Please don't use it for issues, go to the GitHub Issues section instead)
 
 ---
+### Sceneform maintained and successor:
 
-## Differences with Google Sceneform (1.15.0, 1.16.0, 1.17.0 and 1.17.1)
+- Sceneform - Java Continuation : Here
+- SceneView - Kotlin Successor : [SceneView/sceneview-android](https://github.com/SceneView/sceneview-android)
 
-* No Android Studio plugin needed: Use glTF and glb files directly instead of sfb, fbx, obj,...
-* Latest versions of [ARCore SDK](https://github.com/google-ar/arcore-android-sdk) and [Google Filament](https://github.com/google/filament)
-* Latest versions of Android dependencies (Android Build tools, AndroidX,...)
-* Available on `mavenCentral()`
-* Supports <a href="https://www.khronos.org/gltf/">glTF</a> format
-* glTF/glb with animations support
-* Augmented Images supported
-* Augmented Faces supported
-* Video Node supported
-* Depth occlusion supported
-* Simple model loading for basic usage
-* No OpenGL or Unity need
+### Differences with Google Sceneform (1.15.0, 1.16.0, 1.17.0 and 1.17.1)
+
+- No plugin needed: Use **gltf and glb 3D models** files directly from assets, res/raw, local file or http/https url **instead of sfa, sfb, fbx, obj,...**
+- Latest versions of [ARCore SDK](https://github.com/google-ar/arcore-android-sdk) and [Google Filament](https://github.com/google/filament)
+- Latest gradle dependencies including AndroidX, LifecycleScope/Coroutines (**SceneView only**),...
+- Available as `mavenCentral()` dependency
+- **Augmented Images** supported
+- **Augmented Faces** supported
+- `glb` or `gltf` for 3D models (**animations supported**)
+- `hdr` or `ktx` for Environement (IndirectLight + Skybox)
+- 3D only usage supported and single dependency without ARCore (**SceneView only**)
+- **VideoNode** for MediaPlayer (mp4, avi,...) Video 3D Node
+- Horizontal/Vertical Plane Placement
+- **Depth** occlusion and placement (**SceneView only**)
+- **InstantPlacement** (**SceneView only**)
+- **HdrLightEstimation** with adjustements between more Spectacular or Realistic
+- Simple **Model Viewer** for basic usage, with only ArSceneView parameters
+- Less OpenGL knowlege needed
 
 
 This repository is a fork of [Sceneform](https://github.com/google-ar/sceneform-android-sdk) Copyright (c) 2021 Google Inc.  All rights reserved.
