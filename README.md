@@ -4,7 +4,7 @@
 Sceneform Maintained SDK for Android
 ====================================
 
-## Sceneform Maintained is an ARCore Android SDK with Google Filament as 3D engine. This is the continuation of the archived Sceneform.
+## Sceneform Maintained is an ARCore Android SDK with Google Filament as 3D engine. This is the continuation of the [Archived Sceneform](https://developers.google.com/sceneform/develop)
 
 **Android Augmented Reality library: AR Model Viewer, Augmented Images, Augmented Faces, Video, Depth, Cloud Anchors, Instant Placement, Light Estimation and much more in Kotlin and Java**
 
@@ -17,13 +17,16 @@ dependencies {
 ---
 
 ### :zap: **NEWS - 12/22/2020** :zap:
-**1st [SceneView Open Collective](https://opencollective.com/sceneview) sponsor**
+**[1st SceneView Open Collective sponsor](https://opencollective.com/sceneview)**
 
-We are helping the Android developer in making an AR app with more precise answering and code solving/sharing.
+We are helping a company in making an AR app with more precise answering and code issuing/solving/features.
+The team is available on a dedicated Discord channel to answer supporter Android code questions and can read/push to a specific branch on your repo if needed.
 
-Our community helps them to gain a lot of time on AR problematic and specific parts.
+Our community helps them to gain a lot of time on AR problematic and specific blocking issues.
 
-[Contact us](https://sceneview.github.io) for more infos
+- [Order your needed support time](https://opencollective.com/sceneview/contribute)
+- Have a look at the [Community Expenses](https://opencollective.com/sceneview)
+- [Contact us](https://sceneview.github.io)
 
 ---
 
