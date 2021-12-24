@@ -12,9 +12,9 @@ Augmented Reality applications: AR 3D Models (glTF file format), Augmented Image
 ### :zap: **NEWS - 12/22/2020** :zap:
 **1st [SceneView Open Collective](https://opencollective.com/sceneview) sponsor**
 
-We are helping our sponsor developer in making an AR app with more precise answering and code sharing.
+We are helping a developer in making an AR app with more precise answering and code sharing.
 
-Our community knwoleges help them to gain a lot of time on problematic and AR specific parts.
+Our community knwoleges help them to gain a lot of time on AR problematics and specific parts.
 
 ---
 
