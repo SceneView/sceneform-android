@@ -5,7 +5,14 @@ Sceneform Maintained SDK for Android
 ====================================
 
 ## Sceneform Maintained is an ARCore Android SDK with Google Filament as 3D engine. This is the continuation of the archived Sceneform.
-Augmented Reality applications: AR 3D Models (glTF file format), Augmented Images, Augmented Faces, Depth, Cloud Anchors and much more in Kotlin/Java
+
+**Android Augmented Reality library: AR Model Viewer, Augmented Images, Augmented Faces, Video, Depth, Cloud Anchors, Instant Placement, Light Estimation and much more in Kotlin and Java**
+
+```gradle
+dependencies {
+     implementation "com.gorisse.thomas.sceneform:sceneform:1.20.3"
+}
+```
 
 ---
 
@@ -74,7 +81,7 @@ This repository was originaly a fork of [Sceneform](https://github.com/google-ar
 *app/build.gradle*
 ```gradle
 dependencies {
-     implementation("com.gorisse.thomas.sceneform:sceneform:1.20.3")
+     implementation "com.gorisse.thomas.sceneform:sceneform:1.20.3"
 }
 ```
 [**more...**](https://sceneview.github.io/sceneform-android/dependencies)
