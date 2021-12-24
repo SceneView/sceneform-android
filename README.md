@@ -67,17 +67,7 @@ Find some more infos about the tools and samples.
 - Less OpenGL knowlege needed
 
 
-This repository is a fork of [Sceneform](https://github.com/google-ar/sceneform-android-sdk) Copyright (c) 2021 Google Inc.  All rights reserved.
-
-
-#### Maintained and continued by [Nikita Zaytsev](https://github.com/grassydragon), [Vojta Maiwald](https://github.com/VojtaMaiwald), [Brigido Rodriguez](https://github.com/imbrig), [Fvito](https://github.com/fvito), [Marius Kajczuga](https://github.com/Venthorus), [Eduardo Dorantes](https://github.com/doranteseduardo), [Robert Gregat](https://github.com/RGregat) and [Thomas Gorisse](https://github.com/ThomasGorisse)
-
-
----
-
-### :star: Star the repository to help us being known
-
----
+This repository was originaly a fork of [Sceneform](https://github.com/google-ar/sceneform-android-sdk) Copyright (c) 2021 Google Inc.  All rights reserved.
 
 ## Dependencies
 
