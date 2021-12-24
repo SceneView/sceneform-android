@@ -8,12 +8,14 @@ plugins {
 //    id 'com.vanniktech.maven.publish'
 }
 
+apply from: "$rootDir/dependencies.gradle"
+
 android {
-    compileSdkVersion 30
+    compileSdkVersion "$versions.compileSdkVersion"
     defaultConfig {
         // Sceneform requires minSdkVersion >= 24.
-        minSdkVersion 24
-        targetSdkVersion 30
+        minSdkVersion "$versions.mindSdkVersion"
+        targetSdkVersion "$versions.targetSdkVersion"
 
         consumerProguardFiles 'lib-proguard-rules.pro'
 
@@ -44,29 +46,27 @@ dependencies {
     implementation files("libs/libsceneform_runtime_schemas.jar")
 
     // Kotlin
-    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2"
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.2"
-    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:1.5.2"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:$versions.kotlin_version"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:$versions.kotlinx_coroutines_version"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:$versions.kotlinx_coroutines_version"
+    implementation "org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:$versions.kotlinx_coroutines_version"
 
     // Filament
-    def filament_version = '1.12.8'
-    api "com.google.android.filament:filament-android:$filament_version"
-    api "com.google.android.filament:gltfio-android:$filament_version"
-    api "com.google.android.filament:filament-utils-android:$filament_version"
+    api "com.google.android.filament:filament-android:$versions.filament_version"
+    api "com.google.android.filament:gltfio-android:$versions.filament_version"
+    api "com.google.android.filament:filament-utils-android:$versions.filament_version"
 
     // ARCore
-    def arcore_version = '1.26.0'
-    api "com.google.ar:core:$arcore_version"
+    api "com.google.ar:core:$versions.arcore_version"
 
     // AndroidX
-    implementation "androidx.annotation:annotation:1.2.0"
-    implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.3.1"
+    implementation "androidx.annotation:annotation:$versions.annotation_version"
+    implementation "androidx.lifecycle:lifecycle-runtime-ktx:$versions.lifecycle_runtime_ktx_version"
 
     // Fuel
-    implementation "com.github.kittinunf.fuel:fuel:2.3.1"
-    implementation "com.github.kittinunf.fuel:fuel-android:2.3.1"
-    implementation "com.github.kittinunf.fuel:fuel-coroutines:2.3.1"
+    implementation "com.github.kittinunf.fuel:fuel:$versions.fuel"
+    implementation "com.github.kittinunf.fuel:fuel-android:$versions.fuel"
+    implementation "com.github.kittinunf.fuel:fuel-coroutines:$versions.fuel"
 }
 
 //mavenPublish {

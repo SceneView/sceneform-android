@@ -3,15 +3,17 @@ plugins {
     id 'kotlin-android'
 }
 
+apply from: "$rootDir/dependencies.gradle"
+
 android {
-    compileSdkVersion 30
+    compileSdkVersion "$versions.compileSdkVersion"
 
     defaultConfig {
         applicationId "com.google.ar.sceneform.samples.gltf"
 
         // Sceneform requires minSdkVersion >= 24.
-        minSdkVersion 24
-        targetSdkVersion 30
+        minSdkVersion "$versions.minSdkVersion"
+        targetSdkVersion "$versions.targetSdkVersion"
         versionCode 1
         versionName "1.0"
     }
@@ -36,7 +38,7 @@ android {
 
 dependencies {
 
-    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:$versions.kotlin_version"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2"
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.5.2"
 
