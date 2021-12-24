@@ -15,7 +15,8 @@ Augmented Reality applications: AR 3D Models (glTF file format), Augmented Image
 We are helping the Android developer in making an AR app with more precise answering and code solving/sharing.
 
 Our community helps them to gain a lot of time on AR problematic and specific parts.
-[Contact us](https://sceneview.github.io) for financial parts
+
+[Contact us](https://sceneview.github.io) for more infos
 
 ---
 
