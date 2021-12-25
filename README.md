@@ -19,13 +19,15 @@ dependencies {
 ### :zap: **NEWS - 12/22/2020** :zap:
 **[1st SceneView Open Collective sponsor](https://opencollective.com/sceneview)**
 
-We are helping a company in making an AR app with more precise answering and code issuing/solving/features.
-The team is available on a dedicated Discord channel to answer supporter Android code questions and can read/push to a specific branch on your repo if needed.
+We are helping in making Android AR app with more precise answers, code issues solving and specific usage.
+Discuss with the team on a private dedicated Discord channel.
+We can read your code and tell you what is going wrong or could be improved.
+Answers can be explained by chat or directly pushed to a private repo specific branch
 
-Our community helps them to gain a lot of time on AR problematic and specific blocking issues.
+Our community can help you to gain a lot of time on AR problematic and specific blocking issues.
 
 - [Order your needed support time](https://opencollective.com/sceneview/contribute)
-- Have a look at the [Community Expenses](https://opencollective.com/sceneview)
+- Have a look at the [Community Expenses](https://opencollective.com/sceneview/expenses) to see what is done with contributions
 - [Contact us](https://sceneview.github.io)
 
 ---
