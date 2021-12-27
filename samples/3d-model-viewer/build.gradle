@@ -5,14 +5,16 @@ plugins {
     id 'kotlin-kapt'
 }
 
+apply from: "$rootDir/dependencies.gradle"
+
 android {
-    compileSdkVersion 30
+    compileSdkVersion versions.compileSdkVersion
     defaultConfig {
         applicationId "com.google.ar.sceneform.samples.sceneviewbackground"
 
         // Sceneform requires minSdkVersion >= 24.
-        minSdkVersion 24
-        targetSdkVersion 30
+        minSdkVersion versions.mindSdkVersion
+        targetSdkVersion versions.targetSdkVersion
         versionCode 1
         versionName "1.0"
     }
@@ -29,9 +31,9 @@ android {
 }
 
 dependencies {
-    implementation "androidx.appcompat:appcompat:1.3.1"
-    implementation "androidx.fragment:fragment-ktx:1.3.6"
+    implementation "androidx.appcompat:appcompat:$versions.appcompat_version"
+    implementation "androidx.fragment:fragment-ktx:$versions.fragment_ktx_version"
 
-    releaseImplementation "com.gorisse.thomas.sceneform:sceneform:1.20.2"
+    releaseImplementation "com.gorisse.thomas.sceneform:sceneform:$versions.sceneform_version"
     debugApi project(":sceneform")
 }

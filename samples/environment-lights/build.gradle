@@ -5,8 +5,10 @@ plugins {
     id 'kotlin-kapt'
 }
 
+apply from: "$rootDir/dependencies.gradle"
+
 android {
-    compileSdkVersion 30
+    compileSdkVersion versions.compileSdkVersion
     buildFeatures {
         dataBinding true
     }
@@ -14,8 +16,8 @@ android {
         applicationId "com.google.ar.sceneform.samples.environmentlights"
 
         // Sceneform requires minSdkVersion >= 24.
-        minSdkVersion 24
-        targetSdkVersion 30
+        minSdkVersion versions.minSdkVersion
+        targetSdkVersion versions.targetSdkVersion
         versionCode 2
         versionName "1.0.1"
     }
@@ -32,13 +34,13 @@ android {
 }
 
 dependencies {
-    implementation "androidx.appcompat:appcompat:1.3.1"
-    implementation "androidx.core:core-ktx:1.6.0"
-    implementation "androidx.constraintlayout:constraintlayout:2.1.1"
-    implementation "androidx.fragment:fragment-ktx:1.3.6"
+    implementation "androidx.appcompat:appcompat:$versions.appcompat_version"
+    implementation "androidx.core:core-ktx:$versions.core_ktx_version"
+    implementation "androidx.constraintlayout:constraintlayout:$versions.constraintlayout"
+    implementation "androidx.fragment:fragment-ktx:$versions.fragment_ktx_version"
 
-    implementation "com.google.android.material:material:1.4.0"
+    implementation "com.google.android.material:material:$versions.material_version"
 
-    releaseImplementation "com.gorisse.thomas.sceneform:sceneform:1.20.2"
+    releaseImplementation "com.gorisse.thomas.sceneform:sceneform:$versions.sceneform_version"
     debugApi project(":sceneform")
 }

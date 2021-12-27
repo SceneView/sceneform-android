@@ -11,11 +11,11 @@ plugins {
 apply from: "$rootDir/dependencies.gradle"
 
 android {
-    compileSdkVersion "$versions.compileSdkVersion"
+    compileSdkVersion versions.compileSdkVersion
     defaultConfig {
         // Sceneform requires minSdkVersion >= 24.
-        minSdkVersion "$versions.mindSdkVersion"
-        targetSdkVersion "$versions.targetSdkVersion"
+        minSdkVersion versions.mindSdkVersion
+        targetSdkVersion versions.targetSdkVersion
 
         consumerProguardFiles 'lib-proguard-rules.pro'
 
@@ -52,9 +52,7 @@ dependencies {
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:$versions.kotlinx_coroutines_version"
 
     // Filament
-    api "com.google.android.filament:filament-android:$versions.filament_version"
-    api "com.google.android.filament:gltfio-android:$versions.filament_version"
-    api "com.google.android.filament:filament-utils-android:$versions.filament_version"
+    api filamentDependencies.values()
 
     // ARCore
     api "com.google.ar:core:$versions.arcore_version"
@@ -64,9 +62,7 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-runtime-ktx:$versions.lifecycle_runtime_ktx_version"
 
     // Fuel
-    implementation "com.github.kittinunf.fuel:fuel:$versions.fuel"
-    implementation "com.github.kittinunf.fuel:fuel-android:$versions.fuel"
-    implementation "com.github.kittinunf.fuel:fuel-coroutines:$versions.fuel"
+    implementation fuelDependencies.values()
 }
 
 //mavenPublish {
