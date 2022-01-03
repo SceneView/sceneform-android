@@ -166,11 +166,6 @@ public class ArSceneView extends SceneView {
         this.session = session;
 
         Renderer renderer = Preconditions.checkNotNull(getRenderer());
-        int width = renderer.getDesiredWidth();
-        int height = renderer.getDesiredHeight();
-        if (width != 0 && height != 0) {
-            session.setDisplayGeometry(display.getRotation(), width, height);
-        }
 
         // Feature config, therefore facing direction, can only be configured once per session.
         if (session.getCameraConfig().getFacingDirection() == FacingDirection.FRONT) {
@@ -253,6 +248,13 @@ public class ArSceneView extends SceneView {
     protected void resumeSession() throws CameraNotAvailableException {
         if (this.session != null) {
             this.session.resume();
+
+            Renderer renderer = Preconditions.checkNotNull(getRenderer());
+            int width = renderer.getDesiredWidth();
+            int height = renderer.getDesiredHeight();
+            if (width != 0 && height != 0) {
+                session.setDisplayGeometry(display.getRotation(), width, height);
+            }
         }
     }
 
