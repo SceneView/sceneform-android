@@ -1,5 +1,8 @@
 package com.google.ar.sceneform.samples.depth;
 
+import android.animation.Animator;
+import android.animation.ObjectAnimator;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.MotionEvent;
@@ -24,11 +27,13 @@ import com.google.ar.sceneform.math.Vector3;
 import com.google.ar.sceneform.rendering.CameraStream;
 import com.google.ar.sceneform.rendering.ModelRenderable;
 import com.google.ar.sceneform.rendering.Renderable;
+import com.google.ar.sceneform.rendering.RenderableInstance;
 import com.google.ar.sceneform.rendering.ViewRenderable;
 import com.google.ar.sceneform.ux.ArFragment;
 import com.google.ar.sceneform.ux.BaseArFragment;
 import com.google.ar.sceneform.ux.TransformableNode;
 
+import java.io.IOException;
 import java.lang.ref.WeakReference;
 
 public class MainActivity extends AppCompatActivity implements
@@ -39,6 +44,8 @@ public class MainActivity extends AppCompatActivity implements
 
     private ArFragment arFragment;
     private Renderable model;
+    private ObjectAnimator modelAnimator;
+    private MediaPlayer modelSound = new MediaPlayer();
     private ViewRenderable viewRenderable;
 
     @Override
@@ -76,6 +83,34 @@ public class MainActivity extends AppCompatActivity implements
         // Available modes: DEPTH_OCCLUSION_DISABLED, DEPTH_OCCLUSION_ENABLED
         arSceneView.getCameraStream()
                 .setDepthOcclusionMode(CameraStream.DepthOcclusionMode.DEPTH_OCCLUSION_ENABLED);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        if (modelAnimator != null && modelAnimator.isPaused()) {
+            modelAnimator.start();
+            modelSound.start();
+        }
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+
+        if (modelAnimator != null && modelAnimator.isRunning()) {
+            modelAnimator.pause();
+            modelSound.pause();
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        stopSound();
+        modelSound.release();
     }
 
     public void loadModels() {
@@ -123,18 +158,57 @@ public class MainActivity extends AppCompatActivity implements
         anchorNode.setParent(arFragment.getArSceneView().getScene());
 
         // Create the transformable model and add it to the anchor.
-        TransformableNode model = new TransformableNode(arFragment.getTransformationSystem());
-        model.setParent(anchorNode);
-        model.setRenderable(this.model)
-                .animate(true).start();
-        model.select();
+        TransformableNode modelNode = new TransformableNode(arFragment.getTransformationSystem());
+        modelNode.setParent(anchorNode);
+        RenderableInstance modelInstance = modelNode.setRenderable(this.model);
+        modelAnimator = modelInstance.animate(true);
+        modelAnimator.addListener(new Animator.AnimatorListener() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+                playSound();
+            }
+
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                stopSound();
+            }
+
+            @Override
+            public void onAnimationCancel(Animator animation) {
+                stopSound();
+            }
+
+            @Override
+            public void onAnimationRepeat(Animator animation) {
+                stopSound();
+                playSound();
+            }
+        });
+        modelAnimator.start();
+        modelNode.select();
 
         Node titleNode = new Node();
-        titleNode.setParent(model);
+        titleNode.setParent(modelNode);
         titleNode.setEnabled(false);
         titleNode.setLocalPosition(new Vector3(0.0f, 1.0f, 0.0f));
         titleNode.setRenderable(viewRenderable);
         titleNode.setEnabled(true);
+    }
+
+    private void playSound() {
+        try {
+            // Can't figure out why does the repeat function doesn't for remote url
+            modelSound.setDataSource("https://storage.googleapis.com/ar-answers-in-search-models/static/GiantPanda/Bear_Panda_Giant_Unisex_Adult.ogg");
+            modelSound.prepare();
+            modelSound.start();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void stopSound() {
+        modelSound.stop();
+        modelSound.reset();
     }
 
     @Override
