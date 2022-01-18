@@ -318,6 +318,23 @@ arFragment.setOnTapArPlaneListener { hitResult, plane, motionEvent ->
 [**more...**](https://sceneview.github.io/sceneform-android/emulator)
 
 
+## Contribute - Pull Request
+
+### Fork the repository or ask for contributor access on Discord
+
+![image](https://user-images.githubusercontent.com/6597529/149908204-6d4decd7-aa5c-45a6-85f4-c2efb94c8735.png)
+
+### Install GitHub Android Studio Plugin
+
+![image](https://user-images.githubusercontent.com/6597529/149904412-954a7b15-ba1a-4818-a94f-73df6690e68b.png)
+
+### Create the Pull Request directly from Android Studio
+
+![image](https://user-images.githubusercontent.com/6597529/149905247-e0c065ae-6d06-4fb0-aa3a-b2d36f4fb19d.png)
+
+
+[**more...**](https://getstream.io/blog/use-github-android-studio/)
+
 
 ## Go further
 
