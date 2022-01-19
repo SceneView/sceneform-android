@@ -56,7 +56,7 @@ This repository is a fork of [Sceneform](https://github.com/google-ar/sceneform-
 *app/build.gradle*
 ```gradle
 dependencies {
-     implementation("com.gorisse.thomas.sceneform:sceneform:1.20.3")
+     implementation("com.gorisse.thomas.sceneform:sceneform:1.20.4")
 }
 ```
 [**more...**](https://sceneview.github.io/sceneform-android/dependencies)
