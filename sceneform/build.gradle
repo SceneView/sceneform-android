@@ -7,11 +7,11 @@ plugins {
 }
 
 android {
-    compileSdkVersion 30
+    compileSdkVersion rootProject.ext.compileSdkVersion
     defaultConfig {
         // Sceneform requires minSdkVersion >= 24.
-        minSdkVersion 24
-        targetSdkVersion 30
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
     }
     compileOptions {
         // Sceneform libraries use language constructs from Java 8.

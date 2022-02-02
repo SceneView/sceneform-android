@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    compileSdkVersion 30
+    compileSdkVersion rootProject.ext.compileSdkVersion
     buildFeatures {
         dataBinding true
     }
@@ -14,8 +14,8 @@ android {
         applicationId "com.google.ar.sceneform.samples.environmentlights"
 
         // Sceneform requires minSdkVersion >= 24.
-        minSdkVersion 24
-        targetSdkVersion 30
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 2
         versionName "1.0.1"
     }
@@ -32,12 +32,12 @@ android {
 }
 
 dependencies {
-    implementation "androidx.appcompat:appcompat:1.3.1"
-    implementation "androidx.core:core-ktx:1.6.0"
-    implementation "androidx.constraintlayout:constraintlayout:2.1.1"
-    implementation "androidx.fragment:fragment-ktx:1.3.6"
+    implementation "androidx.appcompat:appcompat:$appcompat_version"
+    implementation "androidx.core:core-ktx:$core_ktx_version"
+    implementation "androidx.constraintlayout:constraintlayout:$constraintlayout_version"
+    implementation "androidx.fragment:fragment-ktx:$fragment_ktx_version"
 
-    implementation "com.google.android.material:material:1.4.0"
+    implementation "com.google.android.material:material:$material_version"
 
     releaseImplementation "com.gorisse.thomas.sceneform:sceneform:1.20.4"
     debugApi project(":sceneform")
