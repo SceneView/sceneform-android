@@ -214,6 +214,19 @@ arFragment.apply {
 | ![Augmented Faces 01](https://user-images.githubusercontent.com/6597529/135052644-79cf8964-7778-42d0-83f6-1839b9c8ab8b.gif) | ![Augmented Faces 02](https://user-images.githubusercontent.com/6597529/135059873-3342d169-5ff4-4d0d-bdec-fdac44c282ba.png) | ![Augmented Faces 03](https://user-images.githubusercontent.com/6597529/135051599-14742a53-69db-47d2-a27b-ba641a1d2609.gif) |
 | - | - | - |
 
+
+A Blender file augmented face template is available [here](https://github.com/SceneView/sceneform-android/blob/master/samples/augmented-faces/assets-sources/models/fox.blend) and can be used to create your own models: 
+
+The four bones in the skeleton are moved to the corresponding ARCore poses at runtime. It is possible to attach objects to the bones or assign weight to vertices to position the objects or modify a larger mesh according to the ARCore poses. The positions of the bones in the Blender file give a general idea of how the end result will look like so the relative transform of the attached objects is important.
+
+![image](https://user-images.githubusercontent.com/6597529/152896554-03cbc6c1-d670-4be7-86b9-b8bdb92e5c70.png)
+
+A face texture should be prepared as a separate file. For creating a face texture this template can be used: [canonical_face.png](https://github.com/SceneView/sceneform-android/blob/master/samples/augmented-faces/assets-sources/textures/canonical_face.png)
+
+You can also change the model shape based on the skeleton and weights assigned to vertices, moving some small objects around the head, scaling them, etc...
+
+You can even animate all that.
+
 [**sample project...**](https://github.com/SceneView/sceneform-android/tree/master/samples/augmented-faces)
 
 
