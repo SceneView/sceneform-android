@@ -388,7 +388,7 @@ public class SceneView extends SurfaceView implements Choreographer.FrameCallbac
             renderer.getFilamentView().setColorGrading(
                     new ColorGrading
                             .Builder()
-                            .toneMapper(new ToneMapper.Filmic())
+                            .toneMapping(ColorGrading.ToneMapping.FILMIC)
                             .build(EngineInstance.getEngine().getFilamentEngine())
             );
         }
