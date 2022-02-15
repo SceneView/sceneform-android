@@ -335,7 +335,7 @@ public class RenderableInstance implements AnimatableModel {
         RenderableManager renderableManager = EngineInstance.getEngine().getRenderableManager();
         @EntityInstance int renderableInstance = renderableManager.getInstance(getEntity());
         if (renderableInstance != 0) {
-            renderableManager.setCastShadows(renderableInstance, isShadowCaster);
+            renderableManager.setReceiveShadows(renderableInstance, isShadowReceiver);
         }
         //TODO : Verify if we don't need to apply the parameter to child entities
 //        for (int i = 0; i < entities.length; i++) {
