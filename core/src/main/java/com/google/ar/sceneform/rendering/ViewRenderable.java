@@ -233,7 +233,7 @@ public class ViewRenderable extends Renderable {
     ViewRenderableInternalData data = Preconditions.checkNotNull(viewRenderableData);
     RenderViewToExternalTexture renderViewToExternalTexture = data.getRenderView();
 
-    getMaterial().setExternalTexture("viewTexture", renderViewToExternalTexture.getExternalTexture());
+    getMaterial().setBoolean("viewTextureReady", renderViewToExternalTexture.isViewTextureReady());
 
     if (!renderViewToExternalTexture.isAttachedToWindow()
         || !renderViewToExternalTexture.isLaidOut()) {
@@ -241,7 +241,16 @@ public class ViewRenderable extends Renderable {
       return;
     }
 
+    // Wait until one frame after the surface texture has been drawn to for the first time.
+    // Fixes an issue where the ViewRenderable would render black for a frame before displaying.
+    boolean hasDrawnToSurfaceTexture = renderViewToExternalTexture.hasDrawnToSurfaceTexture();
+    if (!hasDrawnToSurfaceTexture) {
+      return;
+    }
+
     if (!isInitialized) {
+      getMaterial()
+          .setExternalTexture("viewTexture", renderViewToExternalTexture.getExternalTexture());
       updateSuggestedCollisionShape();
 
       isInitialized = true;

@@ -53,24 +53,8 @@ class RenderViewToExternalTexture extends LinearLayout {
 
     externalTexture = new ExternalTexture();
 
-    initializeWithTransparentTexture();
-
     this.view = view;
     addView(view);
-  }
-
-  private void initializeWithTransparentTexture() {
-    externalTexture.getSurfaceTexture().setDefaultBufferSize(1, 1);
-
-    // Sanity that the surface is valid.
-    Surface targetSurface = externalTexture.getSurface();
-    if (!targetSurface.isValid()) {
-      return;
-    }
-
-    Canvas surfaceCanvas = targetSurface.lockCanvas(null);
-    surfaceCanvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
-    targetSurface.unlockCanvasAndPost(surfaceCanvas);
   }
 
   /**
@@ -95,6 +79,10 @@ class RenderViewToExternalTexture extends LinearLayout {
 
   ExternalTexture getExternalTexture() {
     return externalTexture;
+  }
+
+  public boolean isViewTextureReady() {
+    return externalTexture.getFilamentStream().getTimestamp() > 0;
   }
 
   boolean hasDrawnToSurfaceTexture() {
