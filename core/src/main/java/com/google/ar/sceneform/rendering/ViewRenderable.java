@@ -233,6 +233,8 @@ public class ViewRenderable extends Renderable {
     ViewRenderableInternalData data = Preconditions.checkNotNull(viewRenderableData);
     RenderViewToExternalTexture renderViewToExternalTexture = data.getRenderView();
 
+    getMaterial().setBoolean("viewTextureReady", renderViewToExternalTexture.isViewTextureReady());
+
     if (!renderViewToExternalTexture.isAttachedToWindow()
         || !renderViewToExternalTexture.isLaidOut()) {
       // Wait for the view to finish attachment.
