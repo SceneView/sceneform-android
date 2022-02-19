@@ -10,7 +10,7 @@ Sceneform Maintained SDK for Android
 
 ```gradle
 dependencies {
-     implementation "com.gorisse.thomas.sceneform:sceneform:1.20.4"
+     implementation "com.gorisse.thomas.sceneform:sceneform:1.20.5"
 }
 ```
 
@@ -86,7 +86,7 @@ This repository was originaly a fork of [Sceneform](https://github.com/google-ar
 *app/build.gradle*
 ```gradle
 dependencies {
-     implementation "com.gorisse.thomas.sceneform:sceneform:1.20.4"
+     implementation "com.gorisse.thomas.sceneform:sceneform:1.20.5"
 }
 ```
 [**more...**](https://sceneview.github.io/sceneform-android/dependencies)

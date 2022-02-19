@@ -16,7 +16,6 @@ import com.google.ar.sceneform.rendering.ModelRenderable;
 import com.google.ar.sceneform.rendering.Renderable;
 import com.google.ar.sceneform.rendering.RenderableInstance;
 import com.google.ar.sceneform.rendering.Texture;
-import com.google.ar.sceneform.ux.ArFragment;
 import com.google.ar.sceneform.ux.ArFrontFacingFragment;
 import com.google.ar.sceneform.ux.AugmentedFaceNode;
 
