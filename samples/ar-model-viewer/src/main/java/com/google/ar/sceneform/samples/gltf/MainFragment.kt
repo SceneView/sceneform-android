@@ -68,6 +68,7 @@ class MainFragment : Fragment(R.layout.fragment_main) {
             // Create the transformable model and add it to the anchor.
             addChild(TransformableNode(arFragment.transformationSystem).apply {
                 renderable = model
+                renderableInstance.setCulling(false)
                 renderableInstance.animate(true).start()
                 // Add the View
                 addChild(Node().apply {
