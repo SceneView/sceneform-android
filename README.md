@@ -16,8 +16,11 @@ dependencies {
 
 ---
 
+### You want to thank us for our work?
+[Contribute to help us being there for answering your issues/questions](https://opencollective.com/sceneview/contribute/thanks-for-your-work-34718)
 [![image](https://user-images.githubusercontent.com/6597529/156880003-8ae2c008-e4a3-4079-8519-621e7a1dd933.png)](https://opencollective.com/sceneview/contribute/thanks-for-your-work-34718)
 
+---
 
 ### :zap: **NEWS - 12/22/2020** :zap:
 **[1st SceneView Open Collective sponsor](https://opencollective.com/sceneview)**
