@@ -66,12 +66,15 @@ open class HDREnvironment(
     override fun destroy() {
         super.destroy()
 
+        val canDestroySkybox = cubemap != skyboxEnvironment
         if(!sharedCubemap) {
             cubemap?.destroy()
             cubemap = null
         }
         intensity = null
-        skyboxEnvironment?.destroy()
+        if (canDestroySkybox) {
+            skyboxEnvironment?.destroy()
+        }
         skyboxEnvironment = null
     }
 }
