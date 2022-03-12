@@ -8,58 +8,16 @@ Sceneform Maintained SDK for Android
 
 **Android Augmented Reality library: AR Model Viewer, Augmented Images, Augmented Faces, Video, Depth, Cloud Anchors, Instant Placement, Light Estimation and much more in Kotlin and Java**
 
-```gradle
-dependencies {
-     implementation "com.gorisse.thomas.sceneform:sceneform:1.20.5"
-}
-```
-
 ---
 
-### You want to thank us for our work?
-[Contribute to help us being there for answering your issues/questions](https://opencollective.com/sceneview/contribute/thanks-for-your-work-34718)
-[![image](https://user-images.githubusercontent.com/6597529/156880003-8ae2c008-e4a3-4079-8519-621e7a1dd933.png)](https://opencollective.com/sceneview/contribute/thanks-for-your-work-34718)
-
----
-
-### :zap: **NEWS - 12/22/2020** :zap:
-**[1st SceneView Open Collective sponsor](https://opencollective.com/sceneview)**
-
-We are helping in making Android AR app with more precise answers, code issues solving and specific usage.
-Discuss with the team on a private dedicated Discord channel.
-We can read your code and tell you what is going wrong or could be improved.
-Answers can be explained by chat or directly pushed to a private repo specific branch
-
-Our community can help you to gain a lot of time on AR problematic and specific blocking issues.
-
-- [Order your needed support time](https://opencollective.com/sceneview/contribute)
-- Have a look at the [Community Expenses](https://opencollective.com/sceneview/expenses) to see what is done with contributions
-- [Contact us](https://sceneview.github.io)
-
----
-
-### :zap: **NEWS - 12/15/2021** :zap:
-**[SceneView Android - Release 0.0.3](https://github.com/SceneView/sceneview-android) is available on `mavenCentral()`**
-
-Give it a try if you start a new project or not: SceneView has a quite quick automatic migration class that will help you moving your app from Sceneform
-
----
-
-### :zap: **NEWS - 12/6/2021** :zap:
-**[SceneView Community Website](https://sceneview.github.io/) is out and online**
-
-Find some more infos about the tools and samples.
-
----
-
-### :zap: **NEWS - 11/15/2021** :zap:
-**[Discord Channel](https://sceneview.github.io/)** creation
+### Chat with us
 
 [![Discord channel](https://discordapp.com/api/guilds/893787194295222292/widget.png?style=banner3)](https://discord.gg/UbNDDBTNqb)
 
 (Please don't use it for issues, go to the GitHub Issues section instead)
 
 ---
+
 ### Sceneform maintained and successor:
 
 - Sceneform - Java Continuation : Here
