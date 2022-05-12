@@ -3,13 +3,15 @@ plugins {
 }
 
 android {
-    compileSdkVersion rootProject.ext.compileSdkVersion
+    compileSdk rootProject.ext.compileSdk
+    compileSdkVersion rootProject.ext.compileSdk
+
     defaultConfig {
         applicationId 'com.google.ar.sceneform.samples.depth'
 
-        // Sceneform requires minSdkVersion >= 24.
-        minSdkVersion rootProject.ext.minSdkVersion
-        targetSdkVersion rootProject.ext.targetSdkVersion
+        // Sceneform requires minSdk >= 24.
+        minSdk rootProject.ext.minSdk
+        targetSdk rootProject.ext.targetSdk
         versionCode 1
         versionName "1.0"
     }
@@ -17,7 +19,7 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
-    aaptOptions {
+    androidResources {
         noCompress 'filamat', 'ktx'
     }
 

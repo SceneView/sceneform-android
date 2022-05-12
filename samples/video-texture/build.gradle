@@ -1,18 +1,18 @@
 plugins {
     id 'com.android.application'
     id 'kotlin-android'
-    id 'kotlin-android-extensions'
-    id 'kotlin-kapt'
 }
 
 android {
-    compileSdkVersion rootProject.ext.compileSdkVersion
+    compileSdk rootProject.ext.compileSdk
+    compileSdkVersion rootProject.ext.compileSdk
+
     defaultConfig {
         applicationId "com.google.ar.sceneform.samples.videotexture"
 
-        // Sceneform requires minSdkVersion >= 24.
-        minSdkVersion rootProject.ext.minSdkVersion
-        targetSdkVersion rootProject.ext.targetSdkVersion
+        // Sceneform requires minSdk >= 24.
+        minSdk rootProject.ext.minSdk
+        targetSdk rootProject.ext.targetSdk
         versionCode 1
         versionName "1.0"
     }

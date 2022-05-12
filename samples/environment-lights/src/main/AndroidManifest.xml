@@ -2,8 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     package="com.google.ar.sceneform.samples.environmentlights">
-    <!-- "AR Required" apps must declare minSdkVersion ≥ 24.
-         "AR Optional" apps must declare minSdkVersion ≥ 14 -->
+    <!-- "AR Required" apps must declare minSdk ≥ 24.
+         "AR Optional" apps must declare minSdk ≥ 14 -->
     <!-- Always needed for AR. -->
 
     <uses-permission android:name="android.permission.CAMERA" />

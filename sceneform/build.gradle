@@ -1,35 +1,35 @@
 plugins {
     id 'com.android.library'
     id 'kotlin-android'
-    id 'kotlin-android-extensions'
-    id 'kotlin-kapt'
 //    id 'com.vanniktech.maven.publish'
 }
 
 android {
-    compileSdkVersion rootProject.ext.compileSdkVersion
+    compileSdk rootProject.ext.compileSdk
+    compileSdkVersion rootProject.ext.compileSdk
+
     defaultConfig {
-        // Sceneform requires minSdkVersion >= 24.
-        minSdkVersion rootProject.ext.minSdkVersion
-        targetSdkVersion rootProject.ext.targetSdkVersion
+        // Sceneform requires minSdk >= 24.
+        minSdk rootProject.ext.minSdk
+        targetSdk rootProject.ext.targetSdk
     }
     compileOptions {
         // Sceneform libraries use language constructs from Java 8.
-        // Add these compile options if targeting minSdkVersion < 26.
+        // Add these compile options if targeting minSdk < 26.
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
     kotlinOptions {
         jvmTarget = JavaVersion.VERSION_1_8.toString()
     }
-    aaptOptions {
-        noCompress 'filamat', 'ktx'
-    }
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
+    }
+    androidResources {
+        noCompress 'filamat', 'ktx'
     }
 }
 

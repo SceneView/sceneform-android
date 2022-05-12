@@ -1,21 +1,22 @@
 plugins {
     id 'com.android.application'
     id 'kotlin-android'
-    id 'kotlin-android-extensions'
     id 'kotlin-kapt'
 }
 
 android {
-    compileSdkVersion rootProject.ext.compileSdkVersion
+    compileSdk rootProject.ext.compileSdk
+    compileSdkVersion rootProject.ext.compileSdk
+
     buildFeatures {
         dataBinding true
     }
     defaultConfig {
         applicationId "com.google.ar.sceneform.samples.environmentlights"
 
-        // Sceneform requires minSdkVersion >= 24.
-        minSdkVersion rootProject.ext.minSdkVersion
-        targetSdkVersion rootProject.ext.targetSdkVersion
+        // Sceneform requires minSdk >= 24.
+        minSdk rootProject.ext.minSdk
+        targetSdk rootProject.ext.targetSdk
         versionCode 2
         versionName "1.0.1"
     }
@@ -26,7 +27,7 @@ android {
     kotlinOptions {
         jvmTarget = '1.8'
     }
-    aaptOptions {
+    androidResources {
         noCompress 'filamat', 'ktx'
     }
 }
