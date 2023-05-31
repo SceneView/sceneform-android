@@ -83,7 +83,7 @@ public final class MaterialFactory {
         Material.builder()
             .setSource(
                 context,
-                RenderingResources.GetSceneformResource(
+                RenderingResources.GetSceneformSourceResourceUri(
                     context, RenderingResources.Resource.OPAQUE_COLORED_MATERIAL))
             .build();
 
@@ -115,7 +115,7 @@ public final class MaterialFactory {
         Material.builder()
             .setSource(
                 context,
-                RenderingResources.GetSceneformResource(
+                RenderingResources.GetSceneformSourceResourceUri(
                     context, RenderingResources.Resource.TRANSPARENT_COLORED_MATERIAL))
             .build();
 
@@ -148,7 +148,7 @@ public final class MaterialFactory {
         Material.builder()
             .setSource(
                 context,
-                RenderingResources.GetSceneformResource(
+                RenderingResources.GetSceneformSourceResourceUri(
                     context, RenderingResources.Resource.OPAQUE_TEXTURED_MATERIAL))
             .build();
 
@@ -181,7 +181,7 @@ public final class MaterialFactory {
         Material.builder()
             .setSource(
                 context,
-                RenderingResources.GetSceneformResource(
+                RenderingResources.GetSceneformSourceResourceUri(
                     context, RenderingResources.Resource.TRANSPARENT_TEXTURED_MATERIAL))
             .build();
 

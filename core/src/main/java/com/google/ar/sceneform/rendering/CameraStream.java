@@ -178,7 +178,7 @@ public class CameraStream {
                 Material.builder()
                         .setSource(
                                 renderer.getContext(),
-                                RenderingResources.GetSceneformResource(
+                                RenderingResources.GetSceneformSourceResourceUri(
                                         renderer.getContext(),
                                         RenderingResources.Resource.CAMERA_MATERIAL))
                         .build();
@@ -212,7 +212,7 @@ public class CameraStream {
                 Material.builder()
                         .setSource(
                                 renderer.getContext(),
-                                RenderingResources.GetSceneformResource(
+                                RenderingResources.GetSceneformSourceResourceUri(
                                         renderer.getContext(),
                                         RenderingResources.Resource.OCCLUSION_CAMERA_MATERIAL))
                         .build();

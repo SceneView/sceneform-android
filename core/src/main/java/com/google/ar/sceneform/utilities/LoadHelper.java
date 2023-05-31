@@ -142,9 +142,12 @@ public class LoadHelper {
     Resources resources = context.getResources();
     return new Uri.Builder()
         .scheme(ContentResolver.SCHEME_ANDROID_RESOURCE)
-        .authority(resources.getResourcePackageName(resID))
+        .authority(context.getPackageName()) // Look up the resources in the application with its splits loaded
         .appendPath(resources.getResourceTypeName(resID))
-        .appendPath(resources.getResourceEntryName(resID))
+        .appendPath(String.format("%s:%s",
+                resources.getResourcePackageName(resID), // Look up the dynamic resource in the split namespace.
+                resources.getResourceEntryName(resID)
+        ))
         .build();
   }
 

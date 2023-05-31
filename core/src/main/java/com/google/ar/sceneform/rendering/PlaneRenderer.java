@@ -309,7 +309,7 @@ public class PlaneRenderer {
         Material.builder()
                 .setSource(
                         renderer.getContext(),
-                        RenderingResources.GetSceneformResource(
+                        RenderingResources.GetSceneformSourceResourceUri(
                                 renderer.getContext(), RenderingResources.Resource.PLANE_SHADOW_MATERIAL))
                 .build()
                 .thenAccept(
@@ -338,7 +338,7 @@ public class PlaneRenderer {
                 Texture.builder()
                         .setSource(
                                 renderer.getContext(),
-                                RenderingResources.GetSceneformResource(
+                                RenderingResources.GetSceneformSourceResourceUri(
                                         renderer.getContext(), RenderingResources.Resource.PLANE))
                         .setSampler(sampler)
                         .build();
@@ -347,7 +347,7 @@ public class PlaneRenderer {
                 Material.builder()
                         .setSource(
                                 renderer.getContext(),
-                                RenderingResources.GetSceneformResource(
+                                RenderingResources.GetSceneformSourceResourceUri(
                                         renderer.getContext(), RenderingResources.Resource.PLANE_MATERIAL))
                         .build()
                         .thenCombine(
