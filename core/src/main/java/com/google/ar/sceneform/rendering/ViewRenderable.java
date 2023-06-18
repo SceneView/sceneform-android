@@ -442,7 +442,7 @@ public class ViewRenderable extends Renderable {
         CompletableFuture<Void> setSourceFuture = Material.builder()
                 .setSource(
                         context,
-                        RenderingResources.GetSceneformResource(
+                        RenderingResources.GetSceneformSourceResourceUri(
                                 context, RenderingResources.Resource.VIEW_RENDERABLE_MATERIAL))
                 .build()
                 .thenAccept(
