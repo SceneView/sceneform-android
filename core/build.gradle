@@ -68,6 +68,6 @@ dependencies {
     implementation "com.github.kittinunf.fuel:fuel-coroutines:$fuel_version"
 }
 
-//mavenPublish {
-//    releaseSigningEnabled = project.hasProperty('signing.keyId') && project.hasProperty('signing.password')
-//}
+mavenPublish {
+    releaseSigningEnabled = project.hasProperty('signing.keyId') && project.hasProperty('signing.password')
+}

@@ -41,6 +41,6 @@ dependencies {
     api project(":ux")
 }
 
-//mavenPublish {
-//    releaseSigningEnabled = project.hasProperty('signing.keyId') && project.hasProperty('signing.password')
-//}
+mavenPublish {
+    releaseSigningEnabled = project.hasProperty('signing.keyId') && project.hasProperty('signing.password')
+}
